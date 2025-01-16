@@ -12,9 +12,12 @@ public class UserLoginRequest {
     private String password;
 
     public UserLoginRequest(String email, String password) {
+        System.out.println("Inside Login Request");
         this.email = email;
         this.password = password;
     }
+
+    public UserLoginRequest(){}
 
     public String getEmail() {
         return email;
@@ -22,5 +25,22 @@ public class UserLoginRequest {
 
     public String getPassword() {
         return password;
+    }
+
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    @Override
+    public String toString() {
+        return "UserLoginRequest{" +
+                "email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                '}';
     }
 }

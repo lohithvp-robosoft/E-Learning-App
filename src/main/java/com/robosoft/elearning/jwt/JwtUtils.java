@@ -55,9 +55,23 @@ public class JwtUtils {
         long nowMillis = System.currentTimeMillis();
         long expMillis = nowMillis + jwtAccessExpirationMs;
         return Jwts.builder()
-                .claim("sub", user.getId())
+                .claim("sub", user.getId().toString())
                 .claim("username", userDetails.getUsername())
                 .claim("roles", user.getRoles().stream().map(Role::name).toList())
+                .claim("iat", nowMillis / 1000)
+                .claim("exp", expMillis / 1000)
+                .signWith(key())
+                .compact();
+    }
+    public String generateTokenFromUserDetails(User user, String id) {
+        UserDetails userDetails = generateUserDetails(user);
+
+        long nowMillis = System.currentTimeMillis();
+        long expMillis = nowMillis + jwtAccessExpirationMs;
+
+        return Jwts.builder()
+                .claim("id", id)
+                .claim("username", userDetails.getUsername())
                 .claim("iat", nowMillis / 1000)
                 .claim("exp", expMillis / 1000)
                 .signWith(key())
@@ -70,7 +84,7 @@ public class JwtUtils {
         long expMillis = nowMillis + jwtRefreshExpirationMs;
         return Jwts.builder()
 
-                .claim("sub", user.getId())
+                .claim("sub", user.getId().toString())
                 .claim("tokenType", "refresh")
                 .claim("iat", nowMillis / 1000)
                 .claim("exp", expMillis / 1000)
@@ -82,7 +96,7 @@ public class JwtUtils {
         return org.springframework.security.core.userdetails.User
                 .builder()
                 .username(user.getEmail())
-//                .password(user.getPassword())
+                .password(user.getPassword())
                 .roles(user.getRoles().stream().map(Role::name).toArray(String[]::new))
                 .build();
     }
@@ -134,7 +148,7 @@ public class JwtUtils {
         request.setAttribute("jwt-error", logMessage + ": " + e.getMessage());
     }
 
-    public void blacklistToken(String token) {
+    public void blackListRefreshToke(String token) {
         stringRedisTemplate.opsForValue().set("blacklist:" + token, token, jwtRefreshExpirationMs, TimeUnit.MILLISECONDS);
     }
 
@@ -142,8 +156,12 @@ public class JwtUtils {
         return stringRedisTemplate.hasKey("blacklist:" + token);
     }
 
+    public void blackListAccessToken(String token){
+        stringRedisTemplate.opsForValue().set("blacklist:" + token, token, jwtAccessExpirationMs, TimeUnit.MILLISECONDS);
+    }
 
 }
+
 
 
 //                .claim("jti", UUID.randomUUID().toString())

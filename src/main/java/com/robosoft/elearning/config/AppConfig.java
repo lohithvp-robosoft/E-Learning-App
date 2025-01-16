@@ -45,11 +45,8 @@ public class AppConfig {
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .anyRequest().permitAll()
-//                        .requestMatchers("/api/v1/hotel/admin/**").hasRole("ADMIN")
-//                        .requestMatchers("/api/v1/user/register", "/api/v1/user/login,/api/v1/hotel/id/**").permitAll()
-//                        .requestMatchers("/actuator/**").permitAll()
-//                        .anyRequest().authenticated()
+                                .requestMatchers("/api/user/v1/send-reg-otp","/api/user/v1/register","/api/user/v1/login").permitAll()
+                                .anyRequest().authenticated()
         );
         http.sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -90,11 +87,6 @@ public class AppConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration builder) throws Exception {
         return builder.getAuthenticationManager();
     }
-
-//    @Bean
-//    public JedisConnectionFactory jedisConnectionFactory() {
-//        return new JedisConnectionFactory();
-//    }
 
     @Bean
     public StringRedisTemplate stringRedisTemplate(JedisConnectionFactory jedisConnectionFactory) {
