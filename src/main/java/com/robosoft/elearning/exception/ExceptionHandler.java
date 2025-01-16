@@ -47,6 +47,12 @@ public class ExceptionHandler {
         return responseUtil.errorResponse("Internal Server Error: " + ex.getMessage(), 500);
     }
 
+    @org.springframework.web.bind.annotation.ExceptionHandler(value = {JwtException.class})
+    public <T> ResponseEntity<ResponseDTO<T>> handleJwtException(JwtException ex) {
+        log.error("JWT Error: " + ex.getMessage(), ex);
+        return responseUtil.errorResponse("JWT Error: " + ex.getMessage(), 401);
+    }
+
     @org.springframework.web.bind.annotation.ExceptionHandler(value = {MethodArgumentNotValidException.class})
     public ResponseEntity<ResponseDTO<Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
@@ -54,7 +60,7 @@ public class ExceptionHandler {
                 errors.put(error.getField(), error.getDefaultMessage())
         );
 
-        return responseUtil.errorResponse("Validation error occurred ", 400);
+        return responseUtil.errorResponse("Validation error occurred ", 400, errors);
     }
 }
 

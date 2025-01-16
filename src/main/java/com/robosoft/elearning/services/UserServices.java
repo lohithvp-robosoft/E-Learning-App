@@ -1,5 +1,6 @@
 package com.robosoft.elearning.services;
 
+import com.robosoft.elearning.dto.request.BaseRegisterRequest;
 import com.robosoft.elearning.dto.request.LoginRequest;
 import com.robosoft.elearning.dto.request.RefreshTokenRequest;
 import com.robosoft.elearning.dto.request.UserRegisterRequest;
@@ -14,9 +15,9 @@ import org.springframework.stereotype.Service;
 @Service
 public interface UserServices {
 
-    ResponseEntity<ResponseDTO<RegisterResponse>> registerUser(UserRegisterRequest userRegisterRequest, String otp);
+    ResponseEntity<ResponseDTO<RegisterResponse>> register(BaseRegisterRequest baseRegisterRequest, String otp);
 
-    ResponseEntity<ResponseDTO<LoginResponse>> loginUser(LoginRequest loginRequest);
+    ResponseEntity<ResponseDTO<LoginResponse>> login(LoginRequest loginRequest);
 
     ResponseEntity<ResponseDTO<RefreshTokenResponse>> generateAccessTokenFromRefreshToken(RefreshTokenRequest refreshTokenRequest);
 

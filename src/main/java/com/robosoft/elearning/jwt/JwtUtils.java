@@ -1,8 +1,10 @@
 package com.robosoft.elearning.jwt;
 
+import com.robosoft.elearning.exception.JwtException;
 import com.robosoft.elearning.modal.Role;
 import com.robosoft.elearning.modal.User;
-import io.jsonwebtoken.JwtException;
+//import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -60,23 +62,24 @@ public class JwtUtils {
                 .claim("roles", user.getRoles().stream().map(Role::name).toList())
                 .claim("iat", nowMillis / 1000)
                 .claim("exp", expMillis / 1000)
+                .claim("type", "access")
                 .signWith(key())
                 .compact();
     }
-    public String generateTokenFromUserDetails(User user, String id) {
-        UserDetails userDetails = generateUserDetails(user);
-
-        long nowMillis = System.currentTimeMillis();
-        long expMillis = nowMillis + jwtAccessExpirationMs;
-
-        return Jwts.builder()
-                .claim("id", id)
-                .claim("username", userDetails.getUsername())
-                .claim("iat", nowMillis / 1000)
-                .claim("exp", expMillis / 1000)
-                .signWith(key())
-                .compact();
-    }
+//    public String generateTokenFromUserDetails(User user, String id) {
+//        UserDetails userDetails = generateUserDetails(user);
+//
+//        long nowMillis = System.currentTimeMillis();
+//        long expMillis = nowMillis + jwtAccessExpirationMs;
+//
+//        return Jwts.builder()
+//                .claim("id", id)
+//                .claim("username", userDetails.getUsername())
+//                .claim("iat", nowMillis / 1000)
+//                .claim("exp", expMillis / 1000)
+//                .signWith(key())
+//                .compact();
+//    }
 
     public String generateRefreshToken(User user) {
         UserDetails userDetails = generateUserDetails(user);
@@ -88,6 +91,7 @@ public class JwtUtils {
                 .claim("tokenType", "refresh")
                 .claim("iat", nowMillis / 1000)
                 .claim("exp", expMillis / 1000)
+                .claim("type", "refresh")
                 .signWith(key())
                 .compact();
     }
@@ -130,11 +134,10 @@ public class JwtUtils {
             Jwts.parser().verifyWith((SecretKey) key()).build().parseSignedClaims(authToken);
             return true;
         } catch (JwtException e) {
-            handleJwtException(e, "Invalid JWT token");
+            throw new com.robosoft.elearning.exception.JwtException("Invalid JWT token: " + e.getMessage(), e);
         } catch (IllegalArgumentException e) {
-            handleJwtException(e, "JWT claims string is empty");
+            throw new com.robosoft.elearning.exception.JwtException("JWT claims string is empty: " + e.getMessage(), e);
         }
-        return false;
     }
 
     public Long getUserIdFromRequestHeader(HttpServletRequest request){
@@ -142,13 +145,13 @@ public class JwtUtils {
         return Long.valueOf(getUserIdFromJwtToken(token));
     }
 
-    private void handleJwtException(Exception e, String logMessage) {
-        log.error( logMessage +" "+e.getMessage());
-        HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
-        request.setAttribute("jwt-error", logMessage + ": " + e.getMessage());
-    }
+//    private void handleJwtException(Exception e, String logMessage) {
+//        log.error( logMessage +" "+e.getMessage());
+//        HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
+//        request.setAttribute("jwt-error", logMessage + ": " + e.getMessage());
+//    }
 
-    public void blackListRefreshToke(String token) {
+    public void blackListRefreshToken(String token) {
         stringRedisTemplate.opsForValue().set("blacklist:" + token, token, jwtRefreshExpirationMs, TimeUnit.MILLISECONDS);
     }
 
@@ -159,6 +162,17 @@ public class JwtUtils {
     public void blackListAccessToken(String token){
         stringRedisTemplate.opsForValue().set("blacklist:" + token, token, jwtAccessExpirationMs, TimeUnit.MILLISECONDS);
     }
+
+    public boolean isAccessToken(String token) {
+        Claims claims = Jwts.parser().setSigningKey(key()).build().parseClaimsJws(token).getBody();
+        return "access".equals(claims.get("type"));
+    }
+
+    public boolean isRefreshToken(String token) {
+        Claims claims = Jwts.parser().setSigningKey(key()).build().parseClaimsJws(token).getBody();
+        return "refresh".equals(claims.get("type"));
+    }
+
 
 }
 

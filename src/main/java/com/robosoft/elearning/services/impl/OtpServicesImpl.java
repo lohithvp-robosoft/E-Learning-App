@@ -26,7 +26,7 @@ public class OtpServicesImpl implements OtpServices {
     private ResponseUtil responseUtil;
 
     @Override
-    public ResponseEntity<ResponseDTO<Object>> sendOtp(String email, String subject, String content) {
+    public ResponseEntity<ResponseDTO<Void>> sendOtp(String email, String subject, String content) {
         String otp = generateOtp();
         emailHandler.sendMail(email, subject, content + " " + otp);
         storeOtpInRedis(email, otp);

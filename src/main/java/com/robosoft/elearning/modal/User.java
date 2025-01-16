@@ -1,5 +1,6 @@
 package com.robosoft.elearning.modal;
 
+import com.robosoft.elearning.dto.request.BaseRegisterRequest;
 import com.robosoft.elearning.dto.request.UserRegisterRequest;
 import jakarta.persistence.*;
 
@@ -18,6 +19,8 @@ public class User {
 
     @Column(nullable = false, unique = true)
     private String username;
+
+    private String imageUrl;
 
     @Column(nullable = false)
     private String password;
@@ -42,16 +45,16 @@ public class User {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public User(UserRegisterRequest userRegisterRequest) {
-        this.email = userRegisterRequest.getEmail();
-        this.password = userRegisterRequest.getPassword();
-        this.username = userRegisterRequest.getUserName();
+    public User(BaseRegisterRequest registerRequest, String encodedPassword) {
+        this.email = registerRequest.getEmail();
+        this.password = encodedPassword;
+        this.username = registerRequest.getUserName();
 
-        if (userRegisterRequest.getRoles() == null || userRegisterRequest.getRoles().isEmpty()) {
+        if (registerRequest.getRoles() == null || registerRequest.getRoles().isEmpty()) {
 //            log.info("No roles provided, setting default role");
             this.roles.add(Role.USER);
         } else {
-            this.roles = userRegisterRequest.getRoles();
+            this.roles = registerRequest.getRoles();
         }
     }
     User(){}
@@ -100,6 +103,22 @@ public class User {
         this.roles = roles;
     }
 
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public User(String email, String username, String imageUrl, String password, List<Role> roles) {
+        this.email = email;
+        this.username = username;
+        this.imageUrl = imageUrl;
+        this.password = password;
+        this.roles = roles;
+    }
+
     public User(String email, String username, String password, List<Role> roles) {
         this.email = email;
         this.username = username;
@@ -114,7 +133,8 @@ public class User {
                 ", email='" + email + '\'' +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
-                ", roles=" + roles +
+                ", roles=" + roles + '\'' +
+                ", imageUrl=" + imageUrl +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';

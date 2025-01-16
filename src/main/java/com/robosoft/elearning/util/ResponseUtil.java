@@ -28,4 +28,8 @@ public class ResponseUtil {
     public <T> ResponseEntity<ResponseDTO<T>> errorResponse(String message, int statusCode) {
         return new ResponseEntity<>(new ResponseDTO<>(-1, statusCode, message, null), HttpStatusCode.valueOf(statusCode));
     }
+
+    public <T> ResponseEntity<ResponseDTO<T>> errorResponse(String message, int statusCode,T response) {
+        return new ResponseEntity<>(new ResponseDTO<>(-1, statusCode, message, response), HttpStatusCode.valueOf(statusCode));
+    }
 }
