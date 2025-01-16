@@ -1,6 +1,6 @@
 package com.robosoft.elearning.modal;
 
-import com.robosoft.elearning.dto.request.UserRequest;
+import com.robosoft.elearning.dto.request.UserRegisterRequest;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -42,16 +42,16 @@ public class User {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public User(UserRequest userRequest) {
-        this.email = userRequest.getEmail();
-        this.password = userRequest.getPassword();
-        this.username = userRequest.getUserName();
+    public User(UserRegisterRequest userRegisterRequest) {
+        this.email = userRegisterRequest.getEmail();
+        this.password = userRegisterRequest.getPassword();
+        this.username = userRegisterRequest.getUserName();
 
-        if (userRequest.getRoles() == null || userRequest.getRoles().isEmpty()) {
+        if (userRegisterRequest.getRoles() == null || userRegisterRequest.getRoles().isEmpty()) {
 //            log.info("No roles provided, setting default role");
             this.roles.add(Role.USER);
         } else {
-            this.roles = userRequest.getRoles();
+            this.roles = userRegisterRequest.getRoles();
         }
     }
     User(){}

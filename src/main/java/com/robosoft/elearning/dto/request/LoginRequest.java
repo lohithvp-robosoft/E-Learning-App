@@ -3,7 +3,7 @@ package com.robosoft.elearning.dto.request;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-public class UserLoginRequest {
+public class LoginRequest {
     @Email(message = "Invalid email format")
     @NotBlank(message = "Email cannot be blank")
     private String email;
@@ -11,13 +11,13 @@ public class UserLoginRequest {
     @NotBlank(message = "Password cannot be blank")
     private String password;
 
-    public UserLoginRequest(String email, String password) {
+    public LoginRequest(String email, String password) {
         System.out.println("Inside Login Request");
         this.email = email;
         this.password = password;
     }
 
-    public UserLoginRequest(){}
+    public LoginRequest(){}
 
     public String getEmail() {
         return email;
@@ -38,7 +38,7 @@ public class UserLoginRequest {
 
     @Override
     public String toString() {
-        return "UserLoginRequest{" +
+        return "LoginRequest{" +
                 "email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 '}';

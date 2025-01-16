@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserRequest {
+public class AdminRegistrationRequest {
     @Email(message = "Invalid email format")
     @NotBlank(message = "Email cannot be blank")
     private String email;
@@ -27,42 +27,46 @@ public class UserRequest {
 
     private List<Role> roles = new ArrayList<>();
 
-    public UserRequest(String email, String userName, String password, List<Role> roles) {
+    public AdminRegistrationRequest(String email, String userName, String password, List<Role> roles) {
         this.email = email;
         this.userName = userName;
         this.password = password;
-        this.roles = roles;
+        this.roles.add(Role.ADMIN);
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
+    public AdminRegistrationRequest() {
+        this.roles.add(Role.USER);
     }
 
     public String getEmail() {
         return email;
     }
 
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getUserName() {
         return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getPassword() {
         return password;
     }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public List<Role> getRoles() {
         return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
     }
 }

@@ -6,7 +6,7 @@ import com.robosoft.elearning.modal.User;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserLoginResponse {
+public class LoginResponse {
     private Long id;
 
     private String email;
@@ -43,9 +43,9 @@ public class UserLoginResponse {
         return refreshToken;
     }
 
-//    public UserLoginResponse(){}
+//    public LoginResponse(){}
 
-    public UserLoginResponse(User user, String accessToken, String refreshToken) {
+    public LoginResponse(User user, String accessToken, String refreshToken) {
         if (user == null || accessToken == null || accessToken.isEmpty() || refreshToken == null || refreshToken.isEmpty()) {
             throw new IllegalArgumentException("User, access token, and refresh token cannot be null or empty");
         }

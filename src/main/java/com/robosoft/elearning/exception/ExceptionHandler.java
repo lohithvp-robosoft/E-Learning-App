@@ -30,6 +30,11 @@ public class ExceptionHandler {
         return responseUtil.errorResponse("Invalid email or Password", 401);
     }
 
+    @org.springframework.web.bind.annotation.ExceptionHandler(value = {MailAuthenticationException.class})
+    public <T> ResponseEntity<ResponseDTO<T>> handleMailAuthentication() {
+        return responseUtil.errorResponse("Mail Authentication Failer", 401);
+    }
+
     @org.springframework.web.bind.annotation.ExceptionHandler(value = {NotFoundException.class})
     public <T> ResponseEntity<ResponseDTO<T>> handleNotFoundException(NotFoundException ex) {
         return responseUtil.errorResponse(ex.getMessage(), 404);

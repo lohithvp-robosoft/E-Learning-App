@@ -33,10 +33,16 @@ public class OtpServicesImpl implements OtpServices {
         return responseUtil.successResponse(null, "Successfully sent the email to " + email);
     }
 
+//    @Override
+//    public String generateOtp() {
+//        Random random = new Random();
+//        return String.valueOf(random.nextInt(100_000, 999_999));
+//    }
+
     @Override
     public String generateOtp() {
         Random random = new Random();
-        return String.valueOf(random.nextInt(100_000, 999_999));
+        return String.valueOf(random.nextInt(9000) + 1000);
     }
 
     @Override

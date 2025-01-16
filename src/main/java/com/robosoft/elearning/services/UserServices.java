@@ -1,13 +1,12 @@
 package com.robosoft.elearning.services;
 
-//import com.robosoft.elearning.dto.request.LogoutRequest;
+import com.robosoft.elearning.dto.request.LoginRequest;
 import com.robosoft.elearning.dto.request.RefreshTokenRequest;
-import com.robosoft.elearning.dto.request.UserLoginRequest;
-import com.robosoft.elearning.dto.request.UserRequest;
+import com.robosoft.elearning.dto.request.UserRegisterRequest;
+import com.robosoft.elearning.dto.response.LoginResponse;
+import com.robosoft.elearning.dto.response.RefreshTokenResponse;
+import com.robosoft.elearning.dto.response.RegisterResponse;
 import com.robosoft.elearning.dto.response.ResponseDTO;
-import com.robosoft.elearning.dto.response.UserLoginResponse;
-import com.robosoft.elearning.dto.response.UserRegisterResponse;
-import com.robosoft.elearning.modal.User;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -15,13 +14,11 @@ import org.springframework.stereotype.Service;
 @Service
 public interface UserServices {
 
-    ResponseEntity<ResponseDTO<UserRegisterResponse>> registerUser(UserRequest userRequest, String otp);
+    ResponseEntity<ResponseDTO<RegisterResponse>> registerUser(UserRegisterRequest userRegisterRequest, String otp);
 
-    ResponseEntity<ResponseDTO<UserLoginResponse>> loginUser(UserLoginRequest userLoginRequest);
+    ResponseEntity<ResponseDTO<LoginResponse>> loginUser(LoginRequest loginRequest);
 
-//    User loginUser(UserLoginRequest userLoginRequest);
+    ResponseEntity<ResponseDTO<RefreshTokenResponse>> generateAccessTokenFromRefreshToken(RefreshTokenRequest refreshTokenRequest);
 
-    ResponseEntity<ResponseDTO<UserLoginResponse>> generateAccessTokenFromRefreshToken(RefreshTokenRequest refreshTokenRequest);
-
-    String logout(HttpServletRequest request, RefreshTokenRequest refreshTokenRequest);
+    ResponseEntity<ResponseDTO<Void>> logout(HttpServletRequest request, RefreshTokenRequest refreshTokenRequest);
 }

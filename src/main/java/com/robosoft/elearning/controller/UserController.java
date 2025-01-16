@@ -1,11 +1,13 @@
 package com.robosoft.elearning.controller;
 
+import com.robosoft.elearning.dto.request.AdminRegistrationRequest;
+import com.robosoft.elearning.dto.request.LoginRequest;
 import com.robosoft.elearning.dto.request.RefreshTokenRequest;
-import com.robosoft.elearning.dto.request.UserLoginRequest;
-import com.robosoft.elearning.dto.request.UserRequest;
+import com.robosoft.elearning.dto.request.UserRegisterRequest;
+import com.robosoft.elearning.dto.response.RefreshTokenResponse;
+import com.robosoft.elearning.dto.response.RegisterResponse;
 import com.robosoft.elearning.dto.response.ResponseDTO;
-import com.robosoft.elearning.dto.response.UserLoginResponse;
-import com.robosoft.elearning.dto.response.UserRegisterResponse;
+import com.robosoft.elearning.dto.response.LoginResponse;
 import com.robosoft.elearning.services.OtpServices;
 import com.robosoft.elearning.services.UserServices;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,7 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api")
 public class UserController {
 
     @Autowired
@@ -31,29 +33,39 @@ public class UserController {
     @Autowired
     private UserServices userServices;
 
-    @PostMapping("/v1/send-reg-otp")
-    public ResponseEntity<ResponseDTO<Object>> sendOtpForRegistration(@Valid @RequestBody UserRequest userRequest) {
-        return otpServices.sendOtp(userRequest.getEmail(), mailRegSubject, mailRegContent);
+    @PostMapping("/v1/user/send-reg-otp")
+    public ResponseEntity<ResponseDTO<Object>> sendOtpForRegistrationForUser(@Valid @RequestBody UserRegisterRequest userRegisterRequest) {
+        return otpServices.sendOtp(userRegisterRequest.getEmail(), mailRegSubject, mailRegContent);
     }
 
-    @PostMapping("/v1/register")
-    public ResponseEntity<ResponseDTO<UserRegisterResponse>> registerUser(@Valid @RequestBody UserRequest userRegister, @RequestParam String otp) {
+    @PostMapping("/v1/admin/send-reg-otp")
+    public ResponseEntity<ResponseDTO<Object>> sendOtpForRegistrationForAdmin(@Valid @RequestBody UserRegisterRequest adminRegistrationRequest) {
+        return otpServices.sendOtp(adminRegistrationRequest.getEmail(), mailRegSubject, mailRegContent);
+    }
+
+    @PostMapping("/v1/user/register")
+    public ResponseEntity<ResponseDTO<RegisterResponse>> registerUser(@Valid @RequestBody UserRegisterRequest userRegister, @RequestParam String otp) {
+        return userServices.registerUser(userRegister, otp);
+    }
+
+    @PostMapping("/v1/admin/register")
+    public ResponseEntity<ResponseDTO<RegisterResponse>> registerAdmin(@Valid @RequestBody UserRegisterRequest userRegister, @RequestParam String otp) {
         return userServices.registerUser(userRegister, otp);
     }
 
     @PostMapping("/v1/login")
-    public ResponseEntity<ResponseDTO<UserLoginResponse>> loginUser(@Valid @RequestBody UserLoginRequest userLoginRequest){
-        System.out.println(userLoginRequest);
-        return userServices.loginUser(userLoginRequest);
+    public ResponseEntity<ResponseDTO<LoginResponse>> loginUser(@Valid @RequestBody LoginRequest loginRequest){
+        System.out.println(loginRequest);
+        return userServices.loginUser(loginRequest);
     }
 
     @PostMapping("/v1/refresh-Token")
-    public ResponseEntity<ResponseDTO<UserLoginResponse>> generateAccessTokenFromRefreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest){
+    public ResponseEntity<ResponseDTO<RefreshTokenResponse>> generateAccessTokenFromRefreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest){
         return userServices.generateAccessTokenFromRefreshToken(refreshTokenRequest);
     }
 
     @PostMapping("/v1/logout")
-    public String logout(HttpServletRequest request, @RequestBody RefreshTokenRequest refreshTokenRequest){
+    public ResponseEntity<ResponseDTO<Void>> logout(HttpServletRequest request, @RequestBody RefreshTokenRequest refreshTokenRequest){
         return userServices.logout(request,refreshTokenRequest);
     }
 
