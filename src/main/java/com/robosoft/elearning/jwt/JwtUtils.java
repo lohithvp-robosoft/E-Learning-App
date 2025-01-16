@@ -9,7 +9,9 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -19,16 +21,25 @@ import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class JwtUtils {
 
     private static final Log log = LogFactory.getLog(JwtUtils.class);
+
     @Value("${spring.app.jwtSecret}")
     private String jwtSecret;
 
-    @Value("${spring.app.jwtExpirationMs}")
-    private int jwtExpirationMs;
+    @Value("${spring.app.jwtAccessExpirationMs}")
+    private int jwtAccessExpirationMs;
+
+    @Value("${spring.app.jwtRefreshExpirationMs}")
+    private int jwtRefreshExpirationMs;
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
 
     public String getJwtFromHeader(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
@@ -39,15 +50,28 @@ public class JwtUtils {
         return null;
     }
 
-    public String generateTokenFromUserDetails(User user, String id) {
+    public String generateAccessToken(User user) {
         UserDetails userDetails = generateUserDetails(user);
-
         long nowMillis = System.currentTimeMillis();
-        long expMillis = nowMillis + jwtExpirationMs;
-
+        long expMillis = nowMillis + jwtAccessExpirationMs;
         return Jwts.builder()
-                .claim("id", id)
+                .claim("sub", user.getId())
                 .claim("username", userDetails.getUsername())
+                .claim("roles", user.getRoles().stream().map(Role::name).toList())
+                .claim("iat", nowMillis / 1000)
+                .claim("exp", expMillis / 1000)
+                .signWith(key())
+                .compact();
+    }
+
+    public String generateRefreshToken(User user) {
+        UserDetails userDetails = generateUserDetails(user);
+        long nowMillis = System.currentTimeMillis();
+        long expMillis = nowMillis + jwtRefreshExpirationMs;
+        return Jwts.builder()
+
+                .claim("sub", user.getId())
+                .claim("tokenType", "refresh")
                 .claim("iat", nowMillis / 1000)
                 .claim("exp", expMillis / 1000)
                 .signWith(key())
@@ -58,7 +82,7 @@ public class JwtUtils {
         return org.springframework.security.core.userdetails.User
                 .builder()
                 .username(user.getEmail())
-                .password(user.getPassword())
+//                .password(user.getPassword())
                 .roles(user.getRoles().stream().map(Role::name).toArray(String[]::new))
                 .build();
     }
@@ -75,7 +99,7 @@ public class JwtUtils {
     }
 
     public String getUserIdFromJwtToken(String token) {
-        return getPayloadFromJwtToken(token).get("id").toString();
+        return getPayloadFromJwtToken(token).get("sub").toString();
     }
 
     private Key key() {
@@ -83,6 +107,10 @@ public class JwtUtils {
     }
 
     public boolean validateJwtToken(String authToken) {
+        if (isTokenBlacklisted(authToken)) {
+            log.error("Token is blacklisted");
+            return false;
+        }
         try {
             log.info("Validating JWT token");
             Jwts.parser().verifyWith((SecretKey) key()).build().parseSignedClaims(authToken);
@@ -106,5 +134,16 @@ public class JwtUtils {
         request.setAttribute("jwt-error", logMessage + ": " + e.getMessage());
     }
 
+    public void blacklistToken(String token) {
+        stringRedisTemplate.opsForValue().set("blacklist:" + token, token, jwtRefreshExpirationMs, TimeUnit.MILLISECONDS);
+    }
+
+    public boolean isTokenBlacklisted(String token) {
+        return stringRedisTemplate.hasKey("blacklist:" + token);
+    }
+
 
 }
+
+
+//                .claim("jti", UUID.randomUUID().toString())
