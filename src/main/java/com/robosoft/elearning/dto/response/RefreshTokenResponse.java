@@ -23,7 +23,7 @@ public class RefreshTokenResponse {
         }
         this.id = user.getId();
         this.email = user.getEmail();
-        this.userName = user.getUsername();
+        this.userName = user.getUserName();
         this.roles = user.getRoles();
         this.accessToken = accessToken;
     }

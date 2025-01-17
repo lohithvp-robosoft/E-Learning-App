@@ -1,13 +1,7 @@
 package com.robosoft.elearning.controller;
 
-import com.robosoft.elearning.dto.request.AdminRegistrationRequest;
-import com.robosoft.elearning.dto.request.LoginRequest;
-import com.robosoft.elearning.dto.request.RefreshTokenRequest;
-import com.robosoft.elearning.dto.request.UserRegisterRequest;
-import com.robosoft.elearning.dto.response.RefreshTokenResponse;
-import com.robosoft.elearning.dto.response.RegisterResponse;
-import com.robosoft.elearning.dto.response.ResponseDTO;
-import com.robosoft.elearning.dto.response.LoginResponse;
+import com.robosoft.elearning.dto.request.*;
+import com.robosoft.elearning.dto.response.*;
 import com.robosoft.elearning.services.OtpServices;
 import com.robosoft.elearning.services.UserServices;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api")
@@ -54,22 +51,32 @@ public class UserController {
     }
 
     @PostMapping("/v1/login")
-    public ResponseEntity<ResponseDTO<LoginResponse>> loginUser(@Valid @RequestBody LoginRequest loginRequest){
+    public ResponseEntity<ResponseDTO<LoginResponse>> loginUser(@Valid @RequestBody LoginRequest loginRequest) {
         return userServices.login(loginRequest);
     }
 
     @PostMapping("/v1/refresh-Token")
-    public ResponseEntity<ResponseDTO<RefreshTokenResponse>> generateAccessTokenFromRefreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest){
+    public ResponseEntity<ResponseDTO<RefreshTokenResponse>> generateAccessTokenFromRefreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
         return userServices.generateAccessTokenFromRefreshToken(refreshTokenRequest);
     }
 
     @PostMapping("/v1/logout")
-    public ResponseEntity<ResponseDTO<Void>> logout(HttpServletRequest request, @RequestBody RefreshTokenRequest refreshTokenRequest){
-        return userServices.logout(request,refreshTokenRequest);
+    public ResponseEntity<ResponseDTO<Void>> logout(HttpServletRequest request, @RequestBody RefreshTokenRequest refreshTokenRequest) {
+        return userServices.logout(request, refreshTokenRequest);
     }
 
-    @GetMapping("/v1/test")
-    public String test(){
-        return "Working";
+    @PostMapping("/v1/profile-update")
+    public ResponseEntity<ResponseDTO<UserDetailResponse>> update(@ModelAttribute UpdateUserRequest userRequest, @RequestParam(required = false) MultipartFile file, HttpServletRequest request) throws IOException {
+        return userServices.update(userRequest, file, request);
+    }
+
+    @PostMapping("/v1/forgot-password")
+    public ResponseEntity<ResponseDTO<Void>> forgotPassword(HttpServletRequest request) {
+        return userServices.forgotPassword(request);
+    }
+
+    @GetMapping("/v1/reset-password")
+    public ResponseEntity<ResponseDTO<Void>> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest, @RequestParam String otp, HttpServletRequest request) {
+        return userServices.resetPassword(resetPasswordRequest,otp,request);
     }
 }

@@ -1,16 +1,13 @@
 package com.robosoft.elearning.services;
 
-import com.robosoft.elearning.dto.request.BaseRegisterRequest;
-import com.robosoft.elearning.dto.request.LoginRequest;
-import com.robosoft.elearning.dto.request.RefreshTokenRequest;
-import com.robosoft.elearning.dto.request.UserRegisterRequest;
-import com.robosoft.elearning.dto.response.LoginResponse;
-import com.robosoft.elearning.dto.response.RefreshTokenResponse;
-import com.robosoft.elearning.dto.response.RegisterResponse;
-import com.robosoft.elearning.dto.response.ResponseDTO;
+import com.robosoft.elearning.dto.request.*;
+import com.robosoft.elearning.dto.response.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Service
 public interface UserServices {
@@ -22,4 +19,11 @@ public interface UserServices {
     ResponseEntity<ResponseDTO<RefreshTokenResponse>> generateAccessTokenFromRefreshToken(RefreshTokenRequest refreshTokenRequest);
 
     ResponseEntity<ResponseDTO<Void>> logout(HttpServletRequest request, RefreshTokenRequest refreshTokenRequest);
+
+    public ResponseEntity<ResponseDTO<UserDetailResponse>> update(UpdateUserRequest updateUserRequest, MultipartFile file, HttpServletRequest request) throws IOException;
+
+    public ResponseEntity<ResponseDTO<Void>> forgotPassword(HttpServletRequest request);
+
+    ResponseEntity<ResponseDTO<Void>> resetPassword(ResetPasswordRequest resetPasswordRequest, String otp, HttpServletRequest request);
+
 }

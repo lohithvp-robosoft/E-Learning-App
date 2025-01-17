@@ -1,7 +1,6 @@
 package com.robosoft.elearning.modal;
 
 import com.robosoft.elearning.dto.request.BaseRegisterRequest;
-import com.robosoft.elearning.dto.request.UserRegisterRequest;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -18,9 +17,9 @@ public class User {
     private String email;
 
     @Column(nullable = false, unique = true)
-    private String username;
+    private String userName;
 
-    private String imageUrl;
+    private String profileImageUrl;
 
     @Column(nullable = false)
     private String password;
@@ -48,7 +47,7 @@ public class User {
     public User(BaseRegisterRequest registerRequest, String encodedPassword) {
         this.email = registerRequest.getEmail();
         this.password = encodedPassword;
-        this.username = registerRequest.getUserName();
+        this.userName = registerRequest.getUserName();
 
         if (registerRequest.getRoles() == null || registerRequest.getRoles().isEmpty()) {
 //            log.info("No roles provided, setting default role");
@@ -67,8 +66,8 @@ public class User {
         return email;
     }
 
-    public String getUsername() {
-        return username;
+    public String getUserName() {
+        return userName;
     }
 
     public String getPassword() {
@@ -91,8 +90,8 @@ public class User {
         this.email = email;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUserName(String username) {
+        this.userName = username;
     }
 
     public void setPassword(String password) {
@@ -103,25 +102,25 @@ public class User {
         this.roles = roles;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public String getProfileImageUrl() {
+        return profileImageUrl;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
     }
 
-    public User(String email, String username, String imageUrl, String password, List<Role> roles) {
+    public User(String email, String userName, String profileImageUrl, String password, List<Role> roles) {
         this.email = email;
-        this.username = username;
-        this.imageUrl = imageUrl;
+        this.userName = userName;
+        this.profileImageUrl = profileImageUrl;
         this.password = password;
         this.roles = roles;
     }
 
-    public User(String email, String username, String password, List<Role> roles) {
+    public User(String email, String userName, String password, List<Role> roles) {
         this.email = email;
-        this.username = username;
+        this.userName = userName;
         this.password = password;
         this.roles = roles;
     }
@@ -131,10 +130,10 @@ public class User {
         return "User{" +
                 "id=" + id +
                 ", email='" + email + '\'' +
-                ", username='" + username + '\'' +
+                ", username='" + userName + '\'' +
                 ", password='" + password + '\'' +
                 ", roles=" + roles + '\'' +
-                ", imageUrl=" + imageUrl +
+                ", profileImageUrl=" + profileImageUrl +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';

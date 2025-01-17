@@ -51,7 +51,7 @@ public class LoginResponse {
         }
         this.id = user.getId();
         this.email = user.getEmail();
-        this.userName = user.getUsername();
+        this.userName = user.getUserName();
         this.roles = user.getRoles();
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
