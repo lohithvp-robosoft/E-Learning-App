@@ -12,7 +12,7 @@ public class RegisterResponse {
 
     public RegisterResponse(User user) {
         this.email = user.getEmail();
-        this.userName = user.getUsername();
+        this.userName = user.getUserName();
         this.roles = user.getRoles();
     }
 

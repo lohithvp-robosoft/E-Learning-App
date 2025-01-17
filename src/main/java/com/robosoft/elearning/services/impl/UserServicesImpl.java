@@ -1,22 +1,17 @@
 package com.robosoft.elearning.services.impl;
 
-import com.robosoft.elearning.dto.request.LoginRequest;
-import com.robosoft.elearning.dto.request.RefreshTokenRequest;
-import com.robosoft.elearning.dto.request.UserRegisterRequest;
-import com.robosoft.elearning.dto.response.RefreshTokenResponse;
-import com.robosoft.elearning.dto.response.RegisterResponse;
-import com.robosoft.elearning.dto.response.ResponseDTO;
-import com.robosoft.elearning.dto.response.LoginResponse;
+import com.robosoft.elearning.dto.request.*;
+import com.robosoft.elearning.dto.response.*;
 import com.robosoft.elearning.exception.EmailAlreadyExistsException;
 import com.robosoft.elearning.exception.InvalidCredentialsException;
+import com.robosoft.elearning.exception.JwtException;
+import com.robosoft.elearning.exception.NotFoundException;
 import com.robosoft.elearning.jwt.JwtUtils;
 import com.robosoft.elearning.modal.User;
 import com.robosoft.elearning.repository.UserRepository;
 import com.robosoft.elearning.services.OtpServices;
 import com.robosoft.elearning.services.UserServices;
-import com.robosoft.elearning.util.EmailHandler;
-import com.robosoft.elearning.util.ResponseUtil;
-import io.jsonwebtoken.JwtException;
+import com.robosoft.elearning.util.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,6 +20,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.Optional;
 
 @Service
 public class UserServicesImpl implements UserServices {
@@ -39,6 +38,9 @@ public class UserServicesImpl implements UserServices {
     @Autowired
     private EmailHandler emailHandler;
 
+    @Autowired
+    private ObjectMapperUtil objectMapperUtil;
+
     @Value("${mail.registration.success.subject}")
     private String mailRegSuccessSubject;
 
@@ -47,6 +49,9 @@ public class UserServicesImpl implements UserServices {
 
     @Value("${success.logout.message}")
     private String logoutMessage;
+
+    @Value("${success.passwordUpdated.message}")
+    private String passwordUpdatedMessage;
 
     @Autowired
     private ResponseUtil responseUtil;
@@ -57,23 +62,40 @@ public class UserServicesImpl implements UserServices {
     @Autowired
     private JwtUtils jwtUtils;
 
+    @Autowired
+    private FileStorageUtil fileStorageUtil;
+
+    @Autowired
+    private EntityMapperUtil entityMapperUtil;
+
     @Value("${email.already.exist.message}")
     private String emailAlreadyExistMessage;
 
     @Value("${token.blacklistedMessage}")
     private String tokenBlacklistMessage;
 
+    @Value("${mail.changePassword.subject}")
+    private String changePasswordMailSubject;
+
+    @Value("${mail.changePassword.content}")
+    private String changePasswordMailContent;
+
+    @Value("${message.otpSend.success}")
+    private String otpSendSuccessMessage;
+
     @Override
-    public ResponseEntity<ResponseDTO<RegisterResponse>> registerUser(UserRegisterRequest userRegisterRequest, String otp) {
-        boolean isOtpValid = otpServices.validateOtp(userRegisterRequest.getEmail(), otp);
+    public ResponseEntity<ResponseDTO<RegisterResponse>> register(BaseRegisterRequest registerRequest, String otp) {
+        boolean isOtpValid = otpServices.validateOtp(registerRequest.getEmail(), otp);
         if (isOtpValid) {
-            if (userRepository.existsByEmail(userRegisterRequest.getEmail())) {
+            if (userRepository.existsByEmail(registerRequest.getEmail())) {
                 throw new EmailAlreadyExistsException(emailAlreadyExistMessage);
             }
-            User newUser = new User(userRegisterRequest);
-             RegisterResponse userRegisterResponse = new RegisterResponse(newUser);
+            User newUser = new User(registerRequest, passwordEncoder.encode(registerRequest.getPassword()));
 
-            emailHandler.sendMail(userRegisterRequest.getEmail(), mailRegSuccessSubject, "Hi, "+newUser.getUsername()+"\n\n"+mailRegSuccessContent);
+            userRepository.save(newUser);
+            RegisterResponse userRegisterResponse = new RegisterResponse(newUser);
+
+            emailHandler.sendMail(registerRequest.getEmail(), mailRegSuccessSubject, "Hi, " + newUser.getUserName() + "\n\n" + mailRegSuccessContent);
 
             return responseUtil.successResponse(userRegisterResponse);
         } else {
@@ -82,7 +104,7 @@ public class UserServicesImpl implements UserServices {
     }
 
     @Override
-    public ResponseEntity<ResponseDTO<LoginResponse>> loginUser(LoginRequest loginRequest) {
+    public ResponseEntity<ResponseDTO<LoginResponse>> login(LoginRequest loginRequest) {
 
         User user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(InvalidCredentialsException::new);
 
@@ -92,7 +114,7 @@ public class UserServicesImpl implements UserServices {
         String accessToken = jwtUtils.generateAccessToken(user);
         String refreshToken = jwtUtils.generateRefreshToken(user);
 
-        return responseUtil.successResponse(new LoginResponse(user, accessToken,refreshToken));
+        return responseUtil.successResponse(new LoginResponse(user, accessToken, refreshToken));
     }
 
     @Override
@@ -101,17 +123,83 @@ public class UserServicesImpl implements UserServices {
         if (jwtUtils.isTokenBlacklisted(refreshTokenRequest.getRefreshToken())) {
             throw new JwtException(tokenBlacklistMessage);
         }
+        if (jwtUtils.isAccessToken(refreshTokenRequest.getRefreshToken()))
+            throw new JwtException("Please use Valid refresh Token");
 
         String userId = jwtUtils.getUserIdFromJwtToken(refreshTokenRequest.getRefreshToken());
         User user = userRepository.findById(Long.valueOf(userId)).orElseThrow(() -> new JwtException("User not found"));
 
-        return responseUtil.successResponse(new RefreshTokenResponse(user,jwtUtils.generateAccessToken(user)));
+        return responseUtil.successResponse(new RefreshTokenResponse(user, jwtUtils.generateAccessToken(user)));
     }
 
     @Override
     public ResponseEntity<ResponseDTO<Void>> logout(HttpServletRequest request, RefreshTokenRequest refreshTokenRequest) {
         jwtUtils.blackListAccessToken(jwtUtils.getJwtFromHeader(request));
-        jwtUtils.blackListRefreshToke(refreshTokenRequest.getRefreshToken());
-        return responseUtil.successResponse(null,logoutMessage);
+        jwtUtils.blackListRefreshToken(refreshTokenRequest.getRefreshToken());
+        return responseUtil.successResponse(null, logoutMessage);
     }
+
+
+    @Override
+    public ResponseEntity<ResponseDTO<UserDetailResponse>> update(UpdateUserRequest updateUserRequest,
+                                                                  MultipartFile file,
+                                                                  HttpServletRequest request) throws IOException {
+        long userId = jwtUtils.getUserIdFromRequestHeader(request);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+
+        updateUserData(user, updateUserRequest);
+
+        if (file != null && !file.isEmpty()) {
+            String imageUrl = handleFileUpload(file, user.getId());
+            user.setProfileImageUrl(imageUrl);
+        }
+
+        userRepository.save(user);
+
+        UserDetailResponse userDetailResponse = entityMapperUtil.convertUserToUserDetailResponse(user);
+
+        return responseUtil.successResponse(userDetailResponse, "User updated successfully");
+    }
+
+    private void updateUserData(User user, UpdateUserRequest updateUserRequest) {
+        if (updateUserRequest.getUserName() != null && !updateUserRequest.getUserName().isEmpty()) {
+            user.setUserName(updateUserRequest.getUserName());
+        }
+        if (updateUserRequest.getEmail() != null && !updateUserRequest.getEmail().isEmpty()) {
+            user.setEmail(updateUserRequest.getEmail());
+        }
+    }
+
+    private String handleFileUpload(MultipartFile file, long userId) throws IOException {
+        String folder = "user-profile-images";
+        try {
+            return fileStorageUtil.storeFile(file, folder, userId);
+        } catch (Exception e) {
+            throw new IOException("Error uploading file", e);
+        }
+    }
+
+    @Override
+    public ResponseEntity<ResponseDTO<Void>> forgotPassword(HttpServletRequest request) {
+        User user = jwtUtils.getUserDataFromRequest(request);
+        otpServices.sendOtp(user.getEmail(), changePasswordMailSubject, changePasswordMailContent);
+        return responseUtil.successResponse(null, otpSendSuccessMessage);
+    }
+
+    @Override
+    public ResponseEntity<ResponseDTO<Void>> resetPassword(ResetPasswordRequest resetPasswordRequest, String otp, HttpServletRequest request) {
+        User user = jwtUtils.getUserDataFromRequest(request);
+        boolean isValidOtp = otpServices.validateOtp(user.getEmail(), otp);
+        if (isValidOtp) {
+            String encodedPassword = passwordEncoder.encode(resetPasswordRequest.getNewPassword());
+            user.setPassword(encodedPassword);
+            userRepository.save(user);
+            return responseUtil.successResponse(null, passwordUpdatedMessage);
+        } else {
+            return responseUtil.errorResponse("Invalid OTP " + otp);
+        }
+    }
+
 }

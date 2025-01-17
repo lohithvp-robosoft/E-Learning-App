@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface OtpServices {
-    ResponseEntity<ResponseDTO<Object>> sendOtp(String email, String subject, String content);
+    ResponseEntity<ResponseDTO<Void>> sendOtp(String email, String subject, String content);
 
     String generateOtp();
 

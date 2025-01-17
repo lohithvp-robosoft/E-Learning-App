@@ -15,17 +15,17 @@ public class RefreshTokenResponse {
 
     private List<Role> roles = new ArrayList<>();
 
-    private String refreshToken;
+    private String accessToken;
 
-    public RefreshTokenResponse(User user, String refreshToken) {
-        if (user == null ||  refreshToken == null || refreshToken.isEmpty()) {
+    public RefreshTokenResponse(User user, String accessToken) {
+        if (user == null ||  accessToken == null || accessToken.isEmpty()) {
             throw new IllegalArgumentException("User, access token, and refresh token cannot be null or empty");
         }
         this.id = user.getId();
         this.email = user.getEmail();
-        this.userName = user.getUsername();
+        this.userName = user.getUserName();
         this.roles = user.getRoles();
-        this.refreshToken = refreshToken;
+        this.accessToken = accessToken;
     }
 
     public Long getId() {
@@ -60,11 +60,11 @@ public class RefreshTokenResponse {
         this.roles = roles;
     }
 
-    public String getRefreshToken() {
-        return refreshToken;
+    public String getAccessToken() {
+        return accessToken;
     }
 
-    public void setRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
     }
 }

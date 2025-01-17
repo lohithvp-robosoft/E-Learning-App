@@ -1,8 +1,12 @@
 package com.robosoft.elearning.jwt;
 
+import com.robosoft.elearning.exception.JwtException;
+import com.robosoft.elearning.exception.NotFoundException;
 import com.robosoft.elearning.modal.Role;
 import com.robosoft.elearning.modal.User;
-import io.jsonwebtoken.JwtException;
+//import io.jsonwebtoken.JwtException;
+import com.robosoft.elearning.repository.UserRepository;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -40,6 +44,9 @@ public class JwtUtils {
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
 
+    @Autowired
+    private UserRepository userRepository;
+
 
     public String getJwtFromHeader(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
@@ -60,20 +67,7 @@ public class JwtUtils {
                 .claim("roles", user.getRoles().stream().map(Role::name).toList())
                 .claim("iat", nowMillis / 1000)
                 .claim("exp", expMillis / 1000)
-                .signWith(key())
-                .compact();
-    }
-    public String generateTokenFromUserDetails(User user, String id) {
-        UserDetails userDetails = generateUserDetails(user);
-
-        long nowMillis = System.currentTimeMillis();
-        long expMillis = nowMillis + jwtAccessExpirationMs;
-
-        return Jwts.builder()
-                .claim("id", id)
-                .claim("username", userDetails.getUsername())
-                .claim("iat", nowMillis / 1000)
-                .claim("exp", expMillis / 1000)
+                .claim("type", "access")
                 .signWith(key())
                 .compact();
     }
@@ -88,6 +82,7 @@ public class JwtUtils {
                 .claim("tokenType", "refresh")
                 .claim("iat", nowMillis / 1000)
                 .claim("exp", expMillis / 1000)
+                .claim("type", "refresh")
                 .signWith(key())
                 .compact();
     }
@@ -130,11 +125,10 @@ public class JwtUtils {
             Jwts.parser().verifyWith((SecretKey) key()).build().parseSignedClaims(authToken);
             return true;
         } catch (JwtException e) {
-            handleJwtException(e, "Invalid JWT token");
+            throw new com.robosoft.elearning.exception.JwtException("Invalid JWT token: " + e.getMessage(), e);
         } catch (IllegalArgumentException e) {
-            handleJwtException(e, "JWT claims string is empty");
+            throw new com.robosoft.elearning.exception.JwtException("JWT claims string is empty: " + e.getMessage(), e);
         }
-        return false;
     }
 
     public Long getUserIdFromRequestHeader(HttpServletRequest request){
@@ -142,13 +136,7 @@ public class JwtUtils {
         return Long.valueOf(getUserIdFromJwtToken(token));
     }
 
-    private void handleJwtException(Exception e, String logMessage) {
-        log.error( logMessage +" "+e.getMessage());
-        HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
-        request.setAttribute("jwt-error", logMessage + ": " + e.getMessage());
-    }
-
-    public void blackListRefreshToke(String token) {
+    public void blackListRefreshToken(String token) {
         stringRedisTemplate.opsForValue().set("blacklist:" + token, token, jwtRefreshExpirationMs, TimeUnit.MILLISECONDS);
     }
 
@@ -159,6 +147,42 @@ public class JwtUtils {
     public void blackListAccessToken(String token){
         stringRedisTemplate.opsForValue().set("blacklist:" + token, token, jwtAccessExpirationMs, TimeUnit.MILLISECONDS);
     }
+
+    public boolean isAccessToken(String token) {
+        Claims claims = Jwts.parser().setSigningKey(key()).build().parseClaimsJws(token).getBody();
+        return "access".equals(claims.get("type"));
+    }
+
+    public boolean isRefreshToken(String token) {
+        Claims claims = Jwts.parser().setSigningKey(key()).build().parseClaimsJws(token).getBody();
+        return "refresh".equals(claims.get("type"));
+    }
+
+    public User getUserDataFromRequest(HttpServletRequest request) {
+        // Step 1: Get the JWT token from the request header
+        String token = getJwtFromHeader(request);
+
+        // Step 2: Validate the token (you can use your existing validateJwtToken method)
+        if (!validateJwtToken(token)) {
+            throw new JwtException("Invalid JWT token");
+        }
+
+        // Step 3: Extract user ID from the token
+        Long userId = Long.parseLong(getUserIdFromJwtToken(token));
+
+        // Step 4: Fetch the user data from the database using the user ID
+        // Assuming you have a method to fetch the user by ID. You can use a repository or a service.
+        User user = getUserById(userId);
+
+        return user;  // Return the user object
+    }
+
+    private User getUserById(Long userId) {
+        // Replace this with your actual method to fetch the user from the repository.
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+    }
+
 
 }
 

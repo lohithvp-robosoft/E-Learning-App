@@ -8,64 +8,15 @@ import jakarta.validation.constraints.Size;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.PrimitiveIterator;
 
-public class UserRegisterRequest {
-    @Email(message = "Invalid email format")
-    @NotBlank(message = "Email cannot be blank")
-    private String email;
-
-    @NotBlank(message = "Username cannot be blank")
-    private String userName;
-
-    @Size(min = 6, message = "Password must have at least 6 characters")
-    @NotBlank(message = "Password cannot be blank")
-    @Pattern(
-            regexp = "^(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?])(?=.*\\d.*\\d).+$",
-            message = "Password must include at least 2 numbers and 1 special character"
-    )
-    private String password;
-
-    private List<Role> roles = new ArrayList<>();
-
+public class UserRegisterRequest extends BaseRegisterRequest {
     public UserRegisterRequest(String email, String userName, String password) {
-        this.email = email;
-        this.userName = userName;
-        this.password = password;
-        this.roles.add(Role.USER);
+        super(email, userName, password, Role.USER);
     }
+
     public UserRegisterRequest() {
-        this.roles.add(Role.USER);
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public List<Role> getRoles() {
-        return roles;
+        super();
+        this.getRoles().add(Role.USER);
     }
 }
