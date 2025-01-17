@@ -14,6 +14,8 @@ public class Content {
     private String contentImg;
     private String videoUrl;
     private String thumbnail;
+
+    @Column(name = "info", columnDefinition = "TEXT")
     private String info;
 
     @ManyToOne

@@ -3,6 +3,7 @@ package com.robosoft.elearning.modal;
 import jakarta.persistence.*;
 
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -11,24 +12,48 @@ public class Question {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String questionText;
+    private String questionStatement;
 
-   // @ElementCollection
+   @ElementCollection
     private List<String> options;
 
     private String correctOption;
-    private String questionUrl;
+    private String questionImageUrl;
 
 
     @ManyToOne
     private Test test;
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
 
-    public String getQuestionUrl() {
-        return questionUrl;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = this.createdAt;
     }
 
-    public void setQuestionUrl(String questionUrl) {
-        this.questionUrl = questionUrl;
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public String getQuestionImageUrl() {
+        return questionImageUrl;
+    }
+
+    public void setQuestionImageUrl(String questionImageUrl) {
+        this.questionImageUrl = questionImageUrl;
     }
 
     public Long getId() {
@@ -39,12 +64,12 @@ public class Question {
         this.id = id;
     }
 
-    public String getQuestionText() {
-        return questionText;
+    public String getQuestionStatement() {
+        return questionStatement;
     }
 
-    public void setQuestionText(String questionText) {
-        this.questionText = questionText;
+    public void setQuestionStatement(String questionStatement) {
+        this.questionStatement = questionStatement;
     }
 
     public List<String> getOptions() {
