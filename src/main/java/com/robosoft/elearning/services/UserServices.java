@@ -26,4 +26,6 @@ public interface UserServices {
 
     ResponseEntity<ResponseDTO<Void>> resetPassword(ResetPasswordRequest resetPasswordRequest, String otp, HttpServletRequest request);
 
+    ResponseEntity<ResponseDTO<UserDetailResponse>> getProfile(HttpServletRequest request);
+
 }

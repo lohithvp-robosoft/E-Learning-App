@@ -1,6 +1,7 @@
 package com.robosoft.elearning.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.robosoft.elearning.modal.UserTestResult;
 
 public class UserDetailResponse {
     private long id;
@@ -9,9 +10,12 @@ public class UserDetailResponse {
     @JsonProperty("userName")
     private String userName;
     private String email;
-    private double completerCompletedInPercentage;
-    private double AverageTestScore;
-    private double highestTestScore;
+    private double completerChapterInPercentage;
+//    private double AverageTestScore;
+//    private double highestTestScore;
+
+    private UserTestResultResponse testResult;
+
     private boolean isNotificationEnabled;
 
     public String getProfileImageUrl() {
@@ -38,29 +42,29 @@ public class UserDetailResponse {
         this.email = email;
     }
 
-    public double getCompleterCompletedInPercentage() {
-        return completerCompletedInPercentage;
+    public double getCompleterChapterInPercentage() {
+        return completerChapterInPercentage;
     }
 
-    public void setCompleterCompletedInPercentage(double completerCompletedInPercentage) {
-        this.completerCompletedInPercentage = completerCompletedInPercentage;
+    public void setCompleterChapterInPercentage(double completerChapterInPercentage) {
+        this.completerChapterInPercentage = completerChapterInPercentage;
     }
 
-    public double getAverageTestScore() {
-        return AverageTestScore;
-    }
-
-    public void setAverageTestScore(double averageTestScore) {
-        AverageTestScore = averageTestScore;
-    }
-
-    public double getHighestTestScore() {
-        return highestTestScore;
-    }
-
-    public void setHighestTestScore(double highestTestScore) {
-        this.highestTestScore = highestTestScore;
-    }
+//    public double getAverageTestScore() {
+//        return AverageTestScore;
+//    }
+//
+//    public void setAverageTestScore(double averageTestScore) {
+//        AverageTestScore = averageTestScore;
+//    }
+//
+//    public double getHighestTestScore() {
+//        return highestTestScore;
+//    }
+//
+//    public void setHighestTestScore(double highestTestScore) {
+//        this.highestTestScore = highestTestScore;
+//    }
 
     public boolean isNotificationEnabled() {
         return isNotificationEnabled;
@@ -76,5 +80,13 @@ public class UserDetailResponse {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public UserTestResultResponse getTestResult() {
+        return testResult;
+    }
+
+    public void setTestResult(UserTestResultResponse testResult) {
+        this.testResult = testResult;
     }
 }

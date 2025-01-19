@@ -202,4 +202,11 @@ public class UserServicesImpl implements UserServices {
         }
     }
 
+    @Override
+    public ResponseEntity<ResponseDTO<UserDetailResponse>> getProfile(HttpServletRequest request) {
+        User user = Optional.ofNullable(jwtUtils.getUserDataFromRequest(request)).orElseThrow(()-> new NotFoundException("User not Found"));
+        UserDetailResponse userDetailResponse = entityMapperUtil.convertUserToUserDetailResponse(user);
+        return responseUtil.successResponse(userDetailResponse);
+    }
+
 }

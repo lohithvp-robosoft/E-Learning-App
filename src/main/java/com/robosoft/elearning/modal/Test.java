@@ -12,6 +12,8 @@ public class Test {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String testIcon;
+
     private String heading;
 
     @Enumerated(EnumType.STRING)
@@ -96,6 +98,14 @@ public class Test {
 
     public void setQuestions(List<Question> questions) {
         this.questions = questions;
+    }
+
+    public String getTestIcon() {
+        return testIcon;
+    }
+
+    public void setTestIcon(String testIcon) {
+        this.testIcon = testIcon;
     }
 }
 

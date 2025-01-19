@@ -27,6 +27,9 @@ public class User {
     @ElementCollection(fetch = FetchType.EAGER)
     private List<Role> roles = new ArrayList<>();
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private UserTestResult userTestResult;
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
@@ -125,6 +128,14 @@ public class User {
         this.roles = roles;
     }
 
+    public UserTestResult getUserTestResult() {
+        return userTestResult;
+    }
+
+    public void setUserTestResult(UserTestResult userTestResult) {
+        this.userTestResult = userTestResult;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -133,6 +144,7 @@ public class User {
                 ", username='" + userName + '\'' +
                 ", password='" + password + '\'' +
                 ", roles=" + roles + '\'' +
+                ", testResult =" + userTestResult + '\'' +
                 ", profileImageUrl=" + profileImageUrl +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
