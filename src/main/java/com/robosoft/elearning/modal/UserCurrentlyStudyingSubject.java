@@ -2,6 +2,7 @@ package com.robosoft.elearning.modal;
 
 import jakarta.persistence.*;
 
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -26,6 +27,9 @@ public class UserCurrentlyStudyingSubject {
     private List<CompletedChapter> completedChapters;
 
     private Double completedChapterInPercentage;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date startedAt;
 
     public Long getId() {
         return id;

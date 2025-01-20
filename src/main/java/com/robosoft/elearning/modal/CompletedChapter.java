@@ -19,6 +19,40 @@ public class CompletedChapter {
     @OneToMany(mappedBy = "completedChapter", cascade = CascadeType.ALL)
     private List<CompletedLesson> completedLessons;
 
+
+    private boolean isCompleted;
+
+    private String completionDate;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+
+    public boolean isCompleted() {
+        return isCompleted;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setCompleted(boolean completed) {
+        isCompleted = completed;
+    }
+
+    public String getCompletionDate() {
+        return completionDate;
+    }
+
+    public void setCompletionDate(String completionDate) {
+        this.completionDate = completionDate;
+    }
+
     public Long getId() {
         return id;
     }

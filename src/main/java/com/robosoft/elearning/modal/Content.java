@@ -76,5 +76,18 @@ public class Content {
     public void setTopic(Topic topic) {
         this.topic = topic;
     }
+
+    @Override
+    public String toString() {
+        return "Content{" +
+                "id=" + id +
+                ", contentType=" + contentType +
+                ", contentImg='" + contentImg + '\'' +
+                ", videoUrl='" + videoUrl + '\'' +
+                ", thumbnail='" + thumbnail + '\'' +
+                ", info='" + info + '\'' +
+                ", topic=" + topic +
+                '}';
+    }
 }
 

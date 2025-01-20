@@ -1,7 +1,7 @@
 package com.robosoft.elearning.modal;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-
 
 import java.util.List;
 
@@ -15,6 +15,7 @@ public class Subject {
     private String subjectIcon;
 
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Chapter> chapters;
 
     public Long getId() {
