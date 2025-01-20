@@ -2,6 +2,7 @@ package com.robosoft.elearning.modal;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -10,14 +11,12 @@ public class UserTestResult {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    @ManyToOne
-    private Lesson lesson;
-
     @OneToMany(mappedBy = "userTestResult", cascade = CascadeType.ALL)
-    private List<UserTestScore> userTestScores;
+    private List<UserTestScore> userTestScores = new ArrayList<>();
 
     private Double averageScore;
     private Double highestScore;
@@ -36,14 +35,6 @@ public class UserTestResult {
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public Lesson getLesson() {
-        return lesson;
-    }
-
-    public void setLesson(Lesson lesson) {
-        this.lesson = lesson;
     }
 
     public List<UserTestScore> getUserTestScores() {
