@@ -84,5 +84,14 @@ public class CompletedChapter {
     public void setCompletedLessons(List<CompletedLesson> completedLessons) {
         this.completedLessons = completedLessons;
     }
+
+    public CompletedChapter(User user, Chapter chapter) {
+        this.user = user;
+        this.chapter = chapter;
+    }
+
+    public CompletedChapter(){
+
+    }
 }
 

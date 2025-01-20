@@ -14,6 +14,16 @@ public class UserLiked {
     @ManyToOne
     private Lesson lesson;
 
+    private boolean liked;
+
+    public boolean isLiked() {
+        return liked;
+    }
+
+    public void setLiked(boolean liked) {
+        this.liked = liked;
+    }
+
     public Long getId() {
         return id;
     }

@@ -1,0 +1,58 @@
+package com.robosoft.elearning.services.impl;
+
+import com.robosoft.elearning.dto.request.LikeLessonRequestDTO;
+import com.robosoft.elearning.dto.response.ResponseDTO;
+import com.robosoft.elearning.jwt.JwtUtils;
+import com.robosoft.elearning.modal.Lesson;
+import com.robosoft.elearning.modal.User;
+import com.robosoft.elearning.modal.UserLiked;
+import com.robosoft.elearning.repository.LessonRepository;
+import com.robosoft.elearning.repository.UserLikedRepository;
+import com.robosoft.elearning.repository.UserRepository;
+import com.robosoft.elearning.services.UserLikedService;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+
+@Service
+public class UserLikedServiceImpl implements UserLikedService {
+    @Autowired
+    private UserLikedRepository userLikedRepository;
+
+    @Autowired
+    private JwtUtils jwtUtils;
+
+    @Autowired
+    private LessonRepository lessonRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Override
+    public ResponseEntity<String> likeLesson(LikeLessonRequestDTO requestDTO, HttpServletRequest request) {
+        Long userId = jwtUtils.getUserIdFromRequestHeader(request);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Lesson lesson = lessonRepository.findById(requestDTO.getLessonId())
+                .orElseThrow(() -> new RuntimeException("Lesson not found"));
+
+        UserLiked userLiked = userLikedRepository.findByUserIdAndLessonId(userId, requestDTO.getLessonId())
+                .orElseGet(() -> {
+                    UserLiked newLike = new UserLiked();
+                    newLike.setUser(user);
+                    newLike.setLesson(lesson);
+                    return newLike;
+                });
+
+        userLiked.setLiked(true);
+        userLikedRepository.save(userLiked);
+
+        return ResponseEntity.ok("Lesson liked successfully");
+    }
+
+
+}

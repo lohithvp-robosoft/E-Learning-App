@@ -14,12 +14,39 @@ public class Content {
     private String contentImg;
     private String videoUrl;
     private String thumbnail;
+    private String audioUrl;
 
     @Column(name = "info", columnDefinition = "TEXT")
     private String info;
 
     @ManyToOne
     private Topic topic;
+
+    private int pageNumber;
+
+    @ManyToOne
+    @JoinColumn(name = "lesson_id")
+    private Lesson lesson;
+
+    public String getAudioUrl() {
+        return audioUrl;
+    }
+
+    public void setAudioUrl(String audioUrl) {
+        this.audioUrl = audioUrl;
+    }
+
+    public void setTopic(Topic topic) {
+        this.topic = topic;
+    }
+
+    public int getPageNumber() {
+        return pageNumber;
+    }
+
+    public void setPageNumber(int pageNumber) {
+        this.pageNumber = pageNumber;
+    }
 
     public Long getId() {
         return id;
@@ -73,9 +100,9 @@ public class Content {
         return topic;
     }
 
-    public void setTopic(Topic topic) {
-        this.topic = topic;
-    }
+   // public void setTopic(Topic topic) {
+      //  this.topic = topic;
+    //}
 
     @Override
     public String toString() {
