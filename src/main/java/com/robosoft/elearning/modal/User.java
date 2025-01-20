@@ -30,6 +30,8 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private UserTestResult userTestResult;
 
+    private boolean isNotificationEnabled;
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
@@ -51,7 +53,7 @@ public class User {
         this.email = registerRequest.getEmail();
         this.password = encodedPassword;
         this.userName = registerRequest.getUserName();
-
+        this.isNotificationEnabled = true;
         if (registerRequest.getRoles() == null || registerRequest.getRoles().isEmpty()) {
 //            log.info("No roles provided, setting default role");
             this.roles.add(Role.USER);
@@ -136,6 +138,14 @@ public class User {
         this.userTestResult = userTestResult;
     }
 
+    public boolean isNotificationEnabled() {
+        return isNotificationEnabled;
+    }
+
+    public void setNotificationEnabled(boolean notificationEnabled) {
+        isNotificationEnabled = notificationEnabled;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -146,6 +156,7 @@ public class User {
                 ", roles=" + roles + '\'' +
                 ", testResult =" + userTestResult + '\'' +
                 ", profileImageUrl=" + profileImageUrl +
+                ", isNotificationEnabled" + isNotificationEnabled +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';

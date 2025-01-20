@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import software.amazon.awssdk.services.s3.endpoints.internal.Value;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -50,6 +51,10 @@ public class UserTestProgress {
     @Enumerated(EnumType.STRING)
     private TestStatus status;
 
+
+    private LocalDateTime testStartTime;
+
+
     public  UserTestProgress(User user , Test test, Long questionId,Integer totalNumberOfQuestions, Integer lessonIndex, String lessonName, Integer chapterIndex) {
         this.user = user;
         this.test = test;
@@ -63,6 +68,7 @@ public class UserTestProgress {
         this.lessonIndex = lessonIndex;
         this.lessonName = lessonName;
         this.chapterIndex = chapterIndex;
+        this.testStartTime = LocalDateTime.now();
     }
 
     public UserTestProgress(){}
@@ -171,4 +177,14 @@ public class UserTestProgress {
     public void setChapterIndex(Integer chapterIndex) {
         this.chapterIndex = chapterIndex;
     }
+
+
+    public LocalDateTime getTestStartTime() {
+        return testStartTime;
+    }
+
+    public void setTestStartTime(LocalDateTime testStartTime) {
+        this.testStartTime = testStartTime;
+    }
+
 }

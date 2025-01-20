@@ -25,6 +25,7 @@ public class EntityMapperUtil {
                 testResult.getAverageScore(),
                 testResult.getHighestScore()
         );
+        userDetailResponse.setNotificationEnabled(user.isNotificationEnabled());
         userDetailResponse.setTestResult(testResultResponse);
 
         return userDetailResponse;
@@ -106,6 +107,15 @@ public class EntityMapperUtil {
                 totalQuestions,
                 remarksComment,
                 remarkSubComment
+        );
+    }
+
+    public NotificationResponse toNotificationResponse(Notification notification) {
+        return new NotificationResponse(
+                notification.getId(),
+                notification.getTitle(),
+                notification.getMessage(),
+                notification.getTimestamp()
         );
     }
 
