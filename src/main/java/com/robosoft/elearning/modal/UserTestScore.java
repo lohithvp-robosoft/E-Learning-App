@@ -16,6 +16,9 @@ public class UserTestScore {
     @ManyToOne
     private Test test;
 
+    @ManyToOne
+    private User user;
+
     private Integer totalAnsweredQuestions;
     private Integer totalMarks;
 
@@ -89,5 +92,18 @@ public class UserTestScore {
 
     public void setTotalNumberOfQuestion(Integer totalNumberOfQuestion) {
         this.totalNumberOfQuestion = totalNumberOfQuestion;
+    }
+
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Integer getTotalNumberOfQuestion() {
+        return totalNumberOfQuestion;
     }
 }

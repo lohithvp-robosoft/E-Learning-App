@@ -118,7 +118,8 @@ public class UserServicesImpl implements UserServices {
     }
 
     @Override
-    public ResponseEntity<ResponseDTO<RefreshTokenResponse>> generateAccessTokenFromRefreshToken(RefreshTokenRequest refreshTokenRequest) {
+    public ResponseEntity<ResponseDTO<RefreshTokenResponse>>
+    generateAccessTokenFromRefreshToken(RefreshTokenRequest refreshTokenRequest) {
 
         if (jwtUtils.isTokenBlacklisted(refreshTokenRequest.getRefreshToken())) {
             throw new JwtException(tokenBlacklistMessage);
@@ -181,16 +182,31 @@ public class UserServicesImpl implements UserServices {
         }
     }
 
+
     @Override
-    public ResponseEntity<ResponseDTO<Void>> forgotPassword(HttpServletRequest request) {
-        User user = jwtUtils.getUserDataFromRequest(request);
+    public ResponseEntity<ResponseDTO<Void>> forgotPassword(ForgotPasswordRequest request) {
+        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(
+                () -> new NotFoundException("Email Not Registered")
+        );
         otpServices.sendOtp(user.getEmail(), changePasswordMailSubject, changePasswordMailContent);
         return responseUtil.successResponse(null, otpSendSuccessMessage);
     }
 
     @Override
-    public ResponseEntity<ResponseDTO<Void>> resetPassword(ResetPasswordRequest resetPasswordRequest, String otp, HttpServletRequest request) {
+    public ResponseEntity<ResponseDTO<Void>> resetPassword(ResetPasswordRequest resetPasswordRequest, HttpServletRequest request) {
         User user = jwtUtils.getUserDataFromRequest(request);
+
+        String encodedPassword = passwordEncoder.encode(resetPasswordRequest.getNewPassword());
+        user.setPassword(encodedPassword);
+        userRepository.save(user);
+        return responseUtil.successResponse(null, passwordUpdatedMessage);
+    }
+
+
+    @Override
+    public ResponseEntity<ResponseDTO<Void>> forgotResetPassword(ResetPasswordRequest resetPasswordRequest, String otp) {
+        User user = userRepository.findByEmail(resetPasswordRequest.getEmail()).orElseThrow(()->
+                new NotFoundException("User Not Registered"));
         boolean isValidOtp = otpServices.validateOtp(user.getEmail(), otp);
         if (isValidOtp) {
             String encodedPassword = passwordEncoder.encode(resetPasswordRequest.getNewPassword());

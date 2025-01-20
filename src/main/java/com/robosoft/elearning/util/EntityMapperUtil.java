@@ -73,6 +73,7 @@ public class EntityMapperUtil {
                 .map(question -> new QuestionSetResponse(
                         question.getId(),
                         question.getQuestionStatement(),
+
                         userTestProgress.getSelectedAnswers().containsKey(question.getId())
                 ))
                 .toList();

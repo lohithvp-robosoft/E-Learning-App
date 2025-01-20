@@ -65,19 +65,29 @@ public class UserController {
         return userServices.logout(request, refreshTokenRequest);
     }
 
+//    @PostMapping("/logout")
+//    public ResponseEntity<ResponseDTO<Void>> logout(@RequestBody RefreshTokenRequest refreshTokenRequest) {
+//        return userServices.logout(refreshTokenRequest);
+//    }
+
     @PostMapping("/profile-update")
     public ResponseEntity<ResponseDTO<UserDetailResponse>> update(@ModelAttribute UpdateUserRequest userRequest, @RequestParam(required = false) MultipartFile file, HttpServletRequest request) throws IOException {
         return userServices.update(userRequest, file, request);
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<ResponseDTO<Void>> forgotPassword(HttpServletRequest request) {
-        return userServices.forgotPassword(request);
+    public ResponseEntity<ResponseDTO<Void>> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest) {
+        return userServices.forgotPassword(forgotPasswordRequest);
     }
 
     @GetMapping("/reset-password")
-    public ResponseEntity<ResponseDTO<Void>> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest, @RequestParam String otp, HttpServletRequest request) {
-        return userServices.resetPassword(resetPasswordRequest,otp,request);
+    public ResponseEntity<ResponseDTO<Void>> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest, HttpServletRequest request) {
+        return userServices.resetPassword(resetPasswordRequest,request);
+    }
+
+    @GetMapping("/forgot-reset-password")
+    public ResponseEntity<ResponseDTO<Void>> forgotResetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest, @RequestParam String otp) {
+        return userServices.forgotResetPassword(resetPasswordRequest,otp);
     }
 
     @GetMapping("/profile")

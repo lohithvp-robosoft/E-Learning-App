@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -138,7 +139,7 @@ public class QuestionServicesImpl implements QuestionServices {
         UserTestProgress userTestProgress = userTestProgressRepository.findByUserIdAndTestId(user.getId(), testId)
                 .orElseThrow(() -> new NotFoundException("User test progress not found"));
 
-        int totalQuestions = userTestProgress.getTotalAnsweredQuestions();
+        int totalQuestions = userTestProgress.getTotalNumberOfQuestions();
         int totalCorrectAnswers = userTestProgress.getCorrectlyAnsweredQuestionsId().size();
         int totalAttemptedQuestions = userTestProgress.getSelectedAnswers().size();
         int securedMarksInPercentage = (int) Math.round((double) totalCorrectAnswers / totalQuestions * 100);
@@ -183,6 +184,7 @@ public class QuestionServicesImpl implements QuestionServices {
         userTestScore.setTotalAnsweredQuestions(totalAttemptedQuestions);
         userTestScore.setTotalMarks(securedMarksInPercentage);
         userTestScore.setTotalNumberOfQuestion(totalQuestions);
+        userTestScore.setUser(user);
         userTestScoreRepository.save(userTestScore);
 
         List<UserTestScore> scores = userTestResult.getUserTestScores();
@@ -226,5 +228,6 @@ public class QuestionServicesImpl implements QuestionServices {
         return responseUtil.successResponse(questionSetResponses);
     }
 }
+
 
 
