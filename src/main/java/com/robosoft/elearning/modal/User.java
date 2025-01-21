@@ -32,6 +32,8 @@ public class User {
 
     private boolean isNotificationEnabled;
 
+    private String deviceToken;
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
@@ -146,6 +148,14 @@ public class User {
         isNotificationEnabled = notificationEnabled;
     }
 
+    public String getDeviceToken() {
+        return deviceToken;
+    }
+
+    public void setDeviceToken(String deviceToken) {
+        this.deviceToken = deviceToken;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -157,6 +167,7 @@ public class User {
                 ", testResult =" + userTestResult + '\'' +
                 ", profileImageUrl=" + profileImageUrl +
                 ", isNotificationEnabled" + isNotificationEnabled +
+                ", deviceToken" + deviceToken +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';

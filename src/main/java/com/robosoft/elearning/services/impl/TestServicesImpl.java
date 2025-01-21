@@ -3,13 +3,16 @@ package com.robosoft.elearning.services.impl;
 import com.robosoft.elearning.controller.TestController;
 import com.robosoft.elearning.dto.response.ResponseDTO;
 import com.robosoft.elearning.dto.response.TestResponse;
+import com.robosoft.elearning.dto.response.TestSubmitResponse;
 import com.robosoft.elearning.exception.NotFoundException;
-import com.robosoft.elearning.modal.Test;
-import com.robosoft.elearning.repository.TestRepository;
+import com.robosoft.elearning.jwt.JwtUtils;
+import com.robosoft.elearning.modal.*;
+import com.robosoft.elearning.repository.*;
 import com.robosoft.elearning.services.TestServices;
 import com.robosoft.elearning.util.EntityMapperUtil;
 import com.robosoft.elearning.util.ObjectMapperUtil;
 import com.robosoft.elearning.util.ResponseUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -31,6 +34,22 @@ public class TestServicesImpl implements TestServices {
     @Autowired
     private EntityMapperUtil entityMapperUtil;
 
+    @Autowired
+    private UserTestProgressRepository userTestProgressRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private JwtUtils jwtUtils;
+
+    @Autowired
+    private UserTestResultRepository userTestResultRepository;
+
+    @Autowired
+    private UserTestScoreRepository userTestScoreRepository;
+
+
     @Override
     public ResponseEntity<ResponseDTO<TestResponse>> getOneTest(Long testId) {
         Test test = testRepository.findById(testId).orElseThrow(() -> new NotFoundException("Test Not Found"));
@@ -50,5 +69,70 @@ public class TestServicesImpl implements TestServices {
                 .toList();
 
         return responseUtil.successResponse(testResponses);
+    }
+
+    @Override
+    public ResponseEntity<ResponseDTO<TestSubmitResponse>> submitTest(Long testId, HttpServletRequest request, boolean isTimeOut) {
+        User user = jwtUtils.getUserDataFromRequest(request);
+        UserTestProgress userTestProgress = userTestProgressRepository.findByUserIdAndTestId(user.getId(),testId)
+                .orElseThrow(() -> new NotFoundException("User Test Progress Not Found"));
+        UserTestResult userTestResult = userTestResultRepository.findByUser(user)
+                .orElseGet(() -> {
+                    UserTestResult newResult = new UserTestResult();
+                    newResult.setUser(user);
+                    newResult.setAverageScore(0.0);
+                    newResult.setHighestScore(0.0);
+                    return userTestResultRepository.save(newResult);
+                });
+        UserTestScore userTestScore = new UserTestScore();
+        int totalQuestions = userTestProgress.getTest().getQuestions().size();
+        Integer totalCorrectAnswer = userTestProgress.getCorrectlyAnsweredQuestionsId().size();
+        Integer totalAttemptedQuestion = userTestProgress.getSelectedAnswers().size();
+        Integer securedMarksInPercentage = (int) (((float) totalCorrectAnswer / totalQuestions) * 100);
+        userTestScore.setTest(userTestProgress.getTest());
+        userTestScore.setUserTestResult(userTestResult);
+        userTestScore.setTotalCorrectAnswers(totalCorrectAnswer);
+        userTestScore.setTotalAnsweredQuestions(totalAttemptedQuestion);
+        userTestScore.setTotalMarks(securedMarksInPercentage);
+
+        userTestScoreRepository.save(userTestScore);
+        List<UserTestScore> scores = userTestResult.getUserTestScores();
+        double totalScore = scores.stream().mapToDouble(UserTestScore::getTotalMarks).sum() + securedMarksInPercentage;
+        int scoreCount = scores.size() + 1;
+        double newAverageScore = totalScore / scoreCount;
+        double newHighestScore = Math.max(userTestResult.getHighestScore(), securedMarksInPercentage);
+        userTestResult.setAverageScore(newAverageScore);
+        userTestResult.setHighestScore(newHighestScore);
+        userTestResultRepository.save(userTestResult);
+
+        String remarksComment;
+        String remarkSubComment;
+        if (isTimeOut) {
+            remarksComment = "Oooops";
+            remarkSubComment = "You ran out of time.\nYour test has been submitted by default.";
+        } else if (securedMarksInPercentage >= 90) {
+            remarksComment = "Excellent";
+            remarkSubComment = "Outstanding performance!";
+        } else if (securedMarksInPercentage >= 75) {
+            remarksComment = "Good";
+            remarkSubComment = "Keep up the good work!";
+        } else if (securedMarksInPercentage >= 50) {
+            remarksComment = "Average";
+            remarkSubComment = "You can do better!";
+        } else {
+            remarksComment = "Poor";
+            remarkSubComment = "Needs significant improvement.";
+        }
+
+        TestSubmitResponse testSubmitResponse = new TestSubmitResponse(
+                securedMarksInPercentage,
+                totalAttemptedQuestion,
+                totalQuestions,
+                remarksComment,
+                remarkSubComment
+        );
+
+        userTestProgressRepository.delete(userTestProgress);
+        return responseUtil.successResponse(testSubmitResponse);
     }
 }

@@ -19,15 +19,22 @@ public class EntityMapperUtil {
         userDetailResponse.setEmail(user.getEmail());
         userDetailResponse.setUserName(user.getUserName());
         userDetailResponse.setProfileImageUrl(user.getProfileImageUrl());
-        UserTestResult testResult = user.getUserTestResult();
-        UserTestResultResponse testResultResponse = new UserTestResultResponse(
-                testResult.getId(),
-                testResult.getAverageScore(),
-                testResult.getHighestScore()
-        );
-        userDetailResponse.setNotificationEnabled(user.isNotificationEnabled());
-        userDetailResponse.setTestResult(testResultResponse);
 
+        // Check if userTestResult is null before accessing its properties
+        UserTestResult testResult = user.getUserTestResult();
+        if (testResult != null) {
+            UserTestResultResponse testResultResponse = new UserTestResultResponse(
+                    testResult.getId(),
+                    testResult.getAverageScore(),
+                    testResult.getHighestScore()
+            );
+            userDetailResponse.setTestResult(testResultResponse);
+        } else {
+            // If testResult is null, set the testResult to null or handle accordingly
+            userDetailResponse.setTestResult(null);
+        }
+
+        userDetailResponse.setNotificationEnabled(user.isNotificationEnabled());
         return userDetailResponse;
     }
 
@@ -46,7 +53,7 @@ public class EntityMapperUtil {
         );
     }
 
-    public QuestionResponse convertToQuestionResponse(Question question, Integer previouslySelectedOption, Integer currentQuestionIndex, Integer totalNoOfQuestion, Integer lessonIndex, String lessonName, Integer chapterIndex) {
+    public QuestionResponse convertToQuestionResponse(Question question) {
         if (question == null) {
             return null;
         }
@@ -55,13 +62,13 @@ public class EntityMapperUtil {
                 question.getId(),
                 question.getQuestionStatement(),
                 question.getOptions(),
-                question.getQuestionImageUrl(),
-                previouslySelectedOption,
-                currentQuestionIndex,
-                totalNoOfQuestion,
-                lessonIndex,
-                lessonName,
-                chapterIndex
+                question.getQuestionImageUrl()
+//                previouslySelectedOption,
+//                currentQuestionIndex,
+//                totalNoOfQuestion,
+//                lessonIndex,
+//                lessonName,
+//                chapterIndex
         );
     }
 

@@ -1,4 +1,4 @@
-package com.robosoft.elearning.controllers;
+package com.robosoft.elearning.controller;
 
 import com.robosoft.elearning.dto.response.NotificationResponse;
 import com.robosoft.elearning.dto.response.ResponseDTO;
