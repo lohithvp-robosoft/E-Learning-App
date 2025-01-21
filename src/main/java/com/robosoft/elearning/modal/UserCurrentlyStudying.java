@@ -2,10 +2,8 @@ package com.robosoft.elearning.modal;
 
 import jakarta.persistence.*;
 
-import java.util.List;
-
 @Entity
-public class UserCurrentlyStudyingSubject {
+public class UserCurrentlyStudying {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,10 +20,14 @@ public class UserCurrentlyStudyingSubject {
     @ManyToOne
     private Lesson currentLesson;
 
-    @OneToMany(mappedBy = "userCurrentlyStudyingSubject", cascade = CascadeType.ALL)
-    private List<CompletedChapter> completedChapters;
+    @ManyToOne
+    private Topic currentTopic;
 
-    private Double completedChapterInPercentage;
+    private Integer completedChapterInPercentage;
+
+    public UserCurrentlyStudying(User user) {
+        this.user = user;
+    }
 
     public Long getId() {
         return id;
@@ -67,19 +69,19 @@ public class UserCurrentlyStudyingSubject {
         this.currentLesson = currentLesson;
     }
 
-    public List<CompletedChapter> getCompletedChapters() {
-        return completedChapters;
-    }
-
-    public void setCompletedChapters(List<CompletedChapter> completedChapters) {
-        this.completedChapters = completedChapters;
-    }
-
-    public Double getCompletedChapterInPercentage() {
+    public Integer getCompletedChapterInPercentage() {
         return completedChapterInPercentage;
     }
 
-    public void setCompletedChapterInPercentage(Double completedChapterInPercentage) {
+    public void setCompletedChapterInPercentage(Integer completedChapterInPercentage) {
         this.completedChapterInPercentage = completedChapterInPercentage;
+    }
+
+    public Topic getCurrentTopic() {
+        return currentTopic;
+    }
+
+    public void setCurrentTopic(Topic currentTopic) {
+        this.currentTopic = currentTopic;
     }
 }

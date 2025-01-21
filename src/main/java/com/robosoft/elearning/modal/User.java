@@ -30,6 +30,11 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private UserTestResult userTestResult;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserCurrentlyStudying> currentlyStudyingSubjects;
+
+    private int chaptersCompletedInPercentage;
+
     private boolean isNotificationEnabled;
 
     private String deviceToken;
@@ -57,7 +62,6 @@ public class User {
         this.userName = registerRequest.getUserName();
         this.isNotificationEnabled = true;
         if (registerRequest.getRoles() == null || registerRequest.getRoles().isEmpty()) {
-//            log.info("No roles provided, setting default role");
             this.roles.add(Role.USER);
         } else {
             this.roles = registerRequest.getRoles();
@@ -154,6 +158,22 @@ public class User {
 
     public void setDeviceToken(String deviceToken) {
         this.deviceToken = deviceToken;
+    }
+
+    public List<UserCurrentlyStudying> getCurrentlyStudyingSubjects() {
+        return currentlyStudyingSubjects;
+    }
+
+    public void setCurrentlyStudyingSubjects(List<UserCurrentlyStudying> currentlyStudyingSubjects) {
+        this.currentlyStudyingSubjects = currentlyStudyingSubjects;
+    }
+
+    public int getChaptersCompletedInPercentage() {
+        return chaptersCompletedInPercentage;
+    }
+
+    public void setChaptersCompletedInPercentage(int chaptersCompletedInPercentage) {
+        this.chaptersCompletedInPercentage = chaptersCompletedInPercentage;
     }
 
     @Override

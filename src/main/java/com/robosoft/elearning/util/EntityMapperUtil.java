@@ -5,6 +5,7 @@ import com.robosoft.elearning.modal.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class EntityMapperUtil {
@@ -124,6 +125,20 @@ public class EntityMapperUtil {
                 notification.getMessage(),
                 notification.getTimestamp()
         );
+    }
+
+    public List<UserCurrentlyStudyingResponse> convertToUserCurrentlyStudyingResponseDTO(List<UserCurrentlyStudying> subjects) {
+        return subjects.stream()
+                .map(subject -> new UserCurrentlyStudyingResponse(
+                        subject.getId(),
+                        subject.getSubject() != null ? subject.getSubject().getSubjectName() : null,
+                        subject.getCompletedChapterInPercentage(),
+                        subject.getCurrentChapter() != null ? subject.getCurrentChapter().getChapterName() : null,  // Direct access
+                        subject.getCurrentLesson() != null ? subject.getCurrentLesson().getLessonName() : null,
+                        subject.getCurrentTopic() != null ? subject.getCurrentTopic().getHeading() : null,
+                        subject.getCurrentChapter().getChapterImg()
+                ))
+                .collect(Collectors.toList());
     }
 
 }
