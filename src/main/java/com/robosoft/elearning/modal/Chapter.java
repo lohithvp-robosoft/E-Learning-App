@@ -17,13 +17,13 @@ public class Chapter {
     private String chapterImg;
     private String title;
 
+
     @ManyToOne
     @JsonBackReference
     private Subject subject;
 
     @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL)
     @JsonManagedReference
-    @JsonIgnore
     private List<Lesson> lessons;
 
     public Long getId() {
@@ -73,5 +73,6 @@ public class Chapter {
     public void setTitle(String title) {
         this.title = title;
     }
+
 }
 

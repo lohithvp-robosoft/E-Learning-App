@@ -6,15 +6,35 @@ public class TopicResponse {
     private Long id;
     private String heading;
     private String subHeading;
-    private String content;
     private Level level;
+    private String icon;
+    private String content;
 
-    public Long getId() {
-        return id;
+    public TopicResponse(String heading, String subHeading, Level level, String icon) {
+        this.heading = heading;
+        this.subHeading = subHeading;
+        this.level = level;
+        this.icon = icon;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public TopicResponse() {
+
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 
     public String getHeading() {
@@ -33,19 +53,19 @@ public class TopicResponse {
         this.subHeading = subHeading;
     }
 
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
     public Level getLevel() {
         return level;
     }
 
     public void setLevel(Level level) {
         this.level = level;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

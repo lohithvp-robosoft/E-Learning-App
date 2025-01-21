@@ -9,6 +9,7 @@ public class ChapterResponse {
     private List<LessonResponse> lessons;
     private String chapterImg;
 
+
 //    public ChapterResponse(String chapterName, List<LessonResponse> lessonResponses) {
 //        this.chapterName = chapterName;
 //        this.lessons = lessonResponses;
@@ -36,6 +37,8 @@ public class ChapterResponse {
         this.lessons = lessonResponses;
         this.chapterImg = chapterImg;
     }
+
+
 
     public String getChapterImg() {
         return chapterImg;
@@ -69,5 +72,6 @@ public class ChapterResponse {
     public void setLessons(List<LessonResponse> lessons) {
         this.lessons = lessons;
     }
+
 }
 

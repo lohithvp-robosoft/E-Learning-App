@@ -2,6 +2,8 @@ package com.robosoft.elearning.dto.response;
 
 import com.robosoft.elearning.modal.Level;
 
+import java.util.List;
+
 public class LessonResponse {
 
     private Long id;
@@ -26,6 +28,7 @@ public class LessonResponse {
     public LessonResponse() {
 
     }
+
 
     public Long getId() {
         return id;

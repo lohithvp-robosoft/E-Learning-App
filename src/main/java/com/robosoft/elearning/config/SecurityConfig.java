@@ -1,5 +1,6 @@
 package com.robosoft.elearning.config;
 
+import com.robosoft.elearning.dto.response.ChapterNameResponse;
 import com.robosoft.elearning.jwt.AuthEntryPointJwt;
 import com.robosoft.elearning.jwt.AuthTokenFilter;
 import com.robosoft.elearning.repository.UserRepository;
@@ -59,6 +60,11 @@ public class SecurityConfig {
 
     @Autowired
     private AuthEntryPointJwt unauthorizedHandler;
+
+    @Bean
+    public ChapterNameResponse chapterNameResponse() {
+        return new ChapterNameResponse();
+    }
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {

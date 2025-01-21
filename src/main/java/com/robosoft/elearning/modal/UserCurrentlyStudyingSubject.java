@@ -2,8 +2,8 @@ package com.robosoft.elearning.modal;
 
 import jakarta.persistence.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class UserCurrentlyStudyingSubject {
@@ -12,18 +12,18 @@ public class UserCurrentlyStudyingSubject {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     private User user;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     private Subject subject;
 
     @ManyToOne
+    @JoinColumn(name = "chapter_id", nullable = false)
     private Chapter chapter;
 
-    // Track lesson progress - map of lesson ID and progress (completed: true/false)
-    @ElementCollection
-    private Map<Long, Boolean> lessonProgress = new HashMap<>();
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LessonProgress> lessonProgresses = new ArrayList<>();
 
     private int completedLessonsCount;
 
@@ -31,79 +31,39 @@ public class UserCurrentlyStudyingSubject {
 
     private boolean isStudying;
 
-    // Update lesson progress and check if the chapter is completed
-    public void updateLessonProgress(Long lessonId, boolean isCompleted) {
-        // Update the lesson progress
-        lessonProgress.put(lessonId, isCompleted);
+    public void updateLessonProgress(Lesson lesson, boolean isCompleted) {
+        LessonProgress progress = lessonProgresses.stream()
+                .filter(lp -> lp.getLesson().getId().equals(lesson.getId()))
+                .findFirst()
+                .orElse(new LessonProgress());
 
-        // Update the count of completed lessons
-        if (isCompleted) {
-            completedLessonsCount++;
-        } else {
-            completedLessonsCount--;
+        progress.setLesson(lesson);
+        progress.setCompleted(isCompleted);
+
+        if (!lessonProgresses.contains(progress)) {
+            lessonProgresses.add(progress);
         }
 
-        // Check if the chapter is completed
+        completedLessonsCount = (int) lessonProgresses.stream().filter(LessonProgress::isCompleted).count();
         checkChapterCompletion();
     }
 
-    // Check if the user has completed the chapter based on lessons
     private void checkChapterCompletion() {
-        // If the number of completed lessons matches the total lessons in the chapter, mark chapter as completed
-        if (completedLessonsCount == chapter.getLessons().size()) {
-            completedChapter = true;
-        } else {
+        if (chapter == null || chapter.getLessons() == null || chapter.getLessons().isEmpty()) {
             completedChapter = false;
+            return;
         }
+        completedChapter = (completedLessonsCount == chapter.getLessons().size());
     }
 
-    // Getters and Setters
-    public Long getId() {
-        return id;
+
+
+    public boolean isStudying() {
+        return isStudying;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Subject getSubject() {
-        return subject;
-    }
-
-    public void setSubject(Subject subject) {
-        this.subject = subject;
-    }
-
-    public Chapter getChapter() {
-        return chapter;
-    }
-
-    public void setChapter(Chapter chapter) {
-        this.chapter = chapter;
-    }
-
-    public Map<Long, Boolean> getLessonProgress() {
-        return lessonProgress;
-    }
-
-    public void setLessonProgress(Map<Long, Boolean> lessonProgress) {
-        this.lessonProgress = lessonProgress;
-    }
-
-    public int getCompletedLessonsCount() {
-        return completedLessonsCount;
-    }
-
-    public void setCompletedLessonsCount(int completedLessonsCount) {
-        this.completedLessonsCount = completedLessonsCount;
+    public void setIsStudying(boolean studying) {
+        isStudying = studying;
     }
 
     public boolean isCompletedChapter() {
@@ -114,15 +74,55 @@ public class UserCurrentlyStudyingSubject {
         this.completedChapter = completedChapter;
     }
 
-    public boolean isStudying() {
-        return isStudying;
+    public int getCompletedLessonsCount() {
+        return completedLessonsCount;
     }
 
-    public void setIsStudying(boolean studying) {
-        isStudying = studying;
+    public void setCompletedLessonsCount(int completedLessonsCount) {
+        this.completedLessonsCount = completedLessonsCount;
     }
 
+    public List<LessonProgress> getLessonProgresses() {
+        return lessonProgresses;
+    }
+
+    public void setLessonProgresses(List<LessonProgress> lessonProgresses) {
+        this.lessonProgresses = lessonProgresses;
+    }
+
+    public Chapter getChapter() {
+        return chapter;
+    }
+
+    public void setChapter(Chapter chapter) {
+        this.chapter = chapter;
+    }
+
+    public Subject getSubject() {
+        return subject;
+    }
+
+    public void setSubject(Subject subject) {
+        this.subject = subject;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 }
+
 
 //    @Id
 //    @GeneratedValue(strategy = GenerationType.IDENTITY)

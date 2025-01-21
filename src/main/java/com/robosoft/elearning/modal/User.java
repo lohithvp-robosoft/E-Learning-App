@@ -61,9 +61,9 @@ public class User {
     }
     User(){}
 
-    public Long getId() {
-        return id;
-    }
+
+
+
 
     public String getEmail() {
         return email;
@@ -126,6 +126,10 @@ public class User {
         this.userName = userName;
         this.password = password;
         this.roles = roles;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     @Override

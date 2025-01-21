@@ -1,5 +1,6 @@
 package com.robosoft.elearning.controller;
 
+import com.robosoft.elearning.dto.response.ChapterNameResponse;
 import com.robosoft.elearning.dto.response.LessonResponse;
 import com.robosoft.elearning.dto.response.ResponseDTO;
 import com.robosoft.elearning.services.LessonService;
@@ -32,6 +33,18 @@ public class LessonController {
     @GetMapping("/v1/chapters/{chapterId}/lessons")
     public ResponseEntity<ResponseDTO<List<LessonResponse>>> getLessonsByChapterId(@PathVariable Long chapterId) {
         return lessonService.getLessonsByChapterId(chapterId);
+    }
+
+    @GetMapping("/{chapterId}/lesson/{lessonId}")
+    public ResponseEntity<ResponseDTO<ChapterNameResponse>> getChapterWithLesson(
+            @PathVariable long chapterId,
+            @PathVariable int lessonId) {
+        return lessonService.getChapterWithLesson(chapterId, lessonId);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<ResponseDTO<List<ChapterNameResponse>>> getAllChaptersWithLessons() {
+        return lessonService.getAllChaptersWithLessons();
     }
 }
 

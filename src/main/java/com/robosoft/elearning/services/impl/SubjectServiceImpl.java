@@ -60,22 +60,18 @@ public class SubjectServiceImpl implements SubjectService {
     private String fetchSubjectDetailsMessage;
 
 
-    // Method to assign a subject to the user
     public ResponseEntity<ResponseDTO<Void>> assignSubjectToUser(HttpServletRequest request, Long subjectId) {
         Long userId = jwtUtils.getUserIdFromRequestHeader(request);
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         Subject subject = subjectRepository.findById(subjectId).orElseThrow(() -> new RuntimeException("Subject not found"));
 
-        // Check if the user is already studying this subject
         List<UserCurrentlyStudyingSubject> existingSubjects = userCurrentlyStudyingSubjectRepository.findByUserIdAndSubjectId(userId, subjectId);
         if (existingSubjects.isEmpty()) {
-            // Create a new entry for this subject
             UserCurrentlyStudyingSubject userSubject = new UserCurrentlyStudyingSubject();
             userSubject.setUser(user);
             userSubject.setSubject(subject);
-            userSubject.setIsStudying(true); // Mark as studying
+            userSubject.setIsStudying(true);
 
-            // Save to the repository
             userCurrentlyStudyingSubjectRepository.save(userSubject);
             return responseUtil.successResponse(null);
         } else {
@@ -83,7 +79,6 @@ public class SubjectServiceImpl implements SubjectService {
         }
     }
 
-    // Method to assign multiple subjects to the user
     public ResponseEntity<ResponseDTO<Void>> assignSubjectsToUser(HttpServletRequest request, List<Long> subjectIds) {
         Long userId = jwtUtils.getUserIdFromRequestHeader(request);
         for (Long subjectId : subjectIds) {
@@ -125,8 +120,5 @@ public class SubjectServiceImpl implements SubjectService {
         SubjectResponse subjectResponse = entityMapperUtil.convertSubjectToSubjectResponse(subject);
         return responseUtil.successResponse(subjectResponse, fetchSubjectDetailsMessage);
     }
-
-
-
 
 }

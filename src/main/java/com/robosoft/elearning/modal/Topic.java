@@ -15,6 +15,7 @@ public class Topic {
 
     @Enumerated(EnumType.STRING)
     private Level level;
+    private String icon;
 
     @ManyToOne
 //    @JoinColumn(name = "lesson_id")
@@ -22,6 +23,14 @@ public class Topic {
 
     @OneToMany(mappedBy = "topic", cascade = CascadeType.ALL)
     private List<Content> contents;
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
 
     public Long getId() {
         return id;

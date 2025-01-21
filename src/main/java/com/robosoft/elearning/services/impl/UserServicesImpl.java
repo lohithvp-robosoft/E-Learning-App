@@ -172,10 +172,10 @@ public class UserServicesImpl implements UserServices {
         }
     }
 
-    private String handleFileUpload(MultipartFile file, long userId) throws IOException {
+    private String handleFileUpload(MultipartFile file, long id) throws IOException {
         String folder = "user-profile-images";
         try {
-            return fileStorageUtil.storeFile(file, folder, userId);
+            return fileStorageUtil.storeFile(file, folder, id);
         } catch (Exception e) {
             throw new IOException("Error uploading file", e);
         }
