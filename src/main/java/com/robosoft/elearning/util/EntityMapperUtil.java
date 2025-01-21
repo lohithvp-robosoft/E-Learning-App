@@ -4,9 +4,8 @@ import com.robosoft.elearning.dto.response.*;
 import com.robosoft.elearning.modal.*;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class EntityMapperUtil {
@@ -44,6 +43,20 @@ public class EntityMapperUtil {
         return subjectResponse;
     }
 
+    public ChapterResponse convertChapterToChapterResponseWithoutLessons(Chapter chapter) {
+        if (chapter == null) {
+            return null;
+        }
+
+        // Only set id, chapterName, and chapterImg
+        ChapterResponse chapterResponse = new ChapterResponse();
+        chapterResponse.setId(chapter.getId());
+        chapterResponse.setChapterName(chapter.getChapterName());
+        chapterResponse.setChapterImg(chapter.getChapterImg());
+
+        return chapterResponse;
+    }
+
     public ChapterResponse convertChapterToChapterResponse(Chapter chapter) {
         if (chapter == null) {
             return null;
@@ -52,15 +65,29 @@ public class EntityMapperUtil {
         ChapterResponse chapterResponse = new ChapterResponse();
         chapterResponse.setId(chapter.getId());
         chapterResponse.setChapterName(chapter.getChapterName());
+        chapterResponse.setChapterImg(chapter.getChapterImg());
 
-        List<LessonResponse> lessonResponses = chapter.getLessons().stream()
-                .map(this::convertLessonToLessonResponse)
-                .collect(Collectors.toList());
+        // Map lessons for the chapter
+        List<LessonResponse> lessonResponses = new ArrayList<>();
+        int lessonCounter = 1;
+
+        if (chapter.getLessons() != null) {
+            for (Lesson lesson : chapter.getLessons()) {
+                LessonResponse lessonResponse = new LessonResponse();
+                lessonResponse.setLessonNumber("Lesson " + lessonCounter++);
+                lessonResponse.setLessonName(lesson.getLessonName());
+                lessonResponse.setLessonImg(lesson.getLessonImg());
+                lessonResponse.setLevel(lesson.getLevel());
+                lessonResponse.setHeading(lesson.getHeading());
+                lessonResponse.setSubheading(lesson.getSubheading());
+                lessonResponses.add(lessonResponse);
+            }
+        }
 
         chapterResponse.setLessons(lessonResponses);
-
         return chapterResponse;
     }
+
 
     public LessonResponse convertLessonToLessonResponse(Lesson lesson) {
         if (lesson == null) {
@@ -70,13 +97,13 @@ public class EntityMapperUtil {
         LessonResponse lessonResponse = new LessonResponse();
         lessonResponse.setId(lesson.getId());
         lessonResponse.setLessonName(lesson.getLessonName());
-        lessonResponse.setLessonImg(Collections.singletonList(lesson.getLessonImg()));
+        lessonResponse.setLessonImg((lesson.getLessonImg()));
 
-        List<TopicResponse> topicResponses = lesson.getTopics().stream()
-                .map(this::convertTopicToTopicResponse)
-                .collect(Collectors.toList());
-
-        lessonResponse.setTopics(topicResponses);
+//        List<TopicResponse> topicResponses = lesson.getTopics().stream()
+//                .map(this::convertTopicToTopicResponse)
+//                .collect(Collectors.toList());
+//
+//        lessonResponse.setTopics(topicResponses);
 
         return lessonResponse;
     }
@@ -96,21 +123,30 @@ public class EntityMapperUtil {
         return topicResponse;
     }
 
-
-    public UpdateCompletedChapterResponse convertCompletedChapterToResponse(CompletedChapter completedChapter) {
-        if (completedChapter == null) {
-            return null;
-        }
-
-        UpdateCompletedChapterResponse response = new UpdateCompletedChapterResponse();
-        response.setId(completedChapter.getId());
+    public CompletedChapterResponse convertCompletedChapterToResponse(CompletedChapter completedChapter) {
+        CompletedChapterResponse response = new CompletedChapterResponse();
         response.setChapterId(completedChapter.getChapter().getId());
         response.setChapterName(completedChapter.getChapter().getChapterName());
         response.setCompleted(completedChapter.isCompleted());
         response.setCompletionDate(completedChapter.getCompletionDate());
-
         return response;
     }
+
+
+//    public UpdateCompletedChapterResponse convertCompletedChapterToResponse(CompletedChapter completedChapter) {
+//        if (completedChapter == null) {
+//            return null;
+//        }
+//
+//        UpdateCompletedChapterResponse response = new UpdateCompletedChapterResponse();
+//        response.setId(completedChapter.getId());
+//        response.setChapterId(completedChapter.getChapter().getId());
+//        response.setChapterName(completedChapter.getChapter().getChapterName());
+//        response.setCompleted(completedChapter.isCompleted());
+//        response.setCompletionDate(completedChapter.getCompletionDate());
+//
+//        return response;
+//    }
 
 
 

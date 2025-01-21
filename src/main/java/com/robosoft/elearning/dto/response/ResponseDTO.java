@@ -15,9 +15,6 @@ public class ResponseDTO<T> {
     }
     ResponseDTO(){}
 
-    public ResponseDTO(String lessonLikedSuccessfully, Object o) {
-    }
-
     public ResponseDTO(String lessonLikedSuccessfully) {
     }
 

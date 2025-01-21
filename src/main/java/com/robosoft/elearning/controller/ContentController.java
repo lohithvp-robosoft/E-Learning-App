@@ -2,6 +2,7 @@ package com.robosoft.elearning.controller;
 
 
 import com.robosoft.elearning.dto.response.LessonContentResponse;
+import com.robosoft.elearning.dto.response.ResponseDTO;
 import com.robosoft.elearning.services.ContentService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +16,9 @@ public class ContentController {
     @Autowired
     private ContentService contentService;
 
-    @GetMapping("v1/{lessonId}/content")
-    public ResponseEntity<LessonContentResponse> getLessonContent(@PathVariable Long lessonId,
-                                                                  @RequestParam int pageNumber,
-                                                                  HttpServletRequest request) {
+    @GetMapping("/{lessonId}/content")
+    public ResponseEntity<ResponseDTO<LessonContentResponse>> getLessonContent(@PathVariable Long lessonId, @RequestParam int pageNumber, HttpServletRequest request) {
         return contentService.getLessonContent(lessonId, pageNumber, request);
     }
+
 }

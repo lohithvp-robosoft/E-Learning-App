@@ -1,8 +1,8 @@
 package com.robosoft.elearning.services.impl;
 
-import ch.qos.logback.classic.jul.JULHelper;
 import com.robosoft.elearning.dto.response.LessonContentResponse;
 import com.robosoft.elearning.dto.response.PageNavigationResponse;
+import com.robosoft.elearning.dto.response.ResponseDTO;
 import com.robosoft.elearning.exception.NotFoundException;
 import com.robosoft.elearning.jwt.JwtUtils;
 import com.robosoft.elearning.modal.Content;
@@ -11,6 +11,7 @@ import com.robosoft.elearning.repository.ContentRepository;
 import com.robosoft.elearning.repository.LessonRepository;
 import com.robosoft.elearning.repository.UserLikedRepository;
 import com.robosoft.elearning.services.ContentService;
+import com.robosoft.elearning.util.ResponseUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -34,12 +35,14 @@ public class ContentServiceImpl implements ContentService {
     @Autowired
     private JwtUtils jwtUtils;
 
+    @Autowired
+    private ResponseUtil responseUtil;
+
     @Override
-    public ResponseEntity<LessonContentResponse> getLessonContent(Long lessonId, int pageNumber, HttpServletRequest request) {
-//        Long userId = (Long) request.getAttribute("userId");
+    public ResponseEntity<ResponseDTO<LessonContentResponse>> getLessonContent(Long lessonId, int pageNumber, HttpServletRequest request) {
         Long userId = jwtUtils.getUserIdFromRequestHeader(request);
         if (userId == null) {
-            throw new IllegalArgumentException("User ID is missing in the request");
+            return responseUtil.errorResponse("User ID is missing in the request");
         }
 
         Lesson lesson = lessonRepository.findById(lessonId)
@@ -48,7 +51,7 @@ public class ContentServiceImpl implements ContentService {
         List<Content> contents = contentRepository.findByLessonIdOrderByPageNumber(lessonId);
 
         if (contents.isEmpty()) {
-            throw new NotFoundException("No content found for this lesson");
+            return responseUtil.errorResponse("No content found for this lesson");
         }
 
         Content currentContent = contents.stream()
@@ -78,7 +81,6 @@ public class ContentServiceImpl implements ContentService {
 
         response.setPages(pages);
 
-        return ResponseEntity.ok(response);
+        return responseUtil.successResponse(response);
     }
-
 }

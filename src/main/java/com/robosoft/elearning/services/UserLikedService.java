@@ -6,5 +6,5 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 
 public interface UserLikedService {
-    ResponseEntity<String> likeLesson(LikeLessonRequestDTO requestDTO, HttpServletRequest request);
+    ResponseEntity<ResponseDTO<String>> likeLesson(LikeLessonRequestDTO requestDTO, HttpServletRequest request);
 }

@@ -2,24 +2,29 @@ package com.robosoft.elearning.controller;
 
 
 import com.robosoft.elearning.dto.response.CurrentlyStudyingResponseDTO;
+import com.robosoft.elearning.dto.response.ResponseDTO;
 import com.robosoft.elearning.services.UserCurrentlyStudyingSubjectService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 public class UserCurrentlyStudyingSubjectController {
     @Autowired
-    private UserCurrentlyStudyingSubjectService service;
+    private UserCurrentlyStudyingSubjectService userCurrentlyStudyingSubjectService;
 
-    @GetMapping("v1/currently-studying-subject")
-    public ResponseEntity<List<CurrentlyStudyingResponseDTO>> getCurrentlyStudyingSubjects(HttpServletRequest request) {
-        return service.getCurrentlyStudyingSubjects(request);
+    @GetMapping("/currently-studying-subjects")
+    public ResponseEntity<ResponseDTO<List<CurrentlyStudyingResponseDTO>>> getCurrentlyStudyingSubjects(HttpServletRequest request) {
+        return userCurrentlyStudyingSubjectService.getCurrentlyStudyingSubjects(request);
     }
+
+    @PutMapping("/update-progress/chapter/{chapterId}/lesson/{lessonId}")
+    public ResponseEntity<ResponseDTO<String>> updateLessonProgress(HttpServletRequest request, @PathVariable Long chapterId, @PathVariable Long lessonId, @RequestParam boolean isCompleted) {
+        return userCurrentlyStudyingSubjectService.updateLessonProgress(request, chapterId, lessonId, isCompleted);
+    }
+
 }

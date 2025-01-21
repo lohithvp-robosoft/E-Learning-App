@@ -14,13 +14,10 @@ import org.springframework.web.bind.annotation.*;
 public class UserLikedController {
 
     @Autowired
-    private LikeLessonRequestDTO likeLessonRequestDTO;
-
-    @Autowired
     private UserLikedService userLikedService;
 
-    @PostMapping("/like-lesson")
-    public ResponseEntity<String> likeLesson(@RequestBody LikeLessonRequestDTO requestDTO, HttpServletRequest request) {
+    @PostMapping("/like")
+    public ResponseEntity<ResponseDTO<String>> likeLesson(@RequestBody LikeLessonRequestDTO requestDTO, HttpServletRequest request) {
         return userLikedService.likeLesson(requestDTO, request);
     }
 }

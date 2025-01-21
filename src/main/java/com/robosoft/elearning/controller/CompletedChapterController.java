@@ -3,7 +3,7 @@ package com.robosoft.elearning.controller;
 
 import com.robosoft.elearning.dto.request.UpdateCompletedChapterRequest;
 import com.robosoft.elearning.dto.response.CompletedChapterResponse;
-import com.robosoft.elearning.dto.response.UpdateCompletedChapterResponse;
+import com.robosoft.elearning.dto.response.ResponseDTO;
 import com.robosoft.elearning.services.CompletedChapterService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +19,13 @@ public class CompletedChapterController {
     @Autowired
     private CompletedChapterService completedChapterService;
 
-    @GetMapping("/v1/user")
-    public ResponseEntity<List<UpdateCompletedChapterResponse>> getCompletedChaptersByUser(HttpServletRequest request) {
+    @GetMapping("/completed-chapters")
+    public ResponseEntity<ResponseDTO<List<CompletedChapterResponse>>> getCompletedChaptersByUser(HttpServletRequest request) {
         return completedChapterService.getCompletedChaptersByUser(request);
     }
 
-    @PutMapping("/v1/update")
-    public ResponseEntity<String> updateCompletedChapter(HttpServletRequest request, @RequestBody UpdateCompletedChapterRequest updateRequest) {
+    @PutMapping("/update-completed-chapter")
+    public ResponseEntity<ResponseDTO<String>> updateCompletedChapter(HttpServletRequest request, @RequestBody UpdateCompletedChapterRequest updateRequest) {
         return completedChapterService.updateCompletedChapter(request, updateRequest);
     }
 }

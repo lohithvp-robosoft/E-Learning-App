@@ -1,26 +1,22 @@
 package com.robosoft.elearning.services.impl;
 
-import com.robosoft.elearning.dto.response.ChapterResponse;
-import com.robosoft.elearning.dto.response.LessonResponse;
 import com.robosoft.elearning.dto.response.ResponseDTO;
 import com.robosoft.elearning.dto.response.SubjectResponse;
-import com.robosoft.elearning.modal.Chapter;
-import com.robosoft.elearning.modal.Lesson;
+import com.robosoft.elearning.jwt.JwtUtils;
 import com.robosoft.elearning.modal.Subject;
-import com.robosoft.elearning.repository.ChapterRepository;
-import com.robosoft.elearning.repository.LessonRepository;
-import com.robosoft.elearning.repository.SubjectRepository;
+import com.robosoft.elearning.modal.User;
+import com.robosoft.elearning.modal.UserCurrentlyStudyingSubject;
+import com.robosoft.elearning.repository.*;
 import com.robosoft.elearning.services.SubjectService;
 import com.robosoft.elearning.util.EntityMapperUtil;
 import com.robosoft.elearning.util.ResponseUtil;
-import jakarta.transaction.Transactional;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -37,10 +33,19 @@ public class SubjectServiceImpl implements SubjectService {
     private ResponseUtil responseUtil;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private JwtUtils jwtUtils;
+
+    @Autowired
     private ChapterRepository chapterRepository;
 
     @Autowired
     private LessonRepository lessonRepository;
+
+    @Autowired
+    private UserCurrentlyStudyingSubjectRepository userCurrentlyStudyingSubjectRepository;
 
     @Value("${subject.success.fetch-all}")
     private String fetchAllSubjectsSuccessMessage;
@@ -53,6 +58,39 @@ public class SubjectServiceImpl implements SubjectService {
 
     @Value("${subject.success.fetch-details}")
     private String fetchSubjectDetailsMessage;
+
+
+    // Method to assign a subject to the user
+    public ResponseEntity<ResponseDTO<Void>> assignSubjectToUser(HttpServletRequest request, Long subjectId) {
+        Long userId = jwtUtils.getUserIdFromRequestHeader(request);
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        Subject subject = subjectRepository.findById(subjectId).orElseThrow(() -> new RuntimeException("Subject not found"));
+
+        // Check if the user is already studying this subject
+        List<UserCurrentlyStudyingSubject> existingSubjects = userCurrentlyStudyingSubjectRepository.findByUserIdAndSubjectId(userId, subjectId);
+        if (existingSubjects.isEmpty()) {
+            // Create a new entry for this subject
+            UserCurrentlyStudyingSubject userSubject = new UserCurrentlyStudyingSubject();
+            userSubject.setUser(user);
+            userSubject.setSubject(subject);
+            userSubject.setIsStudying(true); // Mark as studying
+
+            // Save to the repository
+            userCurrentlyStudyingSubjectRepository.save(userSubject);
+            return responseUtil.successResponse(null);
+        } else {
+            return responseUtil.errorResponse("User is already studying this subject.");
+        }
+    }
+
+    // Method to assign multiple subjects to the user
+    public ResponseEntity<ResponseDTO<Void>> assignSubjectsToUser(HttpServletRequest request, List<Long> subjectIds) {
+        Long userId = jwtUtils.getUserIdFromRequestHeader(request);
+        for (Long subjectId : subjectIds) {
+            assignSubjectToUser(request, subjectId);
+        }
+        return responseUtil.successResponse(null);
+    }
 
     @Override
     public ResponseEntity<ResponseDTO<List<SubjectResponse>>> getAllSubjects() {
@@ -88,21 +126,7 @@ public class SubjectServiceImpl implements SubjectService {
         return responseUtil.successResponse(subjectResponse, fetchSubjectDetailsMessage);
     }
 
-    @Override
-    public ResponseEntity<ResponseDTO<List<ChapterResponse>>> getChaptersBySubjectId(Long subjectId) {
-        List<Chapter> chapters = chapterRepository.findBySubjectId(subjectId);
-        List<ChapterResponse> responseList = new ArrayList<>();
-        chapters.forEach(chapter -> responseList.add(entityMapperUtil.convertChapterToChapterResponse(chapter)));
-        return responseUtil.successResponse(responseList);
-    }
 
-    @Transactional
-    @Override
-    public ResponseEntity<ResponseDTO<List<LessonResponse>>> getLessonsByChapterId(Long chapterId) {
-        List<Lesson> lessons = lessonRepository.findByChapterId(chapterId);
-        List<LessonResponse> responseList = new ArrayList<>();
-        lessons.forEach(lesson -> responseList.add(entityMapperUtil.convertLessonToLessonResponse(lesson)));
-        return responseUtil.successResponse(responseList);
-    }
+
 
 }
