@@ -3,30 +3,30 @@ package com.robosoft.elearning.dto.response;
 import java.util.List;
 
 public class LessonWithTopicResponse {
-    private String lessonNumber;
+    private Long lessonIndex;
     private String lessonName;
-    private List<TopicWithTopicsResponse> topics;
+    private List<TopicWithTopicNameResponse> topics;
 
-    public LessonWithTopicResponse(String lessonNumber, String lessonName, List<TopicWithTopicsResponse> topics) {
-        this.lessonNumber = lessonNumber;
+    public LessonWithTopicResponse(Long lessonIndex, String lessonName, List<TopicWithTopicNameResponse> topics) {
+        this.lessonIndex = lessonIndex;
         this.lessonName = lessonName;
         this.topics = topics;
     }
 
-    public void setTopics(List<TopicWithTopicsResponse> topics) {
+    public void setTopics(List<TopicWithTopicNameResponse> topics) {
         this.topics = topics;
     }
 
-    public List<TopicWithTopicsResponse> getTopics() {
+    public List<TopicWithTopicNameResponse> getTopics() {
         return topics;
     }
 
-    public String getLessonNumber() {
-        return lessonNumber;
+    public Long getLessonIndex() {
+        return lessonIndex;
     }
 
-    public void setLessonNumber(String lessonNumber) {
-        this.lessonNumber = lessonNumber;
+    public void setLessonIndex(Long lessonIndex) {
+        this.lessonIndex = lessonIndex;
     }
 
     public String getLessonName() {

@@ -8,10 +8,10 @@ import java.util.List;
 
 public interface ChapterService {
     ResponseEntity<ResponseDTO<ChapterResponse>> getChapterById(long id);
-    ResponseEntity<ResponseDTO<ChapterResponse>> getChapterWithLessons(long chapterId);
+  //  ResponseEntity<ResponseDTO<ChapterResponse>> getChapterWithLessons(long chapterId);
     ResponseEntity<ResponseDTO<List<ChapterResponse>>> getChaptersBySubjectId(Long subjectId);
     ResponseEntity<ResponseDTO<List<ChapterResponse>>> getAllChapters();
 
-    ResponseEntity<ResponseDTO<List<ChapterResponse>>> getAllChaptersWithLessons();
+  //  ResponseEntity<ResponseDTO<List<ChapterResponse>>> getAllChaptersWithLessons();
 
 }

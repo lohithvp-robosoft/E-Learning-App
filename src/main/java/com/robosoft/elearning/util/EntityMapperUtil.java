@@ -74,7 +74,7 @@ public class EntityMapperUtil {
         if (chapter.getLessons() != null) {
             for (Lesson lesson : chapter.getLessons()) {
                 LessonResponse lessonResponse = new LessonResponse();
-                lessonResponse.setLessonNumber("Lesson " + lessonCounter++);
+                lessonResponse.setLessonIndex(Long.valueOf("Lesson " + lessonCounter++));
                 lessonResponse.setLessonName(lesson.getLessonName());
                 lessonResponse.setLessonImg(lesson.getLessonImg());
                 lessonResponse.setLevel(lesson.getLevel());
@@ -83,8 +83,6 @@ public class EntityMapperUtil {
                 lessonResponses.add(lessonResponse);
             }
         }
-
-        chapterResponse.setLessons(lessonResponses);
         return chapterResponse;
     }
 
@@ -114,14 +112,34 @@ public class EntityMapperUtil {
         }
 
         TopicResponse topicResponse = new TopicResponse();
+        topicResponse.setSubjectId(topic.getLesson().getChapter().getSubject().getId());
         topicResponse.setId(topic.getId());
         topicResponse.setHeading(topic.getHeading());
         topicResponse.setSubHeading(topic.getSubHeading());
-        topicResponse.setContent(topic.getContents().toString());
+        List<ContentResponse> contentResponseList = new ArrayList<>();
+        topicResponse.setContent(contentResponseList);
         topicResponse.setLevel(topic.getLevel());
 
         return topicResponse;
     }
+
+
+    public List<ContentResponse> convertContentListToResponseList(List<Content> contentList) {
+        if (contentList == null || contentList.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<ContentResponse> contentResponseList = new ArrayList<>();
+        for (Content content : contentList) {
+            ContentResponse contentResponse = new ContentResponse();
+            contentResponse.setId(content.getId());
+            contentResponse.setHeading(content.getHeading());
+            contentResponseList.add(contentResponse);
+        }
+
+        return contentResponseList;
+    }
+
 
     public CompletedChapterResponse convertCompletedChapterToResponse(CompletedChapter completedChapter) {
         CompletedChapterResponse response = new CompletedChapterResponse();

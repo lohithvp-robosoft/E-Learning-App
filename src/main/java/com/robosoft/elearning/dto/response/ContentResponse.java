@@ -2,21 +2,37 @@ package com.robosoft.elearning.dto.response;
 
 import com.robosoft.elearning.modal.ContentType;
 
-public class ContentResponseDTO {
+public class ContentResponse {
     private Long id;
+    private String heading;
     private ContentType contentType;
     private String contentImg;
     private String info;
 
+
     // Constructors
-    public ContentResponseDTO(Long id, ContentType contentType, String contentImg, String info) {
+    public ContentResponse(Long id, String heading, ContentType contentType, String contentImg, String info) {
         this.id = id;
+        this.heading=heading;
         this.contentType = contentType;
         this.contentImg = contentImg;
         this.info = info;
     }
 
+    public ContentResponse() {
+
+    }
+
     // Getters and Setters
+
+    public String getHeading() {
+        return heading;
+    }
+
+    public void setHeading(String heading) {
+        this.heading = heading;
+    }
+
     public Long getId() {
         return id;
     }

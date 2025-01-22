@@ -7,6 +7,7 @@ public class TopicWithTopicsResponse {
     private String heading;
     private String subheading;
     private String icon;
+   
 
     public TopicWithTopicsResponse(Level level, String heading, String icon, String subheading) {
         this.level = level;

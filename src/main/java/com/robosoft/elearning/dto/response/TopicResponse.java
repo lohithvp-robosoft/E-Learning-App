@@ -1,6 +1,9 @@
 package com.robosoft.elearning.dto.response;
 
+import com.robosoft.elearning.modal.Content;
 import com.robosoft.elearning.modal.Level;
+
+import java.util.List;
 
 public class TopicResponse {
     private Long id;
@@ -8,8 +11,9 @@ public class TopicResponse {
     private String subHeading;
     private Level level;
     private String icon;
-    private String content;
+    private List<ContentResponse> content;
 
+    private long subjectId;
     public TopicResponse(String heading, String subHeading, Level level, String icon) {
         this.heading = heading;
         this.subHeading = subHeading;
@@ -21,11 +25,11 @@ public class TopicResponse {
 
     }
 
-    public String getContent() {
+    public List<ContentResponse> getContent() {
         return content;
     }
 
-    public void setContent(String content) {
+    public void setContent(List<ContentResponse> content) {
         this.content = content;
     }
 
@@ -67,5 +71,13 @@ public class TopicResponse {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getSubjectId() {
+        return subjectId;
+    }
+
+    public void setSubjectId(Long subjectId) {
+        this.subjectId = subjectId;
     }
 }

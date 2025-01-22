@@ -6,7 +6,6 @@ public class ChapterResponse {
 
     private Long id;
     private String chapterName;
-    private List<LessonResponse> lessons;
     private String chapterImg;
 
 
@@ -26,19 +25,13 @@ public class ChapterResponse {
 
     }
 
-    public ChapterResponse(String chapterName, List<LessonResponse> lessonResponses) {
-        this.chapterName = chapterName;
-        this.lessons = lessonResponses;
+    public Long getId() {
+        return id;
     }
 
-    public ChapterResponse(Long id, String chapterName, String chapterImg, List<LessonResponse> lessonResponses) {
+    public void setId(Long id) {
         this.id = id;
-        this.chapterName = chapterName;
-        this.lessons = lessonResponses;
-        this.chapterImg = chapterImg;
     }
-
-
 
     public String getChapterImg() {
         return chapterImg;
@@ -48,15 +41,6 @@ public class ChapterResponse {
         this.chapterImg = chapterImg;
     }
 
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getChapterName() {
         return chapterName;
     }
@@ -64,14 +48,4 @@ public class ChapterResponse {
     public void setChapterName(String chapterName) {
         this.chapterName = chapterName;
     }
-
-    public List<LessonResponse> getLessons() {
-        return lessons;
-    }
-
-    public void setLessons(List<LessonResponse> lessons) {
-        this.lessons = lessons;
-    }
-
 }
-

@@ -3,6 +3,7 @@ package com.robosoft.elearning.controller;
 import com.robosoft.elearning.dto.request.AssignSubjectRequestDTO;
 import com.robosoft.elearning.dto.response.ResponseDTO;
 import com.robosoft.elearning.dto.response.SubjectResponse;
+import com.robosoft.elearning.dto.response.SubjectResponseList;
 import com.robosoft.elearning.services.SubjectService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +20,8 @@ public class SubjectController {
     private SubjectService subjectService;
 
     @GetMapping("/v1/subjects")
-    public ResponseEntity<ResponseDTO<List<SubjectResponse>>> getAllSubjects() {
+    public ResponseEntity<ResponseDTO<SubjectResponseList>> getAllSubjects() {
         return subjectService.getAllSubjects();
-
     }
 
     @GetMapping("/v1/subjects/{id}")

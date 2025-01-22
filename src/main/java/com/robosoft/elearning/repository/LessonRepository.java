@@ -9,4 +9,6 @@ import java.util.Optional;
 public interface LessonRepository extends JpaRepository<Lesson, Long> {
     List<Lesson> findByChapterId(Long chapterId);
     Optional<Lesson> findById(Long id);
+    int countByChapterIdAndIdLessThan(Long chapterId, Long lessonId);
+
 }

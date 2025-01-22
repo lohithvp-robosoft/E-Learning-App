@@ -8,7 +8,7 @@ public class LessonResponse {
 
     private Long id;
 
-    private String lessonNumber;
+    private Long lessonIndex;
     private String lessonName;
     private Level level;
     private String heading;
@@ -16,8 +16,8 @@ public class LessonResponse {
 
     private String lessonImg;
 
-    public LessonResponse(String lessonNumber, String lessonName, String lessonImg, Level level, String heading, String subheading) {
-        this.lessonNumber = lessonNumber;
+    public LessonResponse(Long lessonIndex, String lessonName, String lessonImg, Level level, String heading, String subheading) {
+        this.lessonIndex = lessonIndex;
         this.lessonName = lessonName;
         this.lessonImg = lessonImg;
         this.level = level;
@@ -38,12 +38,12 @@ public class LessonResponse {
         this.id = id;
     }
 
-    public String getLessonNumber() {
-        return lessonNumber;
+    public Long getLessonIndex() {
+        return lessonIndex;
     }
 
-    public void setLessonNumber(String lessonNumber) {
-        this.lessonNumber = lessonNumber;
+    public void setLessonIndex(Long lessonIndex) {
+        this.lessonIndex = lessonIndex;
     }
 
     public String getLessonName() {

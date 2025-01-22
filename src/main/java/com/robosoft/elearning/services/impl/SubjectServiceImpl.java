@@ -2,6 +2,7 @@ package com.robosoft.elearning.services.impl;
 
 import com.robosoft.elearning.dto.response.ResponseDTO;
 import com.robosoft.elearning.dto.response.SubjectResponse;
+import com.robosoft.elearning.dto.response.SubjectResponseList;
 import com.robosoft.elearning.jwt.JwtUtils;
 import com.robosoft.elearning.modal.Subject;
 import com.robosoft.elearning.modal.User;
@@ -87,13 +88,14 @@ public class SubjectServiceImpl implements SubjectService {
         return responseUtil.successResponse(null);
     }
 
-    @Override
-    public ResponseEntity<ResponseDTO<List<SubjectResponse>>> getAllSubjects() {
+    public ResponseEntity<ResponseDTO<SubjectResponseList>> getAllSubjects() {
         List<SubjectResponse> subjectResponses = subjectRepository.findAll().stream()
                 .map(entityMapperUtil::convertSubjectToSubjectResponse)
                 .toList();
+        SubjectResponseList subjectResponseList = new SubjectResponseList();
+        subjectResponseList.setSubjects(subjectResponses);
 
-        return responseUtil.successResponse(subjectResponses, fetchAllSubjectsSuccessMessage);
+        return responseUtil.successResponse(subjectResponseList, fetchAllSubjectsSuccessMessage);
     }
 
     @Override

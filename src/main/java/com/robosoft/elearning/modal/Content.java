@@ -15,6 +15,7 @@ public class Content {
     private String videoUrl;
     private String thumbnail;
     private String audioUrl;
+    private String heading;
 
     @Column(name = "info", columnDefinition = "TEXT")
     private String info;
@@ -100,9 +101,25 @@ public class Content {
         return topic;
     }
 
-   // public void setTopic(Topic topic) {
+    public String getHeading() {
+        return heading;
+    }
+
+    public void setHeading(String heading) {
+        this.heading = heading;
+    }
+
+    public Lesson getLesson() {
+        return lesson;
+    }
+
+    public void setLesson(Lesson lesson) {
+        this.lesson = lesson;
+    }
+// public void setTopic(Topic topic) {
       //  this.topic = topic;
     //}
+
 
     @Override
     public String toString() {
@@ -112,8 +129,12 @@ public class Content {
                 ", contentImg='" + contentImg + '\'' +
                 ", videoUrl='" + videoUrl + '\'' +
                 ", thumbnail='" + thumbnail + '\'' +
+                ", audioUrl='" + audioUrl + '\'' +
+                ", heading='" + heading + '\'' +
                 ", info='" + info + '\'' +
                 ", topic=" + topic +
+                ", pageNumber=" + pageNumber +
+                ", lesson=" + lesson +
                 '}';
     }
 }

@@ -82,38 +82,35 @@ public class LessonServiceImpl implements LessonService {
         Chapter chapter = chapterRepository.findById(chapterId)
                 .orElseThrow(() -> new RuntimeException("Chapter not found"));
 
-        // Retrieve the specific lesson by its ID (or index)
         Lesson selectedLesson = null;
         if (lessonId > 0 && lessonId <= chapter.getLessons().size()) {
-            selectedLesson = chapter.getLessons().get(lessonId - 1);  // Lesson ID is 1-based
+            selectedLesson = chapter.getLessons().get(lessonId - 1);
         } else {
             throw new RuntimeException("Lesson not found");
         }
 
-        // Prepare the response for the selected lesson
-        String lessonNumber = "Lesson " + lessonId;
-        List<TopicWithTopicsResponse> topicResponses = new ArrayList<>();
+        Long lessonIndex = (long) lessonId;
+        List<TopicWithTopicNameResponse> topicResponses = new ArrayList<>();
 
-        // Add topics related to the lesson (level, heading, subheading)
         for (Topic topic : selectedLesson.getTopics()) {
-            topicResponses.add(new TopicWithTopicsResponse(
-                    topic.getLevel(),
+            topicResponses.add(new TopicWithTopicNameResponse(
+                    topic.getId(),
+                    topic.getLesson().getChapter().getSubject().getId(),
                     topic.getHeading(),
-                    topic.getIcon(),
                     topic.getSubHeading()
             ));
         }
 
-        // Wrap lesson data in the ChapterResponse
+
         LessonWithTopicResponse lessonResponse = new LessonWithTopicResponse(
-                lessonNumber,
+                lessonIndex,
                 selectedLesson.getLessonName(),
                 topicResponses
         );
 
         ChapterNameResponse chapterResponse = new ChapterNameResponse(
                 chapter.getChapterName(),
-                List.of(lessonResponse)  // Only the selected lesson in the response
+                List.of(lessonResponse)
         );
 
         return responseUtil.successResponse(chapterResponse);
@@ -128,22 +125,20 @@ public class LessonServiceImpl implements LessonService {
             List<LessonWithTopicResponse> lessonResponses = new ArrayList<>();
             int lessonCounter = 1;
             for (Lesson lesson : chapter.getLessons()) {
-                String lessonNumber = "Lesson " + lessonCounter++;
-                List<TopicWithTopicsResponse> topicResponses = new ArrayList<>();
+                Long lessonIndex = (long) lessonCounter++;
+                List<TopicWithTopicNameResponse> topicResponses = new ArrayList<>();
 
-                // Add topics related to the lesson (level, heading, subheading)
                 for (Topic topic : lesson.getTopics()) {
-                    topicResponses.add(new TopicWithTopicsResponse(
-                            topic.getLevel(),
+                    topicResponses.add(new TopicWithTopicNameResponse(
+                            topic.getId(),
+                            topic.getLesson().getChapter().getSubject().getId(),
                             topic.getHeading(),
-                            topic.getIcon(),
                             topic.getSubHeading()
-
                     ));
                 }
 
                 lessonResponses.add(new LessonWithTopicResponse(
-                        lessonNumber,
+                        lessonIndex,
                         lesson.getLessonName(),
                         topicResponses
                 ));
@@ -158,4 +153,5 @@ public class LessonServiceImpl implements LessonService {
 
         return responseUtil.successResponse(responseList);
     }
+
 }

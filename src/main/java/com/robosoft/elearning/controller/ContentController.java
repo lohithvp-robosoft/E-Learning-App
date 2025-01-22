@@ -1,8 +1,9 @@
 package com.robosoft.elearning.controller;
 
 
-import com.robosoft.elearning.dto.response.ContentResponseDTO;
+import com.robosoft.elearning.dto.response.ContentResponse;
 import com.robosoft.elearning.dto.response.PaginatedContentResponseDTO;
+import com.robosoft.elearning.dto.response.ResponseDTO;
 import com.robosoft.elearning.services.ContentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,9 +22,9 @@ public class ContentController {
     private ContentService contentService;
 
     @GetMapping("/paginated")
-    public ResponseEntity<List<ContentResponseDTO>> getPaginatedContent(@RequestParam Long lessonId,
-                                                                        @RequestParam int pageNumber,
-                                                                        @RequestParam int pageSize) {
+    public ResponseEntity<List<ContentResponse>> getPaginatedContent(@RequestParam Long lessonId,
+                                                                     @RequestParam int pageNumber,
+                                                                     @RequestParam int pageSize) {
         return contentService.getPaginatedContent(lessonId, pageNumber, pageSize);
     }
 
@@ -35,12 +36,12 @@ public class ContentController {
     }
 
     @GetMapping("/go-to-page")
-    public ResponseEntity<PaginatedContentResponseDTO> goToPage(
-            @RequestParam Long lessonId,
+    public ResponseEntity<ResponseDTO<PaginatedContentResponseDTO>> goToPage(
+            @RequestParam Long topicId,
             @RequestParam int pageNumber,
             @RequestParam int pageSize
     ) {
-        return contentService.goToPage(lessonId, pageNumber, pageSize);
+        return contentService.goToPage(topicId, pageNumber, pageSize);
     }
 
 

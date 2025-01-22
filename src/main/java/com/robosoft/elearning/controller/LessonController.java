@@ -46,6 +46,12 @@ public class LessonController {
     public ResponseEntity<ResponseDTO<List<ChapterNameResponse>>> getAllChaptersWithLessons() {
         return lessonService.getAllChaptersWithLessons();
     }
+
+
+
+
+
+
 }
 
 

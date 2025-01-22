@@ -30,18 +30,24 @@ public class ChapterController {
         return chapterService.getChapterById(id);
     }
 
-    @GetMapping("/v1/chapter/{chapterId}/lessons")
-    public ResponseEntity<ResponseDTO<ChapterResponse>> getChapterWithLessons(@PathVariable long chapterId) {
-        return chapterService.getChapterWithLessons(chapterId);
-    }
+//    @GetMapping("/v1/chapter/{chapterId}/lessons")
+//    public ResponseEntity<ResponseDTO<ChapterResponse>> getChapterWithLessons(@PathVariable long chapterId) {
+//        return chapterService.getChapterWithLessons(chapterId);
+//    }
+
+
+
+
+
+
 
     @GetMapping("/v1/chapters/subject/{subjectId}")
     public ResponseEntity<ResponseDTO<List<ChapterResponse>>> getChaptersBySubjectId(@PathVariable Long subjectId) {
         return chapterService.getChaptersBySubjectId(subjectId);
     }
-
-    @GetMapping("/v1/chapters/with-lessons")
-    public ResponseEntity<ResponseDTO<List<ChapterResponse>>> getAllChaptersWithLessons() {
-        return chapterService.getAllChaptersWithLessons();
-    }
+//
+//    @GetMapping("/v1/chapters/with-lessons")
+//    public ResponseEntity<ResponseDTO<List<ChapterResponse>>> getAllChaptersWithLessons() {
+//        return chapterService.getAllChaptersWithLessons();
+//    }
 }
