@@ -18,23 +18,29 @@ public class UserStudyProgressController {
     private UserStudyProgressServices userStudyProgressServices;
 
     @GetMapping
-    public ResponseEntity<ResponseDTO<List<UserCurrentlyStudyingResponse>>> getAllUserCurrentlyStudyingSubjects(HttpServletRequest request) {
-        return userStudyProgressServices.getAllUserCurrentlyStudyingSubjects(request);
+    public ResponseEntity<ResponseDTO<List<UserCurrentlyStudyingResponse>>> getAllUserCurrentlyStudying(HttpServletRequest request) {
+        return userStudyProgressServices.getAllUserCurrentlyStudying(request);
     }
 
-    @PostMapping("/topic/completed")
+    @GetMapping("/subjects/{subjectId}")
+    public ResponseEntity<ResponseDTO<UserCurrentlyStudyingResponse>> getUserCurrentlyStudyingBySubjectId(@PathVariable long subjectId, HttpServletRequest request){
+        return userStudyProgressServices.getUserCurrentlyStudying(subjectId,request);
+    }
+
+    @PostMapping("/topic/{topicId}/completed")
     public ResponseEntity<ResponseDTO<Void>> markTopicAsCompleted(
-            @RequestParam Long topicId,
+            @PathVariable Long topicId,
             HttpServletRequest request
     ) {
         return userStudyProgressServices.markTopicAsCompleted(topicId, request);
     }
 
-    @PutMapping("/update")
+    @PutMapping("/subject/{subjectId}/topic/{topicId}/update")
     public ResponseEntity<ResponseDTO<Void>> updateCurrentProgress(
-            @RequestParam Long topicId,
+            @PathVariable Long subjectId,
+            @PathVariable Long topicId,
             HttpServletRequest request
     ) {
-        return userStudyProgressServices.updateCurrentProgress(topicId, request);
+        return userStudyProgressServices.updateCurrentProgress(topicId, subjectId, request);
     }
 }

@@ -20,8 +20,8 @@ public class EntityMapperUtil {
         userDetailResponse.setEmail(user.getEmail());
         userDetailResponse.setUserName(user.getUserName());
         userDetailResponse.setProfileImageUrl(user.getProfileImageUrl());
+        userDetailResponse.setCompleterChapterInPercentage(user.getChaptersCompletedInPercentage());
 
-        // Check if userTestResult is null before accessing its properties
         UserTestResult testResult = user.getUserTestResult();
         if (testResult != null) {
             UserTestResultResponse testResultResponse = new UserTestResultResponse(
@@ -31,7 +31,6 @@ public class EntityMapperUtil {
             );
             userDetailResponse.setTestResult(testResultResponse);
         } else {
-            // If testResult is null, set the testResult to null or handle accordingly
             userDetailResponse.setTestResult(null);
         }
 
@@ -127,18 +126,33 @@ public class EntityMapperUtil {
         );
     }
 
-    public List<UserCurrentlyStudyingResponse> convertToUserCurrentlyStudyingResponseDTO(List<UserCurrentlyStudying> subjects) {
+    public List<UserCurrentlyStudyingResponse> convertToUserCurrentlyStudyingResponseList(List<UserCurrentlyStudying> subjects) {
         return subjects.stream()
-                .map(subject -> new UserCurrentlyStudyingResponse(
-                        subject.getId(),
-                        subject.getSubject() != null ? subject.getSubject().getSubjectName() : null,
-                        subject.getCompletedChapterInPercentage(),
-                        subject.getCurrentChapter() != null ? subject.getCurrentChapter().getChapterName() : null,  // Direct access
-                        subject.getCurrentLesson() != null ? subject.getCurrentLesson().getLessonName() : null,
-                        subject.getCurrentTopic() != null ? subject.getCurrentTopic().getHeading() : null,
-                        subject.getCurrentChapter().getChapterImg()
+                .map(currentlyStudying -> new UserCurrentlyStudyingResponse(
+                        currentlyStudying.getId(),
+                        currentlyStudying.getSubject() != null ? currentlyStudying.getSubject().getSubjectName() : null,
+                        currentlyStudying.getCompletedChapterInPercentage(),
+                        currentlyStudying.getCurrentChapter() != null ? currentlyStudying.getCurrentChapter().getChapterName() : null,
+                        currentlyStudying.getCurrentLesson() != null ? currentlyStudying.getCurrentLesson().getLessonName() : null,
+                        currentlyStudying.getCurrentTopic() != null ? currentlyStudying.getCurrentTopic().getHeading() : null,
+                        currentlyStudying.getCurrentChapter().getChapterImg(),
+                        currentlyStudying.getCompletedLessonInPercentage()
                 ))
                 .collect(Collectors.toList());
     }
+
+    public UserCurrentlyStudyingResponse convertToUserCurrentlyStudyingResponse(UserCurrentlyStudying currentlyStudying) {
+        return new UserCurrentlyStudyingResponse(
+                currentlyStudying.getId(),
+                currentlyStudying.getSubject() != null ? currentlyStudying.getSubject().getSubjectName() : null,
+                currentlyStudying.getCompletedChapterInPercentage(),
+                currentlyStudying.getCurrentChapter() != null ? currentlyStudying.getCurrentChapter().getChapterName() : null,
+                currentlyStudying.getCurrentLesson() != null ? currentlyStudying.getCurrentLesson().getLessonName() : null,
+                currentlyStudying.getCurrentTopic() != null ? currentlyStudying.getCurrentTopic().getHeading() : null,
+                currentlyStudying.getCurrentChapter() != null ? currentlyStudying.getCurrentChapter().getChapterImg() : null,
+                currentlyStudying.getCompletedLessonInPercentage()
+        );
+    }
+
 
 }

@@ -1,9 +1,6 @@
 package com.robosoft.elearning.modal;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class ChapterCompleted {
@@ -14,9 +11,15 @@ public class ChapterCompleted {
     private Long chapterId;
     private Long userId;
 
-    public ChapterCompleted(Long chapterId, Long userId) {
+    @ManyToOne
+    @JoinColumn(name = "subject_id")
+    private Subject subject;
+
+    public ChapterCompleted(Long chapterId, Long userId, Subject subject) {
         this.chapterId = chapterId;
         this.userId = userId;
+        this.subject = subject;
+
     }
 
     public ChapterCompleted(){}
@@ -43,5 +46,13 @@ public class ChapterCompleted {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public Subject getSubject() {
+        return subject;
+    }
+
+    public void setSubject(Subject subject) {
+        this.subject = subject;
     }
 }

@@ -11,14 +11,14 @@ public class TopicCompleted {
     private Long topicId;
     private Long userId;
 
-//    @ManyToOne
-//    @JoinColumn(name = "lesson_id")
-//    private Lesson lesson;
+    @ManyToOne
+    @JoinColumn(name = "lesson_id")
+    private Lesson lesson;
 
-    public TopicCompleted(Long topicId, Long userId) {
+    public TopicCompleted(Long topicId, Long userId, Lesson lesson) {
         this.topicId = topicId;
         this.userId = userId;
-//        this.lesson = lesson;
+        this.lesson = lesson;
     }
 
     public TopicCompleted(){}
@@ -41,5 +41,13 @@ public class TopicCompleted {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public Lesson getLesson() {
+        return lesson;
+    }
+
+    public void setLesson(Lesson lesson) {
+        this.lesson = lesson;
     }
 }

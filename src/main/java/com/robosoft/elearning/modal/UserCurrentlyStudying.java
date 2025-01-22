@@ -25,9 +25,13 @@ public class UserCurrentlyStudying {
 
     private Integer completedChapterInPercentage;
 
+    private Integer completedLessonInPercentage;
+
     public UserCurrentlyStudying(User user) {
         this.user = user;
     }
+
+    public UserCurrentlyStudying(){}
 
     public Long getId() {
         return id;
@@ -83,5 +87,13 @@ public class UserCurrentlyStudying {
 
     public void setCurrentTopic(Topic currentTopic) {
         this.currentTopic = currentTopic;
+    }
+
+    public Integer getCompletedLessonInPercentage() {
+        return completedLessonInPercentage;
+    }
+
+    public void setCompletedLessonInPercentage(Integer completedLessonInPercentage) {
+        this.completedLessonInPercentage = completedLessonInPercentage;
     }
 }

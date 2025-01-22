@@ -1,15 +1,18 @@
 package com.robosoft.elearning.dto.response;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+
 public class UserCurrentlyStudyingResponse {
     private Long id;
     private String subjectName;
     private String chapterImageUrl;
     private Integer completedChapterInPercentage;
+    private Integer completedLessonInPercentage;
     private String currentChapterTitle;
     private String currentLessonTitle;
     private String currentTopicTitle;
 
-    public UserCurrentlyStudyingResponse(Long id, String subjectName, Integer completedChapterInPercentage, String currentChapterTitle, String currentLessonTitle, String currentTopicTitle, String chapterImageUrl) {
+    public UserCurrentlyStudyingResponse(Long id, String subjectName, Integer completedChapterInPercentage, String currentChapterTitle, String currentLessonTitle, String currentTopicTitle, String chapterImageUrl, Integer completedLessonInPercentage) {
         this.id = id;
         this.subjectName = subjectName;
         this.completedChapterInPercentage = completedChapterInPercentage;
@@ -17,6 +20,7 @@ public class UserCurrentlyStudyingResponse {
         this.currentLessonTitle = currentLessonTitle;
         this.currentTopicTitle = currentTopicTitle;
         this.chapterImageUrl = chapterImageUrl;
+        this.completedLessonInPercentage = completedLessonInPercentage;
     }
 
     public Long getId() {
@@ -73,5 +77,13 @@ public class UserCurrentlyStudyingResponse {
 
     public void setChapterImageUrl(String chapterImageUrl) {
         this.chapterImageUrl = chapterImageUrl;
+    }
+
+    public Integer getCompletedLessonInPercentage() {
+        return completedLessonInPercentage;
+    }
+
+    public void setCompletedLessonInPercentage(Integer completedLessonInPercentage) {
+        this.completedLessonInPercentage = completedLessonInPercentage;
     }
 }

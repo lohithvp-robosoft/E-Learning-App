@@ -17,7 +17,7 @@ public class Topic {
     private Level level;
 
     @ManyToOne
-//    @JoinColumn(name = "lesson_id")
+    @JoinColumn(name = "lesson_id")
     private Lesson lesson;
 
     @OneToMany(mappedBy = "topic", cascade = CascadeType.ALL)

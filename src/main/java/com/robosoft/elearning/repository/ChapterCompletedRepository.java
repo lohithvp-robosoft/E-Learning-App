@@ -8,6 +8,14 @@ import org.springframework.data.jpa.repository.Query;
 public interface ChapterCompletedRepository extends JpaRepository<ChapterCompleted, Long> {
     boolean existsByChapterIdAndUserId(Long chapterId, Long userId);
 
-    @Query("SELECT COUNT(c) FROM ChapterCompleted c WHERE c.chapter.subject.id = :subjectId AND c.userId = :userId")
-    long countBySubjectIdAndUserId(@Param("subjectId") Long subjectId, @Param("userId") Long userId);
+//    @Query("SELECT COUNT(c) FROM ChapterCompleted c WHERE c.chapter.subject.id = :subjectId AND c.userId = :userId")
+//    long countBySubjectIdAndUserId(@Param("subjectId") Long subjectId, @Param("userId") Long userId);
+
+//    @Query("SELECT COUNT(c) FROM ChapterCompleted c WHERE c.chapter.subject.id = :subjectId AND c.userId = :userId");
+
+    long countBySubjectIdAndUserId(Long subjectId, Long userId);
+
+//    long countBySubjectIdAndUserId(@Param("subjectId") Long subjectId, @Param("userId") Long userId);
+
+
 }
