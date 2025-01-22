@@ -2,6 +2,7 @@ package com.robosoft.elearning.util;
 
 import com.robosoft.elearning.dto.response.*;
 import com.robosoft.elearning.modal.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class EntityMapperUtil {
+
 
     public UserDetailResponse convertUserToUserDetailResponse(User user) {
         if (user == null) {
@@ -151,6 +153,19 @@ public class EntityMapperUtil {
                 currentlyStudying.getCurrentTopic() != null ? currentlyStudying.getCurrentTopic().getHeading() : null,
                 currentlyStudying.getCurrentChapter() != null ? currentlyStudying.getCurrentChapter().getChapterImg() : null,
                 currentlyStudying.getCompletedLessonInPercentage()
+        );
+    }
+
+    public UserLikedTopicResponse convertToUserLikedTopicResponse(Topic topic, Integer chapterIndex){
+
+        return new UserLikedTopicResponse(
+                topic.getId(),
+                topic.getHeading(),
+                topic.getSubHeading(),
+                topic.getLevel(),
+                topic.getIcon(),
+                topic.getLesson().getLessonName(),
+                chapterIndex
         );
     }
 

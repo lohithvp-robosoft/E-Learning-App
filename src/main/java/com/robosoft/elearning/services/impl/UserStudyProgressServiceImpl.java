@@ -159,7 +159,6 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
 
             int completedChapterPercentage = calculateSubjectCompletionPercentage(chapter.getId(), user.getId());
             int completedLessonPercentage = calculateLessonCompletionPercentage(lesson, user.getId());
-            System.out.println(completedLessonPercentage);
             studyingSubject.setCompletedChapterInPercentage(completedChapterPercentage);
             studyingSubject.setCompletedLessonInPercentage(completedLessonPercentage);
 

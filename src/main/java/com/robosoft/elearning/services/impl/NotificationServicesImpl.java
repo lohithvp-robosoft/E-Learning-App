@@ -2,6 +2,7 @@ package com.robosoft.elearning.services.impl;
 
 import com.robosoft.elearning.dto.response.NotificationResponse;
 import com.robosoft.elearning.dto.response.ResponseDTO;
+import com.robosoft.elearning.exception.NotFoundException;
 import com.robosoft.elearning.modal.Notification;
 import com.robosoft.elearning.modal.User;
 import com.robosoft.elearning.repository.NotificationRepository;
@@ -10,6 +11,7 @@ import com.robosoft.elearning.services.NotificationServices;
 import com.robosoft.elearning.util.EntityMapperUtil;
 import com.robosoft.elearning.util.ResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -31,9 +33,12 @@ public class NotificationServicesImpl implements NotificationServices {
     @Autowired
     private ResponseUtil responseUtil;
 
+    @Value("${message.error.userNotFound}")
+    private String userNotFound;
+
     @Override
     public void saveNotification(String title, String message, Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(userNotFound));
         Notification notification = new Notification(title, message, user);
         notificationRepository.save(notification);
     }

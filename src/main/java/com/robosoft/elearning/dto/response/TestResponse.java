@@ -98,13 +98,6 @@ public class TestResponse {
         this.subHeading = subHeading;
     }
 
-    public Integer getTotalNumberOfQuestion() {
-        return totalNumberOfQuestions;
-    }
-
-    public void setTotalNumberOfQuestion(Integer totalNumberOfQuestion) {
-        this.totalNumberOfQuestions = totalNumberOfQuestions;
-    }
 
     public String getTestIcon() {
         return testIcon;

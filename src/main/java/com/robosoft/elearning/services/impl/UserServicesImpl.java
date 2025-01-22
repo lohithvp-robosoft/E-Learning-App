@@ -28,7 +28,6 @@ import java.util.Optional;
 @Service
 public class UserServicesImpl implements UserServices {
 
-    private static final Log log = LogFactory.getLog(UserServicesImpl.class);
     @Autowired
     private OtpServices otpServices;
 
