@@ -27,7 +27,7 @@ public class TopicController {
         return topicService.getAllTopics();
     }
 
-    // Endpoint to get topic by ID
+    //   Endpoint to get topic by ID
     @GetMapping("v1/topics/{id}")
     public ResponseEntity<ResponseDTO<TopicResponse>> getTopicById(@PathVariable long id) {
         return topicService.getTopicById(id);

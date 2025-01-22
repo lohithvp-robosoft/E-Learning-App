@@ -1,0 +1,52 @@
+package com.robosoft.elearning.dto.response;
+
+import com.robosoft.elearning.modal.ContentType;
+
+public class ContentResponseDTO {
+    private Long id;
+    private ContentType contentType;
+    private String contentImg;
+    private String info;
+
+    // Constructors
+    public ContentResponseDTO(Long id, ContentType contentType, String contentImg, String info) {
+        this.id = id;
+        this.contentType = contentType;
+        this.contentImg = contentImg;
+        this.info = info;
+    }
+
+    // Getters and Setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public ContentType getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(ContentType contentType) {
+        this.contentType = contentType;
+    }
+
+    public String getContentImg() {
+        return contentImg;
+    }
+
+    public void setContentImg(String contentImg) {
+        this.contentImg = contentImg;
+    }
+
+    public String getInfo() {
+        return info;
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
+    }
+
+}
