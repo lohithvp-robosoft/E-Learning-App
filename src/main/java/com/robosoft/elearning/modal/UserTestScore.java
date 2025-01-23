@@ -2,6 +2,8 @@ package com.robosoft.elearning.modal;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 public class UserTestScore {
     @Id
@@ -14,8 +16,23 @@ public class UserTestScore {
     @ManyToOne
     private Test test;
 
+    @ManyToOne
+    private User user;
+
     private Integer totalAnsweredQuestions;
-    private Double totalMarks;
+    private Integer totalMarks;
+
+    private Integer totalCorrectAnswers;
+
+    private Integer totalNumberOfQuestion;
+
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+    }
 
     public Long getId() {
         return id;
@@ -49,11 +66,44 @@ public class UserTestScore {
         this.totalAnsweredQuestions = totalAnsweredQuestions;
     }
 
-    public Double getTotalMarks() {
+    public Integer getTotalMarks() {
         return totalMarks;
     }
 
-    public void setTotalMarks(Double totalMarks) {
+    public void setTotalMarks(Integer totalMarks) {
         this.totalMarks = totalMarks;
+    }
+
+    public Integer getTotalCorrectAnswers() {
+        return totalCorrectAnswers;
+    }
+
+    public void setTotalCorrectAnswers(Integer totalCorrectAnswers) {
+        this.totalCorrectAnswers = totalCorrectAnswers;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public Integer getTotalNumberOfQuestion(int totalQuestions) {
+        return totalNumberOfQuestion;
+    }
+
+    public void setTotalNumberOfQuestion(Integer totalNumberOfQuestion) {
+        this.totalNumberOfQuestion = totalNumberOfQuestion;
+    }
+
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Integer getTotalNumberOfQuestion() {
+        return totalNumberOfQuestion;
     }
 }

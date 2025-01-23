@@ -11,8 +11,11 @@ public class LoginRequest {
     @NotBlank(message = "Password cannot be blank")
     private String password;
 
-    public LoginRequest(String email, String password) {
-        System.out.println("Inside Login Request");
+    private String deviceToken;
+
+    public LoginRequest(String email, String password, String deviceToken) {
+//        System.out.println("Inside Login Request");
+        this.deviceToken = deviceToken;
         this.email = email;
         this.password = password;
     }
@@ -34,6 +37,14 @@ public class LoginRequest {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getDeviceToken() {
+        return deviceToken;
+    }
+
+    public void setDeviceToken(String deviceToken) {
+        this.deviceToken = deviceToken;
     }
 
     @Override
