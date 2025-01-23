@@ -27,11 +27,24 @@ public class User {
     @ElementCollection(fetch = FetchType.EAGER)
     private List<Role> roles = new ArrayList<>();
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private UserTestResult userTestResult;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserCurrentlyStudying> currentlyStudyingSubjects;
+
+    private int chaptersCompletedInPercentage;
+
+    private boolean isNotificationEnabled;
+
+    private String deviceToken;
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
 
     public User(Long userId) {
     }
@@ -51,18 +64,14 @@ public class User {
         this.email = registerRequest.getEmail();
         this.password = encodedPassword;
         this.userName = registerRequest.getUserName();
-
+        this.isNotificationEnabled = true;
         if (registerRequest.getRoles() == null || registerRequest.getRoles().isEmpty()) {
-//            log.info("No roles provided, setting default role");
             this.roles.add(Role.USER);
         } else {
             this.roles = registerRequest.getRoles();
         }
     }
     User(){}
-
-
-
 
 
     public String getEmail() {
@@ -128,10 +137,49 @@ public class User {
         this.roles = roles;
     }
 
+    public UserTestResult getUserTestResult() {
+        return userTestResult;
+    }
+
+    public void setUserTestResult(UserTestResult userTestResult) {
+        this.userTestResult = userTestResult;
+    }
+
+    public boolean isNotificationEnabled() {
+        return isNotificationEnabled;
+    }
+
+    public void setNotificationEnabled(boolean notificationEnabled) {
+        isNotificationEnabled = notificationEnabled;
+    }
+
+    public String getDeviceToken() {
+        return deviceToken;
+    }
+
+    public void setDeviceToken(String deviceToken) {
+        this.deviceToken = deviceToken;
+    }
+
+    public List<UserCurrentlyStudying> getCurrentlyStudyingSubjects() {
+        return currentlyStudyingSubjects;
+    }
+
+    public void setCurrentlyStudyingSubjects(List<UserCurrentlyStudying> currentlyStudyingSubjects) {
+        this.currentlyStudyingSubjects = currentlyStudyingSubjects;
+    }
+
+    public int getChaptersCompletedInPercentage() {
+        return chaptersCompletedInPercentage;
+    }
+
+    public void setChaptersCompletedInPercentage(int chaptersCompletedInPercentage) {
+        this.chaptersCompletedInPercentage = chaptersCompletedInPercentage;
+    }
+
     public Long getId() {
         return id;
     }
-
     @Override
     public String toString() {
         return "User{" +
@@ -140,7 +188,10 @@ public class User {
                 ", username='" + userName + '\'' +
                 ", password='" + password + '\'' +
                 ", roles=" + roles + '\'' +
+                ", testResult =" + userTestResult + '\'' +
                 ", profileImageUrl=" + profileImageUrl +
+                ", isNotificationEnabled" + isNotificationEnabled +
+                ", deviceToken" + deviceToken +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';
