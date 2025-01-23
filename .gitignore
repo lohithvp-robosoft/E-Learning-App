@@ -5,7 +5,7 @@ target/
 !**/src/test/**/target/
 
 **/application-secret.properties
-**/e-learning-app-e8336-firebase-adminsdk-fbsvc-5671f9fba8.json
+
 ### STS ###
 .apt_generated
 .classpath

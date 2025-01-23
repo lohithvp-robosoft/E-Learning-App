@@ -81,9 +81,7 @@ public class SecurityConfig {
                                 "/api/v1/user/register",
                                 "/api/v1/admin/register",
                                 "/api/v1/login",
-                                "/api/v1/refresh-Token",
-                                "/api/v1/forgot-password",
-                                "/api/v1/forgot-reset-password"
+                                "/api/v1/refresh-Token"
                         ).permitAll()
                         .anyRequest().authenticated()
         );
