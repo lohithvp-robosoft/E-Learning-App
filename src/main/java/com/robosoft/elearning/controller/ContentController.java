@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 public class ContentController {
 
     @Autowired
@@ -44,10 +44,5 @@ public class ContentController {
         return contentService.goToPage(topicId, pageNumber, pageSize);
     }
 
-
-//    @GetMapping("/{lessonId}/content")
-//    public ResponseEntity<ResponseDTO<LessonContentResponse>> getLessonContent(@PathVariable Long lessonId, @RequestParam int pageNumber, HttpServletRequest request) {
-//        return contentService.getLessonContent(lessonId, pageNumber, request);
-//    }
 
 }

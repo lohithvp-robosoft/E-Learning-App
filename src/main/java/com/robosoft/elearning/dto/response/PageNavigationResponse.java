@@ -18,8 +18,6 @@ public class PageNavigationResponse {
     public void setPageNumber(int pageNumber) {
         this.pageNumber = pageNumber;
     }
-
     private String pageLabel;
-
 
 }

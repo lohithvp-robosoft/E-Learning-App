@@ -76,82 +76,62 @@ public class LessonServiceImpl implements LessonService {
         return responseUtil.successResponse(responseList);
     }
 
-
-    @Override
-    public ResponseEntity<ResponseDTO<ChapterNameResponse>> getChapterWithLesson(long chapterId, int lessonId) {
+    public ResponseEntity<ResponseDTO<ChapterLessonsResponse>> getLessonsDetailsByChapterId(long chapterId) {
         Chapter chapter = chapterRepository.findById(chapterId)
                 .orElseThrow(() -> new RuntimeException("Chapter not found"));
 
-        Lesson selectedLesson = null;
-        if (lessonId > 0 && lessonId <= chapter.getLessons().size()) {
-            selectedLesson = chapter.getLessons().get(lessonId - 1);
-        } else {
-            throw new RuntimeException("Lesson not found");
-        }
+        List<Lesson> lessons = lessonRepository.findByChapterId(chapterId);
 
-        Long lessonIndex = (long) lessonId;
-        List<TopicWithTopicNameResponse> topicResponses = new ArrayList<>();
+        List<LessonWithTopicResponse> lessonResponses = new ArrayList<>();
 
-        for (Topic topic : selectedLesson.getTopics()) {
-            topicResponses.add(new TopicWithTopicNameResponse(
-                    topic.getId(),
-                    topic.getLesson().getChapter().getSubject().getId(),
-                    topic.getHeading(),
-                    topic.getSubHeading()
-            ));
-        }
+        for (int i = 0; i < lessons.size(); i++) {
+            Lesson lesson = lessons.get(i);
+            List<TopicWithTopicNameResponse> topicResponses = new ArrayList<>();
 
-
-        LessonWithTopicResponse lessonResponse = new LessonWithTopicResponse(
-                lessonIndex,
-                selectedLesson.getLessonName(),
-                topicResponses
-        );
-
-        ChapterNameResponse chapterResponse = new ChapterNameResponse(
-                chapter.getChapterName(),
-                List.of(lessonResponse)
-        );
-
-        return responseUtil.successResponse(chapterResponse);
-    }
-
-    @Override
-    public ResponseEntity<ResponseDTO<List<ChapterNameResponse>>> getAllChaptersWithLessons() {
-        List<Chapter> chapters = chapterRepository.findAll();
-        List<ChapterNameResponse> responseList = new ArrayList<>();
-
-        chapters.forEach(chapter -> {
-            List<LessonWithTopicResponse> lessonResponses = new ArrayList<>();
-            int lessonCounter = 1;
-            for (Lesson lesson : chapter.getLessons()) {
-                Long lessonIndex = (long) lessonCounter++;
-                List<TopicWithTopicNameResponse> topicResponses = new ArrayList<>();
-
-                for (Topic topic : lesson.getTopics()) {
-                    topicResponses.add(new TopicWithTopicNameResponse(
-                            topic.getId(),
-                            topic.getLesson().getChapter().getSubject().getId(),
-                            topic.getHeading(),
-                            topic.getSubHeading()
-                    ));
-                }
-
-                lessonResponses.add(new LessonWithTopicResponse(
-                        lessonIndex,
-                        lesson.getLessonName(),
-                        topicResponses
+            for (Topic topic : lesson.getTopics()) {
+                topicResponses.add(new TopicWithTopicNameResponse(
+                        topic.getId(),
+                        lesson.getId(), // Lesson ID
+                        topic.getHeading(),
+                        topic.getSubHeading()
                 ));
             }
 
-            ChapterNameResponse chapterResponse = new ChapterNameResponse(
-                    chapter.getChapterName(),
-                    lessonResponses
-            );
-            responseList.add(chapterResponse);
-        });
+            lessonResponses.add(new LessonWithTopicResponse(
+                    chapterId, // Chapter ID
+                    (long) (i + 1), // Lesson Index (1-based index)
+                    lesson.getLessonName(),
+                    topicResponses
+            ));
+        }
 
-        return responseUtil.successResponse(responseList);
+        ChapterLessonsResponse chapterLessonsResponse = new ChapterLessonsResponse(lessonResponses);
+        return responseUtil.successResponse(chapterLessonsResponse);
+    }
+
+    public ResponseEntity<ResponseDTO<ChapterLessonTopicResponse>> getLessonsWithTopicsByChapterId(long chapterId) {
+        Chapter chapter = chapterRepository.findById(chapterId)
+                .orElseThrow(() -> new RuntimeException("Chapter not found"));
+        List<Lesson> lessons = lessonRepository.findByChapterId(chapterId);
+        List<LessonResponse> lessonResponses = new ArrayList<>();
+        for (Lesson lesson : lessons) {
+            long lessonIndex = lessonRepository.countByChapterIdAndIdLessThan(chapterId, lesson.getId()) + 1;
+            lessonResponses.add(new LessonResponse(
+                    lessonIndex,
+                    lesson.getLessonName(),
+                    lesson.getLessonImg(),
+                    lesson.getLevel(),
+                    lesson.getHeading(),
+                    lesson.getSubheading()
+            ));
+        }
+        ChapterLessonTopicResponse chapterLessonTopicResponse = new ChapterLessonTopicResponse(
+                chapter.getId(),
+                chapter.getChapterName(),
+                lessonResponses
+        );
+        return responseUtil.successResponse(chapterLessonTopicResponse);
     }
 
 }
+

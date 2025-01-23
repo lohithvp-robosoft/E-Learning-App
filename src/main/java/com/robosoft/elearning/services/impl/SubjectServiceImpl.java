@@ -6,7 +6,6 @@ import com.robosoft.elearning.dto.response.SubjectResponseList;
 import com.robosoft.elearning.jwt.JwtUtils;
 import com.robosoft.elearning.modal.Subject;
 import com.robosoft.elearning.modal.User;
-import com.robosoft.elearning.modal.UserCurrentlyStudyingSubject;
 import com.robosoft.elearning.repository.*;
 import com.robosoft.elearning.services.SubjectService;
 import com.robosoft.elearning.util.EntityMapperUtil;
@@ -45,8 +44,6 @@ public class SubjectServiceImpl implements SubjectService {
     @Autowired
     private LessonRepository lessonRepository;
 
-    @Autowired
-    private UserCurrentlyStudyingSubjectRepository userCurrentlyStudyingSubjectRepository;
 
     @Value("${subject.success.fetch-all}")
     private String fetchAllSubjectsSuccessMessage;
@@ -61,32 +58,8 @@ public class SubjectServiceImpl implements SubjectService {
     private String fetchSubjectDetailsMessage;
 
 
-    public ResponseEntity<ResponseDTO<Void>> assignSubjectToUser(HttpServletRequest request, Long subjectId) {
-        Long userId = jwtUtils.getUserIdFromRequestHeader(request);
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        Subject subject = subjectRepository.findById(subjectId).orElseThrow(() -> new RuntimeException("Subject not found"));
 
-        List<UserCurrentlyStudyingSubject> existingSubjects = userCurrentlyStudyingSubjectRepository.findByUserIdAndSubjectId(userId, subjectId);
-        if (existingSubjects.isEmpty()) {
-            UserCurrentlyStudyingSubject userSubject = new UserCurrentlyStudyingSubject();
-            userSubject.setUser(user);
-            userSubject.setSubject(subject);
-            userSubject.setIsStudying(true);
 
-            userCurrentlyStudyingSubjectRepository.save(userSubject);
-            return responseUtil.successResponse(null);
-        } else {
-            return responseUtil.errorResponse("User is already studying this subject.");
-        }
-    }
-
-    public ResponseEntity<ResponseDTO<Void>> assignSubjectsToUser(HttpServletRequest request, List<Long> subjectIds) {
-        Long userId = jwtUtils.getUserIdFromRequestHeader(request);
-        for (Long subjectId : subjectIds) {
-            assignSubjectToUser(request, subjectId);
-        }
-        return responseUtil.successResponse(null);
-    }
 
     public ResponseEntity<ResponseDTO<SubjectResponseList>> getAllSubjects() {
         List<SubjectResponse> subjectResponses = subjectRepository.findAll().stream()
@@ -113,12 +86,9 @@ public class SubjectServiceImpl implements SubjectService {
     public ResponseEntity<ResponseDTO<SubjectResponse>> searchSubjectByName(String name) {
         Subject subject = subjectRepository.findBySubjectName(name)
                 .orElseThrow(() -> new RuntimeException("Subject not found with name: " + name));
-
-
         if (subject == null) {
             return responseUtil.errorResponse("Resource not found", 404);
         }
-
         SubjectResponse subjectResponse = entityMapperUtil.convertSubjectToSubjectResponse(subject);
         return responseUtil.successResponse(subjectResponse, fetchSubjectDetailsMessage);
     }

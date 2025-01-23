@@ -2,6 +2,8 @@ package com.robosoft.elearning.util;
 
 import com.robosoft.elearning.dto.response.*;
 import com.robosoft.elearning.modal.*;
+import com.robosoft.elearning.repository.LessonRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -9,6 +11,9 @@ import java.util.List;
 
 @Component
 public class EntityMapperUtil {
+
+    @Autowired
+    private LessonRepository lessonRepository;
 
     public UserDetailResponse convertUserToUserDetailResponse(User user) {
         if (user == null) {
@@ -21,11 +26,6 @@ public class EntityMapperUtil {
         userDetailResponse.setEmail(user.getEmail());
         userDetailResponse.setUserName(user.getUserName());
         userDetailResponse.setProfileImageUrl(user.getProfileImageUrl());
-
-//        userDetailResponse.setCompleterCompletedInPercentage(0.0);
-//        userDetailResponse.setAverageTestScore(0.0);
-//        userDetailResponse.setHighestTestScore(0.0);
-//        userDetailResponse.setNotificationEnabled(true);
 
         return userDetailResponse;
     }
@@ -47,8 +47,6 @@ public class EntityMapperUtil {
         if (chapter == null) {
             return null;
         }
-
-        // Only set id, chapterName, and chapterImg
         ChapterResponse chapterResponse = new ChapterResponse();
         chapterResponse.setId(chapter.getId());
         chapterResponse.setChapterName(chapter.getChapterName());
@@ -67,14 +65,13 @@ public class EntityMapperUtil {
         chapterResponse.setChapterName(chapter.getChapterName());
         chapterResponse.setChapterImg(chapter.getChapterImg());
 
-        // Map lessons for the chapter
         List<LessonResponse> lessonResponses = new ArrayList<>();
-        int lessonCounter = 1;
-
         if (chapter.getLessons() != null) {
             for (Lesson lesson : chapter.getLessons()) {
                 LessonResponse lessonResponse = new LessonResponse();
-                lessonResponse.setLessonIndex(Long.valueOf("Lesson " + lessonCounter++));
+                Long lessonIndex = (long) lessonRepository.countByChapterIdAndIdLessThan(chapter.getId(), lesson.getId()) + 1;
+
+                lessonResponse.setLessonIndex(lessonIndex);
                 lessonResponse.setLessonName(lesson.getLessonName());
                 lessonResponse.setLessonImg(lesson.getLessonImg());
                 lessonResponse.setLevel(lesson.getLevel());
@@ -96,12 +93,6 @@ public class EntityMapperUtil {
         lessonResponse.setId(lesson.getId());
         lessonResponse.setLessonName(lesson.getLessonName());
         lessonResponse.setLessonImg((lesson.getLessonImg()));
-
-//        List<TopicResponse> topicResponses = lesson.getTopics().stream()
-//                .map(this::convertTopicToTopicResponse)
-//                .collect(Collectors.toList());
-//
-//        lessonResponse.setTopics(topicResponses);
 
         return lessonResponse;
     }
@@ -139,36 +130,6 @@ public class EntityMapperUtil {
 
         return contentResponseList;
     }
-
-
-    public CompletedChapterResponse convertCompletedChapterToResponse(CompletedChapter completedChapter) {
-        CompletedChapterResponse response = new CompletedChapterResponse();
-        response.setChapterId(completedChapter.getChapter().getId());
-        response.setChapterName(completedChapter.getChapter().getChapterName());
-        response.setCompleted(completedChapter.isCompleted());
-        response.setCompletionDate(completedChapter.getCompletionDate());
-        return response;
-    }
-
-
-//    public UpdateCompletedChapterResponse convertCompletedChapterToResponse(CompletedChapter completedChapter) {
-//        if (completedChapter == null) {
-//            return null;
-//        }
-//
-//        UpdateCompletedChapterResponse response = new UpdateCompletedChapterResponse();
-//        response.setId(completedChapter.getId());
-//        response.setChapterId(completedChapter.getChapter().getId());
-//        response.setChapterName(completedChapter.getChapter().getChapterName());
-//        response.setCompleted(completedChapter.isCompleted());
-//        response.setCompletionDate(completedChapter.getCompletionDate());
-//
-//        return response;
-//    }
-
-
-
-
 
 
 

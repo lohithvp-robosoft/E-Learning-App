@@ -6,6 +6,7 @@ import java.util.List;
 
 @Component
 public class ChapterNameResponse {
+    private Long id;
     private String chapterName;
     private List<LessonWithTopicResponse> lessons;
 
@@ -15,6 +16,12 @@ public class ChapterNameResponse {
     }
 
     public ChapterNameResponse() {
+
+    }
+
+    public ChapterNameResponse(Long id, String chapterName, List<LessonResponse> lessonResponses) {
+        this.id=id;
+        this.chapterName=chapterName;
 
     }
 

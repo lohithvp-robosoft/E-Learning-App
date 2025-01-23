@@ -3,22 +3,24 @@ package com.robosoft.elearning.dto.response;
 import java.util.List;
 
 public class LessonWithTopicResponse {
+    private Long chapterId;
     private Long lessonIndex;
     private String lessonName;
     private List<TopicWithTopicNameResponse> topics;
 
-    public LessonWithTopicResponse(Long lessonIndex, String lessonName, List<TopicWithTopicNameResponse> topics) {
+    public LessonWithTopicResponse(Long chapterId, Long lessonIndex, String lessonName, List<TopicWithTopicNameResponse> topics) {
+        this.chapterId = chapterId;
         this.lessonIndex = lessonIndex;
         this.lessonName = lessonName;
         this.topics = topics;
     }
 
-    public void setTopics(List<TopicWithTopicNameResponse> topics) {
-        this.topics = topics;
+    public Long getChapterId() {
+        return chapterId;
     }
 
-    public List<TopicWithTopicNameResponse> getTopics() {
-        return topics;
+    public void setChapterId(Long chapterId) {
+        this.chapterId = chapterId;
     }
 
     public Long getLessonIndex() {
@@ -37,5 +39,11 @@ public class LessonWithTopicResponse {
         this.lessonName = lessonName;
     }
 
+    public List<TopicWithTopicNameResponse> getTopics() {
+        return topics;
+    }
 
+    public void setTopics(List<TopicWithTopicNameResponse> topics) {
+        this.topics = topics;
+    }
 }

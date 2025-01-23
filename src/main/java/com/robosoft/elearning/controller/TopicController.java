@@ -14,21 +14,19 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 public class TopicController {
 
 
     @Autowired
     private TopicService topicService;
 
-    // Endpoint to get all topics
-    @GetMapping("/v1/topics")
+    @GetMapping("/topics")
     public ResponseEntity<ResponseDTO<List<TopicResponse>>> getAllTopics() {
         return topicService.getAllTopics();
     }
 
-    //   Endpoint to get topic by ID
-    @GetMapping("v1/topics/{id}")
+    @GetMapping("/topics/{id}")
     public ResponseEntity<ResponseDTO<TopicResponse>> getTopicById(@PathVariable long id) {
         return topicService.getTopicById(id);
     }

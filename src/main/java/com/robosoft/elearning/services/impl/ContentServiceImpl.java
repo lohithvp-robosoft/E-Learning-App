@@ -10,7 +10,6 @@ import com.robosoft.elearning.modal.Topic;
 import com.robosoft.elearning.repository.ContentRepository;
 import com.robosoft.elearning.repository.LessonRepository;
 import com.robosoft.elearning.repository.TopicRepository;
-import com.robosoft.elearning.repository.UserLikedRepository;
 import com.robosoft.elearning.services.ContentService;
 import com.robosoft.elearning.util.ResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +36,6 @@ public class ContentServiceImpl implements ContentService {
     @Autowired
     private TopicRepository topicRepository;
 
-    @Autowired
-    private UserLikedRepository userLikedRepository;
 
     @Autowired
     private JwtUtils jwtUtils;
@@ -49,20 +46,15 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public ResponseEntity<List<ContentResponse>> getPaginatedContent(Long lessonId, int pageNumber, int pageSize) {
-        // Validate pageNumber and pageSize
         if (pageNumber < 1 || pageSize < 1) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
-        // Adjust page number for zero-based indexing
         Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
         Page<Content> contentPage = contentRepository.findByLessonId(lessonId, pageable);
 
         if (contentPage.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
-        // Map Content entities to ContentResponse
         List<ContentResponse> responseDTOList = contentPage.getContent().stream()
                 .map(content -> new ContentResponse(
                         content.getId(),
@@ -82,41 +74,30 @@ public class ContentServiceImpl implements ContentService {
         if (paginatedResponse.getStatusCode() == HttpStatus.NOT_FOUND) {
             return new ResponseEntity<>("Invalid page number.", HttpStatus.BAD_REQUEST);
         }
-
-        // Construct the redirect URL
         String redirectUrl = "/lesson/" + lessonId + "/page/" + pageNumber;
         return new ResponseEntity<>(redirectUrl, HttpStatus.OK);
     }
 
 
     public ResponseEntity<ResponseDTO<PaginatedContentResponseDTO>> goToPage(Long topicId, int pageNumber, int pageSize) {
-        // Validate page number and size
         if (pageNumber < 1 || pageSize < 1) {
             return new ResponseEntity<>(
                     new ResponseDTO<>(400, HttpStatus.BAD_REQUEST.value(), "Invalid page number or size", null),
                     HttpStatus.BAD_REQUEST
             );
         }
-
-        // Create pageable object
         Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
         Page<Content> contentPage = contentRepository.findByLessonId(topicId, pageable);
-
-        // Check if content page is empty
         if (contentPage.isEmpty()) {
             throw new NotFoundException("No content found for the given topic ID.");
         }
-
-        // Fetch topic details
         Optional<Topic> topic = topicRepository.findById(topicId);
         if (!topic.isPresent()) {
             throw new NotFoundException("Topic not found for the given topic ID.");
         }
 
-        String heading = topic.get().getHeading(); // Assuming Topic entity has a `heading` field
+        String heading = topic.get().getHeading();
         Long lessonId = topic.get().getLessonId();
-
-        // Map content to DTOs
         List<ContentResponse> contentDTOs = contentPage.getContent()
                 .stream()
                 .map(content -> new ContentResponse(
@@ -136,8 +117,6 @@ public class ContentServiceImpl implements ContentService {
                 lessonId,
                 heading
         );
-
-        // Wrap response DTO in ResponseDTO and return
         ResponseDTO<PaginatedContentResponseDTO> response = new ResponseDTO<>(
                 200,
                 HttpStatus.OK.value(),
@@ -148,50 +127,3 @@ public class ContentServiceImpl implements ContentService {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
-
-//    @Override
-//    public ResponseEntity<ResponseDTO<LessonContentResponse>> getLessonContent(Long lessonId, int pageNumber, HttpServletRequest request) {
-//        Long userId = jwtUtils.getUserIdFromRequestHeader(request);
-//        if (userId == null) {
-//            return responseUtil.errorResponse("User ID is missing in the request");
-//        }
-//
-//        Lesson lesson = lessonRepository.findById(lessonId)
-//                .orElseThrow(() -> new NotFoundException("Lesson not found"));
-//
-//        List<Content> contents = contentRepository.findByLessonIdOrderByPageNumber(lessonId);
-//
-//        if (contents.isEmpty()) {
-//            return responseUtil.errorResponse("No content found for this lesson");
-//        }
-//
-//        Content currentContent = contents.stream()
-//                .filter(content -> content.getPageNumber() == pageNumber)
-//                .findFirst()
-//                .orElseThrow(() -> new NotFoundException("Page not found"));
-//
-//        boolean isLiked = userLikedRepository.existsByUserIdAndLessonId(userId, lessonId);
-//
-//        LessonContentResponse response = new LessonContentResponse();
-//        response.setLessonName(lesson.getLessonName());
-//        response.setContentType(currentContent.getContentType());
-//        response.setContentUrl(currentContent.getInfo());
-//        response.setAudioUrl(currentContent.getAudioUrl());
-//        response.setCurrentPage(currentContent.getPageNumber());
-//        response.setTotalPages(contents.size());
-//        response.setLiked(isLiked);
-//
-//        List<PageNavigationResponse> pages = contents.stream()
-//                .map(content -> {
-//                    PageNavigationResponse page = new PageNavigationResponse();
-//                    page.setPageNumber(content.getPageNumber());
-//                    page.setPageLabel("Lesson " + content.getPageNumber() + ": " + lesson.getLessonName());
-//                    return page;
-//                })
-//                .collect(Collectors.toList());
-//
-//        response.setPages(pages);
-//
-//        return responseUtil.successResponse(response);
-//    }
-

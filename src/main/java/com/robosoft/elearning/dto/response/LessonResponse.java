@@ -1,19 +1,20 @@
 package com.robosoft.elearning.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.robosoft.elearning.modal.Level;
 
 import java.util.List;
 
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class LessonResponse {
 
     private Long id;
-
     private Long lessonIndex;
     private String lessonName;
     private Level level;
     private String heading;
     private String subheading;
-
     private String lessonImg;
 
     public LessonResponse(Long lessonIndex, String lessonName, String lessonImg, Level level, String heading, String subheading) {
@@ -25,11 +26,9 @@ public class LessonResponse {
         this.subheading = subheading;
     }
 
-    public LessonResponse() {
+    public LessonResponse() {}
 
-    }
-
-
+    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -58,16 +57,16 @@ public class LessonResponse {
         return level;
     }
 
+    public void setLevel(Level level) {
+        this.level = level;
+    }
+
     public String getLessonImg() {
         return lessonImg;
     }
 
     public void setLessonImg(String lessonImg) {
         this.lessonImg = lessonImg;
-    }
-
-    public void setLevel(Level level) {
-        this.level = level;
     }
 
     public String getHeading() {
@@ -85,40 +84,6 @@ public class LessonResponse {
     public void setSubheading(String subheading) {
         this.subheading = subheading;
     }
-//    private Long id;
-//    private String lessonName;
-//    private List<String> lessonImg;
-//    private List<TopicResponse> topics;
-//
-//    public Long getId() {
-//        return id;
-//    }
-//
-//    public void setId(Long id) {
-//        this.id = id;
-//    }
-//
-//    public String getLessonName() {
-//        return lessonName;
-//    }
-//
-//    public void setLessonName(String lessonName) {
-//        this.lessonName = lessonName;
-//    }
-//
-//    public List<String> getLessonImg() {
-//        return lessonImg;
-//    }
-//
-//    public void setLessonImg(List<String> lessonImg) {
-//        this.lessonImg = lessonImg;
-//    }
-//
-//    public List<TopicResponse> getTopics() {
-//        return topics;
-//    }
-//
-//    public void setTopics(List<TopicResponse> topics) {
-//        this.topics = topics;
-//    }
+
+
 }

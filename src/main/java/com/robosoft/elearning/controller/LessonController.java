@@ -1,8 +1,6 @@
 package com.robosoft.elearning.controller;
 
-import com.robosoft.elearning.dto.response.ChapterNameResponse;
-import com.robosoft.elearning.dto.response.LessonResponse;
-import com.robosoft.elearning.dto.response.ResponseDTO;
+import com.robosoft.elearning.dto.response.*;
 import com.robosoft.elearning.services.LessonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +13,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 public class LessonController {
     @Autowired
     private LessonService lessonService;
@@ -30,27 +28,21 @@ public class LessonController {
         return lessonService.getLessonDetailsById(lessonId);
     }
 
-    @GetMapping("/v1/chapters/{chapterId}/lessons")
+    @GetMapping("/chapters/{chapterId}/lessons")
     public ResponseEntity<ResponseDTO<List<LessonResponse>>> getLessonsByChapterId(@PathVariable Long chapterId) {
         return lessonService.getLessonsByChapterId(chapterId);
     }
 
-    @GetMapping("/{chapterId}/lesson/{lessonId}")
-    public ResponseEntity<ResponseDTO<ChapterNameResponse>> getChapterWithLesson(
-            @PathVariable long chapterId,
-            @PathVariable int lessonId) {
-        return lessonService.getChapterWithLesson(chapterId, lessonId);
+    @GetMapping("/chapter/{chapterId}/lessons")
+    public ResponseEntity<ResponseDTO<ChapterLessonsResponse>> getLessonsDetailsByChapterId(
+            @PathVariable long chapterId) {
+        return lessonService.getLessonsDetailsByChapterId(chapterId);
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<ResponseDTO<List<ChapterNameResponse>>> getAllChaptersWithLessons() {
-        return lessonService.getAllChaptersWithLessons();
+    @GetMapping("/chapter/{chapterId}/lessons/topics")
+    public ResponseEntity<ResponseDTO<ChapterLessonTopicResponse>> getLessonsWithTopicsByChapterId(@PathVariable long chapterId) {
+        return lessonService.getLessonsWithTopicsByChapterId(chapterId);
     }
-
-
-
-
-
 
 }
 

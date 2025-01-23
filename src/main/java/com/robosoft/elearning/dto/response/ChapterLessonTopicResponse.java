@@ -2,37 +2,24 @@ package com.robosoft.elearning.dto.response;
 
 import java.util.List;
 
-public class ChapterResponse {
-
+public class ChapterLessonTopicResponse {
     private Long id;
     private String chapterName;
-    private String chapterImg;
+    private List<LessonResponse> lessons; // List of LessonResponse objects
 
-
-    public ChapterResponse(Long id, String chapterName, String chapterImg) {
+    public ChapterLessonTopicResponse(Long id, String chapterName, List<LessonResponse> lessons) {
         this.id = id;
         this.chapterName = chapterName;
-        this.chapterImg = chapterImg;
+        this.lessons = lessons;
     }
 
-    public ChapterResponse() {
-
-    }
-
+    // Getters and Setters
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getChapterImg() {
-        return chapterImg;
-    }
-
-    public void setChapterImg(String chapterImg) {
-        this.chapterImg = chapterImg;
     }
 
     public String getChapterName() {
@@ -42,4 +29,14 @@ public class ChapterResponse {
     public void setChapterName(String chapterName) {
         this.chapterName = chapterName;
     }
+
+    public List<LessonResponse> getLessons() {
+        return lessons;
+    }
+
+    public void setLessons(List<LessonResponse> lessons) {
+        this.lessons = lessons;
+    }
 }
+
+
