@@ -192,6 +192,22 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
         return responseUtil.successResponse(userCurrentlyStudyingResponse);
     }
 
+    @Override
+    public ResponseEntity<ResponseDTO<List<UserCurrentlyStudyingResponse>>> searchBySubjectName(String subjectName, HttpServletRequest request) {
+        User user = jwtUtils.getUserDataFromRequest(request);
+
+        List<UserCurrentlyStudying> studyingSubjects = userCurrentlyStudyingRepository
+                .findAllByUserIdAndSubjectSubjectNameContainingIgnoreCase(user.getId(), subjectName);
+
+        if (studyingSubjects.isEmpty()) {
+            throw new NotFoundException("No records found for the subject name: " + subjectName);
+        }
+
+        List<UserCurrentlyStudyingResponse> responses = entityMapperUtil.convertToUserCurrentlyStudyingResponseList(studyingSubjects);
+
+        return responseUtil.successResponse(responses);
+    }
+
     private int calculateSubjectCompletionPercentage(Long chapterId, Long userId) {
         Chapter chapter = chapterRepository.findById(chapterId)
                 .orElseThrow(() -> new NotFoundException("Chapter not found"));

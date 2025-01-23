@@ -43,4 +43,10 @@ public class UserStudyProgressController {
     ) {
         return userStudyProgressServices.updateCurrentProgress(topicId, subjectId, request);
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<ResponseDTO<List<UserCurrentlyStudyingResponse>>> searchBySubjectName(
+            @RequestParam String subjectName, HttpServletRequest request) {
+        return userStudyProgressServices.searchBySubjectName(subjectName, request);
+    }
 }

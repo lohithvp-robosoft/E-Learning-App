@@ -19,4 +19,6 @@ public interface UserStudyProgressServices {
 
     ResponseEntity<ResponseDTO<UserCurrentlyStudyingResponse>> getUserCurrentlyStudying(Long subjectId, HttpServletRequest request);
 
+    ResponseEntity<ResponseDTO<List<UserCurrentlyStudyingResponse>>> searchBySubjectName(String subjectName, HttpServletRequest request);
+
 }

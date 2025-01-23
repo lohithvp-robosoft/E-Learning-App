@@ -1,21 +1,23 @@
 package com.robosoft.elearning.dto.response;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
-
 public class UserCurrentlyStudyingResponse {
     private Long id;
     private String subjectName;
     private String chapterImageUrl;
     private Integer completedChapterInPercentage;
     private Integer completedLessonInPercentage;
+    private long currentChapterId;
+    private long currentLessonId;
     private String currentChapterTitle;
     private String currentLessonTitle;
     private String currentTopicTitle;
 
-    public UserCurrentlyStudyingResponse(Long id, String subjectName, Integer completedChapterInPercentage, String currentChapterTitle, String currentLessonTitle, String currentTopicTitle, String chapterImageUrl, Integer completedLessonInPercentage) {
+    public UserCurrentlyStudyingResponse(Long id, String subjectName, Integer completedChapterInPercentage, String currentChapterTitle, long currentChapterId, long currentLessonId, String currentLessonTitle, String currentTopicTitle, String chapterImageUrl, Integer completedLessonInPercentage) {
         this.id = id;
         this.subjectName = subjectName;
         this.completedChapterInPercentage = completedChapterInPercentage;
+        this.currentChapterId = currentChapterId;
+        this.currentLessonId = currentLessonId;
         this.currentChapterTitle = currentChapterTitle;
         this.currentLessonTitle = currentLessonTitle;
         this.currentTopicTitle = currentTopicTitle;
@@ -85,5 +87,21 @@ public class UserCurrentlyStudyingResponse {
 
     public void setCompletedLessonInPercentage(Integer completedLessonInPercentage) {
         this.completedLessonInPercentage = completedLessonInPercentage;
+    }
+
+    public long getCurrentChapterId() {
+        return currentChapterId;
+    }
+
+    public void setCurrentChapterId(long currentChapterId) {
+        this.currentChapterId = currentChapterId;
+    }
+
+    public long getCurrentLessonId() {
+        return currentLessonId;
+    }
+
+    public void setCurrentLessonId(long currentLessonId) {
+        this.currentLessonId = currentLessonId;
     }
 }

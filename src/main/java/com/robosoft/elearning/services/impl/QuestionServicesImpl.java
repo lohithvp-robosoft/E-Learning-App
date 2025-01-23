@@ -317,7 +317,7 @@ public class QuestionServicesImpl implements QuestionServices {
 
         int lessonIndex = lessonRepository.countByChapterIdAndIdLessThan(chapterId,lessonId) + 1;
         int chapterIndex = chapterRepository.countBySubjectIdAndIdLessThan(subjectId,chapterId) + 1;
-        QuestionsListResponse questionsListResponse = new QuestionsListResponse(chapterIndex,lessonIndex,testName,test.getQuestions().size(),questionResponse);
+        QuestionsListResponse questionsListResponse = new QuestionsListResponse(test.getId(), chapterIndex,lessonIndex,testName,test.getQuestions().size(),questionResponse);
         return responseUtil.successResponse(questionsListResponse);
     }
 

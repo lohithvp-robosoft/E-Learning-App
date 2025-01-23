@@ -140,12 +140,15 @@ public class EntityMapperUtil {
                         currentlyStudying.getSubject() != null ? currentlyStudying.getSubject().getSubjectName() : null,
                         currentlyStudying.getCompletedChapterInPercentage(),
                         currentlyStudying.getCurrentChapter() != null ? currentlyStudying.getCurrentChapter().getChapterName() : null,
+                        currentlyStudying.getCurrentChapter() != null ? currentlyStudying.getCurrentChapter().getId() : null,
+                        currentlyStudying.getCurrentLesson() != null ? currentlyStudying.getCurrentLesson().getId() : null,
                         currentlyStudying.getCurrentLesson() != null ? currentlyStudying.getCurrentLesson().getLessonName() : null,
                         currentlyStudying.getCurrentTopic() != null ? currentlyStudying.getCurrentTopic().getHeading() : null,
-                        currentlyStudying.getCurrentChapter().getChapterImg(),
+                        currentlyStudying.getCurrentChapter() != null ? currentlyStudying.getCurrentChapter().getChapterImg() : null,
                         currentlyStudying.getCompletedLessonInPercentage()
                 ))
                 .collect(Collectors.toList());
+
     }
 
     public UserCurrentlyStudyingResponse convertToUserCurrentlyStudyingResponse(UserCurrentlyStudying currentlyStudying) {
@@ -154,6 +157,8 @@ public class EntityMapperUtil {
                 currentlyStudying.getSubject() != null ? currentlyStudying.getSubject().getSubjectName() : null,
                 currentlyStudying.getCompletedChapterInPercentage(),
                 currentlyStudying.getCurrentChapter() != null ? currentlyStudying.getCurrentChapter().getChapterName() : null,
+                currentlyStudying.getCurrentChapter() != null ? currentlyStudying.getCurrentChapter().getId() : null,
+                currentlyStudying.getCurrentLesson() != null ? currentlyStudying.getCurrentLesson().getId() : null,
                 currentlyStudying.getCurrentLesson() != null ? currentlyStudying.getCurrentLesson().getLessonName() : null,
                 currentlyStudying.getCurrentTopic() != null ? currentlyStudying.getCurrentTopic().getHeading() : null,
                 currentlyStudying.getCurrentChapter() != null ? currentlyStudying.getCurrentChapter().getChapterImg() : null,
