@@ -16,13 +16,14 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = false)
     private String userName;
 
     private String profileImageUrl;
 
     @Column(nullable = false)
     private String password;
+
     @Enumerated(EnumType.STRING)
     @ElementCollection(fetch = FetchType.EAGER)
     private List<Role> roles = new ArrayList<>();
