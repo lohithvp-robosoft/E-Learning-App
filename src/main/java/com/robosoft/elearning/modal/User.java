@@ -35,6 +35,9 @@ public class User {
 
     private int chaptersCompletedInPercentage;
 
+    public User(Long userId) {
+    }
+
     private boolean isNotificationEnabled;
 
     private String deviceToken;

@@ -1,6 +1,7 @@
 package com.robosoft.elearning.modal;
 
 import jakarta.persistence.*;
+import com.robosoft.elearning.dto.response.ContentResponse;
 
 
 import java.util.List;
@@ -10,6 +11,8 @@ public class Topic {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "lesson_id", insertable = false, updatable = false)
+    private Long lessonId;
     private String heading;
     private String subHeading;
 
@@ -79,5 +82,13 @@ public class Topic {
 
     public void setIcon(String icon) {
         this.icon = icon;
+    }
+
+    public Long getLessonId() {
+        return lessonId;
+    }
+
+    public void setLessonId(Long lessonId) {
+        this.lessonId = lessonId;
     }
 }

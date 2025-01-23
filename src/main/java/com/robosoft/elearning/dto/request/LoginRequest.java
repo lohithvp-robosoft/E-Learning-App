@@ -13,6 +13,7 @@ public class LoginRequest {
 
     private String deviceToken;
 
+
     public LoginRequest(String email, String password, String deviceToken) {
 //        System.out.println("Inside Login Request");
         this.deviceToken = deviceToken;

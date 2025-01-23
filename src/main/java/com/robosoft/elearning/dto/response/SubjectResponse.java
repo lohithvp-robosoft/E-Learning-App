@@ -1,22 +1,12 @@
-package com.robosoft.elearning.modal;
+package com.robosoft.elearning.dto.response;
 
-import jakarta.persistence.*;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
+import java.security.PrivateKey;
 import java.util.List;
 
-@Entity
-public class Subject {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class SubjectResponse {
     private Long id;
-
     private String subjectName;
     private String subjectIcon;
-
-    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private List<Chapter> chapters;
 
     public Long getId() {
         return id;
@@ -41,13 +31,4 @@ public class Subject {
     public void setSubjectIcon(String subjectIcon) {
         this.subjectIcon = subjectIcon;
     }
-
-    public List<Chapter> getChapters() {
-        return chapters;
-    }
-
-    public void setChapters(List<Chapter> chapters) {
-        this.chapters = chapters;
-    }
 }
-
