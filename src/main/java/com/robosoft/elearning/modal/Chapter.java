@@ -1,7 +1,9 @@
 package com.robosoft.elearning.modal;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-
 
 import java.util.List;
 
@@ -13,11 +15,15 @@ public class Chapter {
 
     private String chapterName;
     private String chapterImg;
+    private String title;
+
 
     @ManyToOne
+    @JsonBackReference
     private Subject subject;
 
     @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Lesson> lessons;
 
     public Long getId() {
@@ -59,5 +65,14 @@ public class Chapter {
     public void setLessons(List<Lesson> lessons) {
         this.lessons = lessons;
     }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
 }
 

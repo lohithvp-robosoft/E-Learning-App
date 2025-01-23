@@ -15,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api")
 public class UserController {
 
     @Autowired
@@ -30,63 +30,53 @@ public class UserController {
     @Autowired
     private UserServices userServices;
 
-    @PostMapping("/user/send-reg-otp")
+    @PostMapping("/v1/user/send-reg-otp")
     public ResponseEntity<ResponseDTO<Void>> sendOtpForRegistrationForUser(@Valid @RequestBody UserRegisterRequest userRegisterRequest) {
         return otpServices.sendOtp(userRegisterRequest.getEmail(), mailRegSubject, mailRegContent);
     }
 
-    @PostMapping("/admin/send-reg-otp")
+    @PostMapping("/v1/admin/send-reg-otp")
     public ResponseEntity<ResponseDTO<Void>> sendOtpForRegistrationForAdmin(@Valid @RequestBody AdminRegistrationRequest adminRegistrationRequest) {
         return otpServices.sendOtp(adminRegistrationRequest.getEmail(), mailRegSubject, mailRegContent);
     }
 
-    @PostMapping("/user/register")
+    @PostMapping("/v1/user/register")
     public ResponseEntity<ResponseDTO<RegisterResponse>> registerUser(@Valid @RequestBody UserRegisterRequest userRegister, @RequestParam String otp) {
         return userServices.register(userRegister, otp);
     }
 
-    @PostMapping("/admin/register")
+    @PostMapping("/v1/admin/register")
     public ResponseEntity<ResponseDTO<RegisterResponse>> registerAdmin(@Valid @RequestBody AdminRegistrationRequest adminRegister, @RequestParam String otp) {
         return userServices.register(adminRegister, otp);
     }
 
-    @PostMapping("/login")
+    @PostMapping("/v1/login")
     public ResponseEntity<ResponseDTO<LoginResponse>> loginUser(@Valid @RequestBody LoginRequest loginRequest) {
         return userServices.login(loginRequest);
     }
 
-    @PostMapping("/refresh-Token")
+    @PostMapping("/v1/refresh-Token")
     public ResponseEntity<ResponseDTO<RefreshTokenResponse>> generateAccessTokenFromRefreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
         return userServices.generateAccessTokenFromRefreshToken(refreshTokenRequest);
     }
 
-    @PostMapping("/logout")
+    @PostMapping("/v1/logout")
     public ResponseEntity<ResponseDTO<Void>> logout(HttpServletRequest request, @RequestBody RefreshTokenRequest refreshTokenRequest) {
         return userServices.logout(request, refreshTokenRequest);
     }
 
-    @PostMapping("/profile-update")
+    @PostMapping("/v1/profile-update")
     public ResponseEntity<ResponseDTO<UserDetailResponse>> update(@ModelAttribute UpdateUserRequest userRequest, @RequestParam(required = false) MultipartFile file, HttpServletRequest request) throws IOException {
         return userServices.update(userRequest, file, request);
     }
 
-    @PostMapping("/forgot-password")
-    public ResponseEntity<ResponseDTO<Void>> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest) {
-        return userServices.forgotPassword(forgotPasswordRequest);
+    @PostMapping("/v1/forgot-password")
+    public ResponseEntity<ResponseDTO<Void>> forgotPassword(HttpServletRequest request) {
+        return userServices.forgotPassword(request);
     }
 
-    @GetMapping("/reset-password")
-    public ResponseEntity<ResponseDTO<Void>> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest, HttpServletRequest request) {
-        return userServices.resetPassword(resetPasswordRequest,request);
-    }
-
-    @GetMapping("/forgot-reset-password")
-    public ResponseEntity<ResponseDTO<Void>> forgotResetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest, @RequestParam String otp) {
-        return userServices.forgotResetPassword(resetPasswordRequest,otp);
-    }
-
-    @GetMapping("/profile")
-    public ResponseEntity<ResponseDTO<UserDetailResponse>> profile(HttpServletRequest request){
-        return userServices.getProfile(request);
+    @GetMapping("/v1/reset-password")
+    public ResponseEntity<ResponseDTO<Void>> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest, @RequestParam String otp, HttpServletRequest request) {
+        return userServices.resetPassword(resetPasswordRequest,otp,request);
     }
 }

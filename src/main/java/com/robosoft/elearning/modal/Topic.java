@@ -1,5 +1,6 @@
 package com.robosoft.elearning.modal;
 
+import com.robosoft.elearning.dto.response.ContentResponse;
 import jakarta.persistence.*;
 
 
@@ -9,21 +10,38 @@ public class Topic {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "lesson_id", insertable = false, updatable = false)
+    private Long lessonId;
 
     private String heading;
     private String subHeading;
 
     @Enumerated(EnumType.STRING)
     private Level level;
-
-    @ManyToOne
-    @JoinColumn(name = "lesson_id")
-    private Lesson lesson;
-
     private String icon;
 
+    @ManyToOne
+   @JoinColumn(name = "lesson_id")
+    private Lesson lesson;
+
     @OneToMany(mappedBy = "topic", cascade = CascadeType.ALL)
-    private List<Content> contents;
+    private List<Content> content;
+
+    public Long getLessonId() {
+        return lessonId;
+    }
+
+    public void setLessonId(Long lessonId) {
+        this.lessonId = lessonId;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
 
     public Long getId() {
         return id;
@@ -65,19 +83,11 @@ public class Topic {
         this.lesson = lesson;
     }
 
-    public List<Content> getContents() {
-        return contents;
+    public List<Content> getContent() {
+        return content;
     }
 
-    public void setContents(List<Content> contents) {
-        this.contents = contents;
-    }
-
-    public String getIcon() {
-        return icon;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon;
+    public void setContent(List<Content> content) {
+        this.content = this.content;
     }
 }

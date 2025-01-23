@@ -17,8 +17,9 @@ public class Question {
    @ElementCollection
     private List<String> options;
 
-    private int correctOption;
+    private String correctOption;
     private String questionImageUrl;
+
 
     @ManyToOne
     private Test test;
@@ -79,11 +80,11 @@ public class Question {
         this.options = options;
     }
 
-    public int getCorrectOption() {
+    public String getCorrectOption() {
         return correctOption;
     }
 
-    public void setCorrectOption(int correctOption) {
+    public void setCorrectOption(String correctOption) {
         this.correctOption = correctOption;
     }
 

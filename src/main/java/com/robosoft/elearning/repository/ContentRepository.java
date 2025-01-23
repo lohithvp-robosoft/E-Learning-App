@@ -1,4 +1,11 @@
 package com.robosoft.elearning.repository;
 
-public class ContentRepository {
+import com.robosoft.elearning.modal.Content;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface ContentRepository extends JpaRepository<Content, Long> {
+Page<Content> findByLessonId(Long lessonId, Pageable pageable);
+
 }
