@@ -28,7 +28,6 @@ import java.util.Optional;
 @Service
 public class UserServicesImpl implements UserServices {
 
-    private static final Log log = LogFactory.getLog(UserServicesImpl.class);
     @Autowired
     private OtpServices otpServices;
 
@@ -114,11 +113,14 @@ public class UserServicesImpl implements UserServices {
         String accessToken = jwtUtils.generateAccessToken(user);
         String refreshToken = jwtUtils.generateRefreshToken(user);
 
+        user.setDeviceToken(loginRequest.getDeviceToken());
+        userRepository.save(user);
         return responseUtil.successResponse(new LoginResponse(user, accessToken, refreshToken));
     }
 
     @Override
-    public ResponseEntity<ResponseDTO<RefreshTokenResponse>> generateAccessTokenFromRefreshToken(RefreshTokenRequest refreshTokenRequest) {
+    public ResponseEntity<ResponseDTO<RefreshTokenResponse>>
+    generateAccessTokenFromRefreshToken(RefreshTokenRequest refreshTokenRequest) {
 
         if (jwtUtils.isTokenBlacklisted(refreshTokenRequest.getRefreshToken())) {
             throw new JwtException(tokenBlacklistMessage);
@@ -134,6 +136,9 @@ public class UserServicesImpl implements UserServices {
 
     @Override
     public ResponseEntity<ResponseDTO<Void>> logout(HttpServletRequest request, RefreshTokenRequest refreshTokenRequest) {
+        User user = jwtUtils.getUserDataFromRequest(request);
+        user.setDeviceToken(null);
+        userRepository.save(user);
         jwtUtils.blackListAccessToken(jwtUtils.getJwtFromHeader(request));
         jwtUtils.blackListRefreshToken(refreshTokenRequest.getRefreshToken());
         return responseUtil.successResponse(null, logoutMessage);
@@ -172,25 +177,40 @@ public class UserServicesImpl implements UserServices {
         }
     }
 
-    private String handleFileUpload(MultipartFile file, long id) throws IOException {
+    private String handleFileUpload(MultipartFile file, long userId) throws IOException {
         String folder = "user-profile-images";
         try {
-            return fileStorageUtil.storeFile(file, folder, id);
+            return fileStorageUtil.storeFile(file, folder, userId);
         } catch (Exception e) {
             throw new IOException("Error uploading file", e);
         }
     }
 
+
     @Override
-    public ResponseEntity<ResponseDTO<Void>> forgotPassword(HttpServletRequest request) {
-        User user = jwtUtils.getUserDataFromRequest(request);
+    public ResponseEntity<ResponseDTO<Void>> forgotPassword(ForgotPasswordRequest request) {
+        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(
+                () -> new NotFoundException("Email Not Registered")
+        );
         otpServices.sendOtp(user.getEmail(), changePasswordMailSubject, changePasswordMailContent);
         return responseUtil.successResponse(null, otpSendSuccessMessage);
     }
 
     @Override
-    public ResponseEntity<ResponseDTO<Void>> resetPassword(ResetPasswordRequest resetPasswordRequest, String otp, HttpServletRequest request) {
+    public ResponseEntity<ResponseDTO<Void>> resetPassword(ResetPasswordRequest resetPasswordRequest, HttpServletRequest request) {
         User user = jwtUtils.getUserDataFromRequest(request);
+
+        String encodedPassword = passwordEncoder.encode(resetPasswordRequest.getNewPassword());
+        user.setPassword(encodedPassword);
+        userRepository.save(user);
+        return responseUtil.successResponse(null, passwordUpdatedMessage);
+    }
+
+
+    @Override
+    public ResponseEntity<ResponseDTO<Void>> forgotResetPassword(ResetPasswordRequest resetPasswordRequest, String otp) {
+        User user = userRepository.findByEmail(resetPasswordRequest.getEmail()).orElseThrow(()->
+                new NotFoundException("User Not Registered"));
         boolean isValidOtp = otpServices.validateOtp(user.getEmail(), otp);
         if (isValidOtp) {
             String encodedPassword = passwordEncoder.encode(resetPasswordRequest.getNewPassword());
@@ -200,6 +220,13 @@ public class UserServicesImpl implements UserServices {
         } else {
             return responseUtil.errorResponse("Invalid OTP " + otp);
         }
+    }
+
+    @Override
+    public ResponseEntity<ResponseDTO<UserDetailResponse>> getProfile(HttpServletRequest request) {
+        User user = Optional.ofNullable(jwtUtils.getUserDataFromRequest(request)).orElseThrow(()-> new NotFoundException("User not Found"));
+        UserDetailResponse userDetailResponse = entityMapperUtil.convertUserToUserDetailResponse(user);
+        return responseUtil.successResponse(userDetailResponse);
     }
 
 }

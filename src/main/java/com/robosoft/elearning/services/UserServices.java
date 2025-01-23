@@ -18,12 +18,17 @@ public interface UserServices {
 
     ResponseEntity<ResponseDTO<RefreshTokenResponse>> generateAccessTokenFromRefreshToken(RefreshTokenRequest refreshTokenRequest);
 
-    ResponseEntity<ResponseDTO<Void>> logout(HttpServletRequest request, RefreshTokenRequest refreshTokenRequest);
+        ResponseEntity<ResponseDTO<Void>> logout(HttpServletRequest request, RefreshTokenRequest refreshTokenRequest);
 
     public ResponseEntity<ResponseDTO<UserDetailResponse>> update(UpdateUserRequest updateUserRequest, MultipartFile file, HttpServletRequest request) throws IOException;
 
-    public ResponseEntity<ResponseDTO<Void>> forgotPassword(HttpServletRequest request);
 
-    ResponseEntity<ResponseDTO<Void>> resetPassword(ResetPasswordRequest resetPasswordRequest, String otp, HttpServletRequest request);
+    public ResponseEntity<ResponseDTO<Void>> forgotPassword(ForgotPasswordRequest request);
+
+    ResponseEntity<ResponseDTO<Void>> resetPassword(ResetPasswordRequest resetPasswordRequest, HttpServletRequest request);
+
+    ResponseEntity<ResponseDTO<Void>> forgotResetPassword(ResetPasswordRequest resetPasswordRequest, String otp);
+
+    ResponseEntity<ResponseDTO<UserDetailResponse>> getProfile(HttpServletRequest request);
 
 }

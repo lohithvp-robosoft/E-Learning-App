@@ -1,6 +1,5 @@
 package com.robosoft.elearning.config;
 
-import com.robosoft.elearning.dto.response.ChapterNameResponse;
 import com.robosoft.elearning.jwt.AuthEntryPointJwt;
 import com.robosoft.elearning.jwt.AuthTokenFilter;
 import com.robosoft.elearning.repository.UserRepository;
@@ -62,11 +61,6 @@ public class SecurityConfig {
     private AuthEntryPointJwt unauthorizedHandler;
 
     @Bean
-    public ChapterNameResponse chapterNameResponse() {
-        return new ChapterNameResponse();
-    }
-
-    @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
         return new AuthTokenFilter();
     }
@@ -81,7 +75,9 @@ public class SecurityConfig {
                                 "/api/v1/user/register",
                                 "/api/v1/admin/register",
                                 "/api/v1/login",
-                                "/api/v1/refresh-Token"
+                                "/api/v1/refresh-Token",
+                                "/api/v1/forgot-password",
+                                "/api/v1/forgot-reset-password"
                         ).permitAll()
                         .anyRequest().authenticated()
         );

@@ -9,6 +9,8 @@ public class ContentResponse {
     private String contentImg;
     private String info;
 
+
+
     public ContentResponse(Long id, String heading, ContentType contentType, String contentImg, String info) {
         this.id = id;
         this.heading=heading;
@@ -20,6 +22,8 @@ public class ContentResponse {
     public ContentResponse() {
 
     }
+
+    // Getters and Setters
 
     public String getHeading() {
         return heading;
