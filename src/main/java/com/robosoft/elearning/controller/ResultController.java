@@ -20,7 +20,7 @@ public class ResultController {
     @Autowired
     private ResultServices resultServices;
 
-    @GetMapping("/user")
+    @GetMapping()
     public ResponseEntity<ResponseDTO<List<UserTestScoreResponse>>> getResultsByUser(HttpServletRequest request)  {
         return resultServices.getAllScoreOfAUser(request);
     }

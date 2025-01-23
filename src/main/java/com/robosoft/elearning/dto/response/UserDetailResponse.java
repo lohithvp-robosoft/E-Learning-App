@@ -10,9 +10,7 @@ public class UserDetailResponse {
     @JsonProperty("userName")
     private String userName;
     private String email;
-    private double completerChapterInPercentage;
-//    private double AverageTestScore;
-//    private double highestTestScore;
+    private int completerChapterInPercentage;
 
     private UserTestResultResponse testResult;
 
@@ -42,29 +40,13 @@ public class UserDetailResponse {
         this.email = email;
     }
 
-    public double getCompleterChapterInPercentage() {
+    public int getCompleterChapterInPercentage() {
         return completerChapterInPercentage;
     }
 
-    public void setCompleterChapterInPercentage(double completerChapterInPercentage) {
+    public void setCompleterChapterInPercentage(int completerChapterInPercentage) {
         this.completerChapterInPercentage = completerChapterInPercentage;
     }
-
-//    public double getAverageTestScore() {
-//        return AverageTestScore;
-//    }
-//
-//    public void setAverageTestScore(double averageTestScore) {
-//        AverageTestScore = averageTestScore;
-//    }
-//
-//    public double getHighestTestScore() {
-//        return highestTestScore;
-//    }
-//
-//    public void setHighestTestScore(double highestTestScore) {
-//        this.highestTestScore = highestTestScore;
-//    }
 
     public boolean isNotificationEnabled() {
         return isNotificationEnabled;
@@ -89,4 +71,5 @@ public class UserDetailResponse {
     public void setTestResult(UserTestResultResponse testResult) {
         this.testResult = testResult;
     }
+
 }

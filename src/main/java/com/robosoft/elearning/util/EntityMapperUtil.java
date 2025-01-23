@@ -2,12 +2,15 @@ package com.robosoft.elearning.util;
 
 import com.robosoft.elearning.dto.response.*;
 import com.robosoft.elearning.modal.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class EntityMapperUtil {
+
 
     public UserDetailResponse convertUserToUserDetailResponse(User user) {
         if (user == null) {
@@ -19,14 +22,21 @@ public class EntityMapperUtil {
         userDetailResponse.setEmail(user.getEmail());
         userDetailResponse.setUserName(user.getUserName());
         userDetailResponse.setProfileImageUrl(user.getProfileImageUrl());
-        UserTestResult testResult = user.getUserTestResult();
-        UserTestResultResponse testResultResponse = new UserTestResultResponse(
-                testResult.getId(),
-                testResult.getAverageScore(),
-                testResult.getHighestScore()
-        );
-        userDetailResponse.setTestResult(testResultResponse);
+        userDetailResponse.setCompleterChapterInPercentage(user.getChaptersCompletedInPercentage());
 
+        UserTestResult testResult = user.getUserTestResult();
+        if (testResult != null) {
+            UserTestResultResponse testResultResponse = new UserTestResultResponse(
+                    testResult.getId(),
+                    testResult.getAverageScore(),
+                    testResult.getHighestScore()
+            );
+            userDetailResponse.setTestResult(testResultResponse);
+        } else {
+            userDetailResponse.setTestResult(null);
+        }
+
+        userDetailResponse.setNotificationEnabled(user.isNotificationEnabled());
         return userDetailResponse;
     }
 
@@ -45,7 +55,7 @@ public class EntityMapperUtil {
         );
     }
 
-    public QuestionResponse convertToQuestionResponse(Question question, Integer previouslySelectedOption, Integer currentQuestionIndex, Integer totalNoOfQuestion, Integer lessonIndex, String lessonName, Integer chapterIndex) {
+    public QuestionResponse convertToQuestionResponse(Question question) {
         if (question == null) {
             return null;
         }
@@ -54,13 +64,13 @@ public class EntityMapperUtil {
                 question.getId(),
                 question.getQuestionStatement(),
                 question.getOptions(),
-                question.getQuestionImageUrl(),
-                previouslySelectedOption,
-                currentQuestionIndex,
-                totalNoOfQuestion,
-                lessonIndex,
-                lessonName,
-                chapterIndex
+                question.getQuestionImageUrl()
+//                previouslySelectedOption,
+//                currentQuestionIndex,
+//                totalNoOfQuestion,
+//                lessonIndex,
+//                lessonName,
+//                chapterIndex
         );
     }
 
@@ -108,5 +118,56 @@ public class EntityMapperUtil {
                 remarkSubComment
         );
     }
+
+    public NotificationResponse toNotificationResponse(Notification notification) {
+        return new NotificationResponse(
+                notification.getId(),
+                notification.getTitle(),
+                notification.getMessage(),
+                notification.getTimestamp()
+        );
+    }
+
+    public List<UserCurrentlyStudyingResponse> convertToUserCurrentlyStudyingResponseList(List<UserCurrentlyStudying> subjects) {
+        return subjects.stream()
+                .map(currentlyStudying -> new UserCurrentlyStudyingResponse(
+                        currentlyStudying.getId(),
+                        currentlyStudying.getSubject() != null ? currentlyStudying.getSubject().getSubjectName() : null,
+                        currentlyStudying.getCompletedChapterInPercentage(),
+                        currentlyStudying.getCurrentChapter() != null ? currentlyStudying.getCurrentChapter().getChapterName() : null,
+                        currentlyStudying.getCurrentLesson() != null ? currentlyStudying.getCurrentLesson().getLessonName() : null,
+                        currentlyStudying.getCurrentTopic() != null ? currentlyStudying.getCurrentTopic().getHeading() : null,
+                        currentlyStudying.getCurrentChapter().getChapterImg(),
+                        currentlyStudying.getCompletedLessonInPercentage()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    public UserCurrentlyStudyingResponse convertToUserCurrentlyStudyingResponse(UserCurrentlyStudying currentlyStudying) {
+        return new UserCurrentlyStudyingResponse(
+                currentlyStudying.getId(),
+                currentlyStudying.getSubject() != null ? currentlyStudying.getSubject().getSubjectName() : null,
+                currentlyStudying.getCompletedChapterInPercentage(),
+                currentlyStudying.getCurrentChapter() != null ? currentlyStudying.getCurrentChapter().getChapterName() : null,
+                currentlyStudying.getCurrentLesson() != null ? currentlyStudying.getCurrentLesson().getLessonName() : null,
+                currentlyStudying.getCurrentTopic() != null ? currentlyStudying.getCurrentTopic().getHeading() : null,
+                currentlyStudying.getCurrentChapter() != null ? currentlyStudying.getCurrentChapter().getChapterImg() : null,
+                currentlyStudying.getCompletedLessonInPercentage()
+        );
+    }
+
+    public UserLikedTopicResponse convertToUserLikedTopicResponse(Topic topic, Integer chapterIndex){
+
+        return new UserLikedTopicResponse(
+                topic.getId(),
+                topic.getHeading(),
+                topic.getSubHeading(),
+                topic.getLevel(),
+                topic.getIcon(),
+                topic.getLesson().getLessonName(),
+                chapterIndex
+        );
+    }
+
 
 }

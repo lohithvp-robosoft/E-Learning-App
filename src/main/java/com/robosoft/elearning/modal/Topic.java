@@ -17,8 +17,10 @@ public class Topic {
     private Level level;
 
     @ManyToOne
-//    @JoinColumn(name = "lesson_id")
+    @JoinColumn(name = "lesson_id")
     private Lesson lesson;
+
+    private String icon;
 
     @OneToMany(mappedBy = "topic", cascade = CascadeType.ALL)
     private List<Content> contents;
@@ -69,5 +71,13 @@ public class Topic {
 
     public void setContents(List<Content> contents) {
         this.contents = contents;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 }

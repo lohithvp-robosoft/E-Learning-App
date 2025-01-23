@@ -1,14 +1,14 @@
 package com.robosoft.elearning.controller;
 
+import com.google.firebase.database.core.Repo;
 import com.robosoft.elearning.dto.response.ResponseDTO;
 import com.robosoft.elearning.dto.response.TestResponse;
+import com.robosoft.elearning.dto.response.TestSubmitResponse;
 import com.robosoft.elearning.services.TestServices;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -29,5 +29,8 @@ public class TestController {
         return testServices.getOneTest(testId);
     }
 
-
+    @PostMapping("/{testId}/submit")
+    public ResponseEntity<ResponseDTO<TestSubmitResponse>> submitTest(@PathVariable Long testId, boolean isTimeout, HttpServletRequest request){
+        return testServices.submitTest(testId, request,isTimeout);
+    }
 }

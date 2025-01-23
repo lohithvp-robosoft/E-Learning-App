@@ -6,4 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface LessonRepository extends JpaRepository<Lesson, Long> {
 
     int countByChapterIdAndIdLessThan(Long chapterId, Long lessonId);
+
+    long countByChapterId(long chapterId);
 }

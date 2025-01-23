@@ -28,7 +28,6 @@ import java.util.Optional;
 @Service
 public class UserServicesImpl implements UserServices {
 
-    private static final Log log = LogFactory.getLog(UserServicesImpl.class);
     @Autowired
     private OtpServices otpServices;
 
@@ -114,6 +113,8 @@ public class UserServicesImpl implements UserServices {
         String accessToken = jwtUtils.generateAccessToken(user);
         String refreshToken = jwtUtils.generateRefreshToken(user);
 
+        user.setDeviceToken(loginRequest.getDeviceToken());
+        userRepository.save(user);
         return responseUtil.successResponse(new LoginResponse(user, accessToken, refreshToken));
     }
 
@@ -135,6 +136,9 @@ public class UserServicesImpl implements UserServices {
 
     @Override
     public ResponseEntity<ResponseDTO<Void>> logout(HttpServletRequest request, RefreshTokenRequest refreshTokenRequest) {
+        User user = jwtUtils.getUserDataFromRequest(request);
+        user.setDeviceToken(null);
+        userRepository.save(user);
         jwtUtils.blackListAccessToken(jwtUtils.getJwtFromHeader(request));
         jwtUtils.blackListRefreshToken(refreshTokenRequest.getRefreshToken());
         return responseUtil.successResponse(null, logoutMessage);

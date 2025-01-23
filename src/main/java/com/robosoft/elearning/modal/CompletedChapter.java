@@ -11,7 +11,7 @@ public class CompletedChapter {
     private Long id;
 
     @ManyToOne
-    private UserCurrentlyStudyingSubject userCurrentlyStudyingSubject;
+    private UserCurrentlyStudying userCurrentlyStudying;
 
     @ManyToOne
     private Chapter chapter;
@@ -27,12 +27,12 @@ public class CompletedChapter {
         this.id = id;
     }
 
-    public UserCurrentlyStudyingSubject getUserCurrentlyStudyingSubject() {
-        return userCurrentlyStudyingSubject;
+    public UserCurrentlyStudying getUserCurrentlyStudyingSubject() {
+        return userCurrentlyStudying;
     }
 
-    public void setUserCurrentlyStudyingSubject(UserCurrentlyStudyingSubject userCurrentlyStudyingSubject) {
-        this.userCurrentlyStudyingSubject = userCurrentlyStudyingSubject;
+    public void setUserCurrentlyStudyingSubject(UserCurrentlyStudying userCurrentlyStudying) {
+        this.userCurrentlyStudying = userCurrentlyStudying;
     }
 
     public Chapter getChapter() {
