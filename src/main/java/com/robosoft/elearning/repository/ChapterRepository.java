@@ -7,5 +7,4 @@ import java.util.List;
 
 public interface ChapterRepository extends JpaRepository<Chapter, Long> {
     List<Chapter> findBySubjectId(Long subjectId);
-    int countBySubjectIdAndIdLessThan(Long subjectId, Long chapterId);
 }
