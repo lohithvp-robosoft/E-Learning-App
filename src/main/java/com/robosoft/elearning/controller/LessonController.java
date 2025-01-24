@@ -2,6 +2,7 @@ package com.robosoft.elearning.controller;
 
 import com.robosoft.elearning.dto.response.*;
 import com.robosoft.elearning.services.LessonService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,15 +34,20 @@ public class LessonController {
         return lessonService.getLessonsByChapterId(chapterId);
     }
 
-    @GetMapping("/chapter/{chapterId}/lessons")
-    public ResponseEntity<ResponseDTO<ChapterLessonsResponse>> getLessonsDetailsByChapterId(
-            @PathVariable long chapterId) {
-        return lessonService.getLessonsDetailsByChapterId(chapterId);
-    }
+//    @GetMapping("/chapter/{chapterId}/lessons")
+//    public ResponseEntity<ResponseDTO<ChapterLessonsResponse>> getLessonsDetailsByChapterId(
+//            @PathVariable long chapterId) {
+//        return lessonService.getLessonsDetailsByChapterId(chapterId);
+//    }
 
     @GetMapping("/chapter/{chapterId}/lessons/topics")
     public ResponseEntity<ResponseDTO<ChapterLessonTopicResponse>> getLessonsWithTopicsByChapterId(@PathVariable long chapterId) {
         return lessonService.getLessonsWithTopicsByChapterId(chapterId);
+    }
+
+    @GetMapping("/lessons")
+    public ResponseEntity<ResponseDTO<List<LessonWithTopicResponse>>> getLessonsWithTopics(HttpServletRequest request) {
+        return lessonService.getLessonsDetails(request);
     }
 
 }

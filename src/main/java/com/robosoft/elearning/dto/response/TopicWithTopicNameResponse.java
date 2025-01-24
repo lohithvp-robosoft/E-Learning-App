@@ -5,12 +5,22 @@ public class TopicWithTopicNameResponse {
     private Long lessonId;
     private String heading;
     private String subHeading;
+    private boolean isCompleted;
 
-    public TopicWithTopicNameResponse(Long id, Long lessonId, String heading, String subHeading) {
-        this.id = id;
-        this.lessonId = lessonId;
-        this.heading = heading;
+    public TopicWithTopicNameResponse(boolean isCompleted, String subHeading, String heading, Long lessonId, Long id) {
+        this.isCompleted = isCompleted;
         this.subHeading = subHeading;
+        this.heading = heading;
+        this.lessonId = lessonId;
+        this.id = id;
+    }
+
+    public boolean isCompleted() {
+        return isCompleted;
+    }
+
+    public void setCompleted(boolean completed) {
+        isCompleted = completed;
     }
 
     public Long getId() {

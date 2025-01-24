@@ -12,6 +12,7 @@ public interface UserCurrentlyStudyingRepository extends JpaRepository<UserCurre
     Optional<UserCurrentlyStudying> findByUserIdAndCurrentTopicId(Long userId, Long topicId);
 
     List<UserCurrentlyStudying> findAllByUserId(Long userId);
+    Optional<UserCurrentlyStudying> findByUserId(Long userId);
 
     List<UserCurrentlyStudying> findAllByUserIdAndSubjectSubjectNameContainingIgnoreCase(Long userId, String subjectName);
 

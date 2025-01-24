@@ -1,8 +1,7 @@
 package com.robosoft.elearning.services;
 
-import com.robosoft.elearning.dto.response.ChapterResponse;
-import com.robosoft.elearning.dto.response.ChapterSummaryResponse;
-import com.robosoft.elearning.dto.response.ResponseDTO;
+import com.robosoft.elearning.dto.response.*;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -12,7 +11,7 @@ public interface ChapterService {
     ResponseEntity<ResponseDTO<ChapterResponse>> getChapterById(long id);
     //  ResponseEntity<ResponseDTO<ChapterResponse>> getChapterWithLessons(long chapterId);
     ResponseEntity<ResponseDTO<List<ChapterResponse>>> getAllChapters();
-    ResponseEntity<ResponseDTO<Map<String, List<ChapterSummaryResponse>>>> getChaptersBySubjectId(Long subjectId);
+//    ResponseEntity<ResponseDTO<Map<String, List<ChapterSummaryResponse>>>> getChaptersBySubjectId(Long subjectId);
     //  ResponseEntity<ResponseDTO<List<ChapterResponse>>> getAllChaptersWithLessons();
-
+ResponseEntity<ResponseDTO<CurrentlyStudyingSubjectResponse>> getChaptersDetailsBySubjectId(Long subjectId, HttpServletRequest request);
 }
