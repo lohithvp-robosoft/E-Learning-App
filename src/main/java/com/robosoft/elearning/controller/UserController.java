@@ -65,7 +65,7 @@ public class UserController {
         return userServices.logout(request, refreshTokenRequest);
     }
 
-    @PostMapping("/profile-update")
+    @PutMapping("/profile-update")
     public ResponseEntity<ResponseDTO<UserDetailResponse>> update(@ModelAttribute UpdateUserRequest userRequest, @RequestParam(required = false) MultipartFile file, HttpServletRequest request) throws IOException {
         return userServices.update(userRequest, file, request);
     }

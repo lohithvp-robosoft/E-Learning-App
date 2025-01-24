@@ -301,7 +301,7 @@ public class QuestionServicesImpl implements QuestionServices {
             throw new NotFoundException("Questions Not Found");
         }
 
-        sendTestStartNotification(user);
+//        sendTestStartNotification(user);
 
         List<QuestionResponse> questionResponse = questionsList.stream()
                 .map(question -> entityMapperUtil.convertToQuestionResponse(question))
@@ -350,6 +350,7 @@ public class QuestionServicesImpl implements QuestionServices {
     private void saveOrRemoveSelectedOption(UserTestProgress userTestProgress, Question question, Long questionId, Integer selectedOption) {
         if (selectedOption != null && selectedOption > 0) {
             if (question.getCorrectOption() == selectedOption) {
+                System.out.println("Hello");
                 userTestProgress.getCorrectlyAnsweredQuestionsId().add(questionId);
             }
             userTestProgress.getSelectedAnswers().put(questionId, selectedOption);
