@@ -290,7 +290,7 @@ public class QuestionServicesImpl implements QuestionServices {
     private String deviceToken;
 
     @Override
-    public ResponseEntity<ResponseDTO<QuestionsListResponse>> getAllQuestions(Long testId, HttpServletRequest request) {
+    public ResponseEntity<ResponseDTO<QuestionsListResponse>> beginTheTest(Long testId, HttpServletRequest request) {
         List<Question> questionsList = questionRepository.findByTestId(testId);
         User user = jwtUtils.getUserDataFromRequest(request);
         Test test = testRepository.findById(testId).orElseThrow(() -> new NotFoundException("Test Not Found"));
@@ -324,6 +324,9 @@ public class QuestionServicesImpl implements QuestionServices {
     @Override
     public ResponseEntity<ResponseDTO<Void>> saveOptionForAQuestion(Long testId, Long questionId, Integer selectedOption, HttpServletRequest request) {
         Question question = questionRepository.findById(questionId).orElseThrow(() -> new NotFoundException("Question Not Found"));
+        if (question.getTest() == null || !question.getTest().getId().equals(testId)) {
+            throw new NotFoundException("The given question does not belong to the specified test.");
+        }
         User user = jwtUtils.getUserDataFromRequest(request);
         UserTestProgress userTestProgress = userTestProgressRepository
                 .findByUserIdAndTestId(user.getId(), testId)
@@ -348,10 +351,11 @@ public class QuestionServicesImpl implements QuestionServices {
     }
 
     private void saveOrRemoveSelectedOption(UserTestProgress userTestProgress, Question question, Long questionId, Integer selectedOption) {
-        if (selectedOption != null && selectedOption > 0) {
+        if (selectedOption != null && selectedOption > 0 && selectedOption < 5) {
             if (question.getCorrectOption() == selectedOption) {
-                System.out.println("Hello");
                 userTestProgress.getCorrectlyAnsweredQuestionsId().add(questionId);
+            }else{
+                userTestProgress.getCorrectlyAnsweredQuestionsId().remove(questionId);
             }
             userTestProgress.getSelectedAnswers().put(questionId, selectedOption);
         } else {

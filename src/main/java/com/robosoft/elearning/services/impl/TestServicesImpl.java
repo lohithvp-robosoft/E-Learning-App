@@ -109,14 +109,14 @@ public class TestServicesImpl implements TestServices {
         Integer totalCorrectAnswer = userTestProgress.getCorrectlyAnsweredQuestionsId().size();
         Integer totalAttemptedQuestion = userTestProgress.getSelectedAnswers().size();
         Integer securedMarksInPercentage = (int) (((float) totalCorrectAnswer / totalQuestions) * 100);
-
         UserTestScore userTestScore = new UserTestScore();
         userTestScore.setTest(userTestProgress.getTest());
         userTestScore.setUserTestResult(userTestResult);
         userTestScore.setTotalCorrectAnswers(totalCorrectAnswer);
         userTestScore.setTotalAnsweredQuestions(totalAttemptedQuestion);
         userTestScore.setTotalMarks(securedMarksInPercentage);
-
+        userTestScore.setTotalNumberOfQuestion(totalQuestions);
+        userTestScore.setUser(userTestProgress.getUser());
         return userTestScore;
     }
 
