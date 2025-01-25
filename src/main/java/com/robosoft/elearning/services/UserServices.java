@@ -31,6 +31,5 @@ public interface UserServices {
 
     ResponseEntity<ResponseDTO<UserDetailResponse>> getProfile(HttpServletRequest request);
 
-    ResponseEntity<ResponseDTO<Void>>  toggleNotification(HttpServletRequest request);
 
 }

@@ -3,6 +3,7 @@ package com.robosoft.elearning.controller;
 import com.robosoft.elearning.dto.response.NotificationResponse;
 import com.robosoft.elearning.dto.response.ResponseDTO;
 import com.robosoft.elearning.services.NotificationServices;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,5 +26,10 @@ public class NotificationController {
     public ResponseEntity<ResponseDTO<Void>> clearNotifications(@PathVariable Long userId) {
         return notificationService.clearNotifications(userId);
 
+    }
+
+    @PutMapping("/toggle")
+    public ResponseEntity<ResponseDTO<Void>> toggleNotification(HttpServletRequest request){
+        return notificationService.toggleNotification(request);
     }
 }

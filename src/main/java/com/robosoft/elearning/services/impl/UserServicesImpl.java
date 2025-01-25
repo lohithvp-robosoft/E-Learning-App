@@ -229,9 +229,4 @@ public class UserServicesImpl implements UserServices {
         return responseUtil.successResponse(userDetailResponse);
     }
 
-    @Override
-    public ResponseEntity<ResponseDTO<Void>> toggleNotification(HttpServletRequest request) {
-        return null;
-    }
-
 }

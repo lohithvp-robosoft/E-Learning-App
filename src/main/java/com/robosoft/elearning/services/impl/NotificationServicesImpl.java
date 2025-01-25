@@ -3,6 +3,7 @@ package com.robosoft.elearning.services.impl;
 import com.robosoft.elearning.dto.response.NotificationResponse;
 import com.robosoft.elearning.dto.response.ResponseDTO;
 import com.robosoft.elearning.exception.NotFoundException;
+import com.robosoft.elearning.jwt.JwtUtils;
 import com.robosoft.elearning.modal.Notification;
 import com.robosoft.elearning.modal.User;
 import com.robosoft.elearning.repository.NotificationRepository;
@@ -10,6 +11,7 @@ import com.robosoft.elearning.repository.UserRepository;
 import com.robosoft.elearning.services.NotificationServices;
 import com.robosoft.elearning.util.EntityMapperUtil;
 import com.robosoft.elearning.util.ResponseUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +38,9 @@ public class NotificationServicesImpl implements NotificationServices {
     @Value("${message.error.userNotFound}")
     private String userNotFound;
 
+    @Autowired
+    private JwtUtils jwtUtils;
+
     @Override
     public void saveNotification(String title, String message, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(userNotFound));
@@ -57,4 +62,21 @@ public class NotificationServicesImpl implements NotificationServices {
         notificationRepository.deleteByUserId(userId);
         return responseUtil.successResponse(null);
     }
+
+    @Override
+    public ResponseEntity<ResponseDTO<Void>> toggleNotification(HttpServletRequest request) {
+        User user = jwtUtils.getUserDataFromRequest(request);
+
+        if (user == null) {
+            return responseUtil.errorResponse("User Not Found");
+        }
+
+        user.setNotificationEnabled(!user.isNotificationEnabled());
+
+        userRepository.save(user);
+
+        return responseUtil.successResponse(null);
+    }
+
+
 }

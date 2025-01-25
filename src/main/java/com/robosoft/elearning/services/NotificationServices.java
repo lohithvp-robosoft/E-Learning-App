@@ -2,7 +2,7 @@ package com.robosoft.elearning.services;
 
 import com.robosoft.elearning.dto.response.NotificationResponse;
 import com.robosoft.elearning.dto.response.ResponseDTO;
-import com.robosoft.elearning.modal.Notification;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -17,4 +17,5 @@ public interface NotificationServices {
 
     ResponseEntity<ResponseDTO<Void>> clearNotifications(Long userId);
 
+    ResponseEntity<ResponseDTO<Void>> toggleNotification(HttpServletRequest request);
 }
