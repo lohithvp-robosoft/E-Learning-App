@@ -162,6 +162,7 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
 
 //            int completedChapterPercentage = calculateSubjectCompletionPercentage(chapter.getId(), user.getId());
             int completedChapterPercentage = calculateSubjectCompletionPercentage(subjectId, user.getId());
+//            int completedChapterPercentage = calculateSubjectCompletionPercentage(subjectId, user.getId(), topicId);
             int completedLessonPercentage = calculateLessonCompletionPercentage(lesson, user.getId());
             System.out.println(completedChapterPercentage);
             System.out.println(completedLessonPercentage);
@@ -179,7 +180,9 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
     public ResponseEntity<ResponseDTO<List<UserCurrentlyStudyingResponse>>> getAllUserCurrentlyStudying(HttpServletRequest request) {
         User user = jwtUtils.getUserDataFromRequest(request);
         List<UserCurrentlyStudying> subjects = userCurrentlyStudyingRepository.findAllByUserId(user.getId());
-
+        if(subjects.isEmpty()){
+            return responseUtil.errorResponse("User Currently Studying Not Found");
+        }
         List<UserCurrentlyStudyingResponse> userCurrentlyStudyingResponses = entityMapperUtil.convertToUserCurrentlyStudyingResponseList(subjects);
 
         if(userCurrentlyStudyingResponses.isEmpty()) throw new NotFoundException("User Progress Not Found");
@@ -311,6 +314,41 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
         int completionPercentage = (int) ((completedChapterCount * 100.0) / (totalChapters * 100));
         return completionPercentage;
     }
+
+//    private float calculateSubjectCompletionPercentage(Long subjectId, Long userId, Long topicId) {
+//
+//        if(topicRepository.existsById(topicId))
+//        Topic topic = topicRepository.findById(topicId).orElseThrow(()-> new NotFoundException("Topic not found"));
+//        Lesson lesson = topic.getLesson();
+//        int totalTopicsInLesson = lesson.getTopics().size();
+//        float completedTopicPerLesson = (float) 1/totalTopicsInLesson;
+//        Chapter chapter = lesson.getChapter();
+//        int totalLessonsInChapter = chapter.getLessons().size();
+//        float completedTopicPerChapter = (float) completedTopicPerLesson/totalLessonsInChapter;
+//        Subject subject = chapter.getSubject();
+//        int totalChaptersPerSubject = subject.getChapters().size();
+//        float completedTopicPerSubject = (float) completedTopicPerChapter/totalChaptersPerSubject;
+//        return completedTopicPerSubject;
+//
+//
+//
+////        Subject subject = subjectRepository.findById(subjectId)
+////                .orElseThrow(() -> new NotFoundException("Subject not found"));
+////
+////        List<Chapter> chapters = subject.getChapters();
+////        long totalChapters = chapters.size();
+////
+////        if (totalChapters == 0) {
+////            return 0;
+////        }
+////
+////        long completedChapterCount = chapters.stream()
+////                .mapToLong(chapter -> calculateChapterCompletionPercentage(chapter.getId(), userId))
+////                .sum();
+////
+////        int completionPercentage = (int) ((completedChapterCount * 100.0) / (totalChapters * 100));
+////        return completionPercentage;
+//    }
 
 
 }
