@@ -1,24 +1,28 @@
 package com.robosoft.elearning.dto.response;
 
 public class TopicWithTopicNameResponse {
-    private Long id;
+    private Long topicId;
     private Long lessonId;
     private String heading;
     private String subHeading;
+    private boolean isCompleted;
+    private Long subjectId;
 
-    public TopicWithTopicNameResponse(Long id, Long lessonId, String heading, String subHeading) {
-        this.id = id;
+    public TopicWithTopicNameResponse(Long topicId, Long lessonId, String heading, String subHeading, boolean isCompleted, Long subjectId) {
+        this.topicId = topicId;
         this.lessonId = lessonId;
         this.heading = heading;
         this.subHeading = subHeading;
+        this.isCompleted = isCompleted;
+        this.subjectId = subjectId;
     }
 
-    public Long getId() {
-        return id;
+    public Long getTopicId() {
+        return topicId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setTopicId(Long topicId) {
+        this.topicId = topicId;
     }
 
     public Long getLessonId() {
@@ -43,5 +47,21 @@ public class TopicWithTopicNameResponse {
 
     public void setSubHeading(String subHeading) {
         this.subHeading = subHeading;
+    }
+
+    public boolean isCompleted() {
+        return isCompleted;
+    }
+
+    public void setCompleted(boolean completed) {
+        isCompleted = completed;
+    }
+
+    public Long getSubjectId() {
+        return subjectId;
+    }
+
+    public void setSubjectId(Long subjectId) {
+        this.subjectId = subjectId;
     }
 }

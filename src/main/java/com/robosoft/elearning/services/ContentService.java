@@ -1,16 +1,19 @@
 package com.robosoft.elearning.services;
 
+import com.robosoft.elearning.dto.request.ContentRequest;
 import com.robosoft.elearning.dto.response.ContentResponse;
-import com.robosoft.elearning.dto.response.PaginatedContentResponseDTO;
+import com.robosoft.elearning.dto.response.PaginatedContentResponse;
 import com.robosoft.elearning.dto.response.ResponseDTO;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
 public interface ContentService {
-    //    ResponseEntity<ResponseDTO<LessonContentResponse>> getLessonContent(Long lessonId, int pageNumber, HttpServletRequest request);
-    ResponseEntity<List<ContentResponse>> getPaginatedContent(Long lessonId, int pageNumber, int pageSize);
-    ResponseEntity<String> redirectToPage(Long lessonId, int pageNumber, int pageSize);
-    ResponseEntity<ResponseDTO<PaginatedContentResponseDTO>> goToPage(Long topicId, int pageNumber, int pageSize) ;
+    ResponseEntity<ResponseDTO<PaginatedContentResponse>> goToPage(Long lessonId, Long topicId, int pageNumber, HttpServletRequest request);
+    ResponseEntity<ResponseDTO<String>> createContent(ContentRequest contentRequest);
 
+    ResponseEntity<ResponseDTO<String>> updateContent(Long contentId, ContentRequest contentRequest);
+
+    ResponseEntity<ResponseDTO<String>> deleteContent(Long contentId);
 }

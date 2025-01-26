@@ -1,5 +1,6 @@
 package com.robosoft.elearning.services.impl;
 
+import com.robosoft.elearning.dto.request.SubjectRequest;
 import com.robosoft.elearning.dto.response.ResponseDTO;
 import com.robosoft.elearning.dto.response.SubjectResponse;
 import com.robosoft.elearning.dto.response.SubjectResponseList;
@@ -57,6 +58,15 @@ public class SubjectServiceImpl implements SubjectService {
     @Value("${subject.success.fetch-details}")
     private String fetchSubjectDetailsMessage;
 
+    @Value("${subject.success.create}")
+    private String createSubjectSuccessMessage;
+
+    @Value("${subject.success.update}")
+    private String updateSubjectSuccessMessage;
+
+    @Value("${subject.success.delete}")
+    private String deleteSubjectSuccessMessage;
+
 
 
 
@@ -83,14 +93,55 @@ public class SubjectServiceImpl implements SubjectService {
 
 
     @Override
-    public ResponseEntity<ResponseDTO<SubjectResponse>> searchSubjectByName(String name) {
-        Subject subject = subjectRepository.findBySubjectName(name)
-                .orElseThrow(() -> new RuntimeException("Subject not found with name: " + name));
-        if (subject == null) {
-            return responseUtil.errorResponse("Resource not found", 404);
+    public ResponseEntity<ResponseDTO<List<SubjectResponse>>> searchSubjectByName(String name) {
+        List<Subject> subjects = subjectRepository.findBySubjectNameContainingIgnoreCase(name);
+
+        if (subjects.isEmpty()) {
+            return responseUtil.errorResponse("No subjects found matching the keyword: " + name, 404);
         }
-        SubjectResponse subjectResponse = entityMapperUtil.convertSubjectToSubjectResponse(subject);
-        return responseUtil.successResponse(subjectResponse, fetchSubjectDetailsMessage);
+
+        List<SubjectResponse> subjectResponses = subjects.stream()
+                .map(entityMapperUtil::convertSubjectToSubjectResponse)
+                .toList();
+
+        return responseUtil.successResponse(subjectResponses, "Subjects fetched successfully");
     }
+
+
+    @Override
+    public ResponseEntity<ResponseDTO<SubjectResponse>> createSubject(SubjectRequest subjectRequest) {
+        Subject subject = new Subject();
+        subject.setSubjectName(subjectRequest.getSubjectName());
+        subject.setSubjectIcon(subjectRequest.getSubjectIcon());
+        Subject savedSubject = subjectRepository.save(subject);
+        SubjectResponse subjectResponse = entityMapperUtil.convertSubjectToSubjectResponse(savedSubject);
+        return responseUtil.successResponse(subjectResponse, createSubjectSuccessMessage);
+    }
+
+    @Override
+        public ResponseEntity<ResponseDTO<SubjectResponse>> updateSubject(Long id, SubjectRequest subjectRequest) {
+        Subject subject = subjectRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Subject not found"));
+        subject.setSubjectName(subjectRequest.getSubjectName());
+        subject.setSubjectIcon(subjectRequest.getSubjectIcon());
+        Subject updatedSubject = subjectRepository.save(subject);
+        SubjectResponse subjectResponse = entityMapperUtil.convertSubjectToSubjectResponse(updatedSubject);
+        return responseUtil.successResponse(subjectResponse, updateSubjectSuccessMessage);
+    }
+
+    @Override
+    public ResponseEntity<ResponseDTO<Void>> deleteSubject(Long id) {
+        Subject subject = subjectRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Subject not found"));
+        subjectRepository.delete(subject);
+        return responseUtil.successResponse(null, deleteSubjectSuccessMessage);
+    }
+
+
+
+
+
+
+
 
 }

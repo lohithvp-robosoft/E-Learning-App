@@ -11,4 +11,5 @@ public interface UserLikedTopicRepository extends JpaRepository<UserLikedTopic, 
 
     UserLikedTopic findByUserAndTopic(User user, Topic topic);
     List<UserLikedTopic> findByUser(User user);
+    boolean existsByUserIdAndTopicId(Long userId, Long topicId);
 }

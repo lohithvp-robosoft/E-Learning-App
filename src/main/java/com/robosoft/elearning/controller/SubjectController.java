@@ -1,5 +1,6 @@
 package com.robosoft.elearning.controller;
 
+import com.robosoft.elearning.dto.request.SubjectRequest;
 import com.robosoft.elearning.dto.response.ResponseDTO;
 import com.robosoft.elearning.dto.response.SubjectResponse;
 import com.robosoft.elearning.dto.response.SubjectResponseList;
@@ -26,9 +27,27 @@ public class SubjectController {
         return subjectService.getSubjectById(id);
     }
 
-    @GetMapping("/search/{name}")
-    public ResponseEntity<ResponseDTO<SubjectResponse>> searchSubjectByName(@PathVariable String name) {
-        return subjectService.searchSubjectByName(name);
+    @GetMapping("/search/subjectName")
+    public ResponseEntity<ResponseDTO<List<SubjectResponse>>> searchSubjects(@RequestParam String keyword) {
+        return subjectService.searchSubjectByName(keyword);
+    }
+
+
+
+
+    @PostMapping("/create/subject")
+    public ResponseEntity<ResponseDTO<SubjectResponse>> createSubject(@RequestBody SubjectRequest subjectRequest) {
+        return subjectService.createSubject(subjectRequest);
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<ResponseDTO<SubjectResponse>> updateSubject(@PathVariable Long id, @RequestBody SubjectRequest subjectRequest) {
+        return subjectService.updateSubject(id, subjectRequest);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<ResponseDTO<Void>> deleteSubject(@PathVariable Long id) {
+        return subjectService.deleteSubject(id);
     }
 
 }

@@ -8,29 +8,15 @@ public class ContentResponse {
     private ContentType contentType;
     private String contentImg;
     private String info;
+    private boolean userLiked;
 
-
-
-    public ContentResponse(Long id, String heading, ContentType contentType, String contentImg, String info) {
+    public ContentResponse(Long id, String heading, ContentType contentType, String contentImg, String info, boolean userLiked) {
         this.id = id;
-        this.heading=heading;
+        this.heading = heading;
         this.contentType = contentType;
         this.contentImg = contentImg;
         this.info = info;
-    }
-
-    public ContentResponse() {
-
-    }
-
-    // Getters and Setters
-
-    public String getHeading() {
-        return heading;
-    }
-
-    public void setHeading(String heading) {
-        this.heading = heading;
+        this.userLiked = userLiked;
     }
 
     public Long getId() {
@@ -39,6 +25,14 @@ public class ContentResponse {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getHeading() {
+        return heading;
+    }
+
+    public void setHeading(String heading) {
+        this.heading = heading;
     }
 
     public ContentType getContentType() {
@@ -65,4 +59,11 @@ public class ContentResponse {
         this.info = info;
     }
 
+    public boolean isUserLiked() {
+        return userLiked;
+    }
+
+    public void setUserLiked(boolean userLiked) {
+        this.userLiked = userLiked;
+    }
 }

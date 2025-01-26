@@ -1,7 +1,10 @@
 package com.robosoft.elearning.util;
 
+import com.robosoft.elearning.dto.request.LessonRequest;
 import com.robosoft.elearning.dto.response.*;
+import com.robosoft.elearning.exception.NotFoundException;
 import com.robosoft.elearning.modal.*;
+import com.robosoft.elearning.repository.ChapterRepository;
 import com.robosoft.elearning.repository.LessonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,6 +19,9 @@ public class EntityMapperUtil {
 
     @Autowired
     private LessonRepository lessonRepository;
+
+    @Autowired
+    private ChapterRepository chapterRepository;
 
     public UserDetailResponse convertUserToUserDetailResponse(User user) {
         if (user == null) {
@@ -257,18 +263,24 @@ public class EntityMapperUtil {
         return topicResponse;
     }
 
-    public List<ContentResponse> convertContentListToResponseList(List<Content> contentList) {
-        if (contentList == null || contentList.isEmpty()) {
-            return new ArrayList<>();
-        }
 
-        List<ContentResponse> contentResponseList = new ArrayList<>();
-        for (Content content : contentList) {
-            ContentResponse contentResponse = new ContentResponse();
-            contentResponse.setId(content.getId());
-            contentResponse.setHeading(content.getHeading());
-            contentResponseList.add(contentResponse);
-        }
-        return contentResponseList;
+    public void updateLessonFromRequest(LessonRequest lessonRequest, Lesson lesson) {
+        Chapter chapter = chapterRepository.findById(lessonRequest.getChapterId())
+                .orElseThrow(() -> new NotFoundException("Chapter not found"));
+
+        lesson.setLessonName(lessonRequest.getLessonName());
+        lesson.setChapter(chapter);
     }
+
+    public Lesson convertLessonRequestToLesson(LessonRequest lessonRequest) {
+        Chapter chapter = chapterRepository.findById(lessonRequest.getChapterId())
+                .orElseThrow(() -> new NotFoundException("Chapter not found"));
+
+        Lesson lesson = new Lesson();
+        lesson.setLessonName(lessonRequest.getLessonName());
+        lesson.setChapter(chapter);
+
+        return lesson;
+    }
+
 }
