@@ -23,7 +23,7 @@ public class UserStudyProgressController {
     }
 
     @GetMapping("/subjects/{subjectId}")
-    public ResponseEntity<ResponseDTO<List<UserCurrentlyStudyingResponse>git status>> getUserCurrentlyStudyingBySubjectId(@PathVariable long subjectId, HttpServletRequest request){
+    public ResponseEntity<ResponseDTO<List<UserCurrentlyStudyingResponse>>> getUserCurrentlyStudyingBySubjectId(@PathVariable long subjectId, HttpServletRequest request){
         return userStudyProgressServices.getUserCurrentlyStudying(subjectId,request);
     }
 
