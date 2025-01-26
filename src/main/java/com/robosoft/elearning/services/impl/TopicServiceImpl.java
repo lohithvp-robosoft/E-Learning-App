@@ -1,8 +1,16 @@
 package com.robosoft.elearning.services.impl;
 
+import com.robosoft.elearning.dto.request.TopicRequest;
+import com.robosoft.elearning.dto.response.ChapterLessonsResponse;
 import com.robosoft.elearning.dto.response.ResponseDTO;
 import com.robosoft.elearning.dto.response.TopicResponse;
+import com.robosoft.elearning.dto.response.TopicWithTopicsResponse;
+import com.robosoft.elearning.exception.NotFoundException;
+import com.robosoft.elearning.modal.Chapter;
+import com.robosoft.elearning.modal.Lesson;
 import com.robosoft.elearning.modal.Topic;
+import com.robosoft.elearning.repository.ChapterRepository;
+import com.robosoft.elearning.repository.LessonRepository;
 import com.robosoft.elearning.repository.TopicRepository;
 import com.robosoft.elearning.services.TopicService;
 import com.robosoft.elearning.util.EntityMapperUtil;
@@ -27,6 +35,12 @@ public class TopicServiceImpl implements TopicService {
     @Autowired
     private ResponseUtil responseUtil;
 
+    @Autowired
+    private LessonRepository lessonRepository;
+
+    @Autowired
+    private ChapterRepository chapterRepository;
+
     @Override
     public ResponseEntity<ResponseDTO<List<TopicResponse>>> getAllTopics() {
         List<Topic> topics = topicRepository.findAll();
@@ -45,4 +59,87 @@ public class TopicServiceImpl implements TopicService {
                 })
                 .orElse(responseUtil.errorResponse("Topic not found"));
     }
+
+
+
+
+    public ResponseEntity<ResponseDTO<ChapterLessonsResponse>> getTopicsByChapterAndLesson(Long chapterId, Long lessonId) {
+
+        Chapter chapter = chapterRepository.findById(chapterId)
+                .orElseThrow(() -> new NotFoundException("Chapter not found"));
+
+        Lesson lesson = lessonRepository.findById(lessonId)
+                .orElseThrow(() -> new NotFoundException("Lesson not found"));
+
+        List<Topic> topics = topicRepository.findByLessonId(lessonId);
+        List<TopicWithTopicsResponse> topicResponses = topics.stream()
+                .map(topic -> new TopicWithTopicsResponse(
+                        topic.getLevel(),
+                        topic.getHeading(),
+                        topic.getIcon(),
+                        topic.getSubHeading(),
+                        topic.getId()
+                ))
+                .collect(Collectors.toList());
+        ChapterLessonsResponse chapterLessonResponse = new ChapterLessonsResponse(
+                chapter.getId(),
+                chapter.getChapterName(),
+                lesson.getId(),
+                lesson.getLessonName(),
+                lessonId,
+                topicResponses
+        );
+        return responseUtil.successResponse(chapterLessonResponse);
+    }
+
+
+
+
+    @Override
+    public ResponseEntity<ResponseDTO<TopicResponse>> createTopic(TopicRequest topicRequest) {
+        Lesson lesson = lessonRepository.findById(topicRequest.getLessonId())
+                .orElseThrow(() -> new NotFoundException("Lesson not found"));
+
+        Topic topic = new Topic();
+        topic.setLesson(lesson);
+        topic.setHeading(topicRequest.getHeading());
+        topic.setSubHeading(topicRequest.getSubHeading());
+        topic.setIcon(topicRequest.getIcon());
+        topic.setLevel(topicRequest.getLevel());
+
+        Topic savedTopic = topicRepository.save(topic);
+
+        TopicResponse topicResponse = entityMapperUtil.convertTopicToTopicResponse(savedTopic);
+        return responseUtil.successResponse(topicResponse, "Topic created successfully");
+    }
+
+    @Override
+    public ResponseEntity<ResponseDTO<TopicResponse>> updateTopic(long id, TopicRequest topicRequest) {
+        Topic topic = topicRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Topic not found"));
+
+        if (!lessonRepository.existsById(topicRequest.getLessonId())) {
+            throw new NotFoundException("Lesson not found");
+        }
+
+        topic.setHeading(topicRequest.getHeading());
+        topic.setSubHeading(topicRequest.getSubHeading());
+        topic.setIcon(topicRequest.getIcon());
+        topic.setLevel(topicRequest.getLevel());
+
+        Topic updatedTopic = topicRepository.save(topic);
+
+        TopicResponse topicResponse = entityMapperUtil.convertTopicToTopicResponse(updatedTopic);
+        return responseUtil.successResponse(topicResponse, "Topic updated successfully");
+    }
+
+    @Override
+    public ResponseEntity<ResponseDTO<Void>> deleteTopic(long id) {
+        Topic topic = topicRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Topic not found"));
+
+        topicRepository.delete(topic);
+        return responseUtil.successResponse(null, "Topic deleted successfully");
+    }
+
 }

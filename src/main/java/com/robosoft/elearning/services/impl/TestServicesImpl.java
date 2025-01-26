@@ -173,7 +173,7 @@ public class TestServicesImpl implements TestServices {
 //    @Override
 //    public ResponseEntity<ResponseDTO<TestSubmitResponse>> submitTest(Long testId, HttpServletRequest request, boolean isTimeOut) {
 //        User user = jwtUtils.getUserDataFromRequest(request);
-//        UserTestProgress userTestProgress = userTestProgressRepository.findByUserIdAndTestId(user.getId(),testId)
+//        UserTestProgress userTestProgress = userTestProgressRepository.findByUserIdAndTestId(user.getTopicId(),testId)
 //                .orElseThrow(() -> new NotFoundException("User Test Progress Not Found"));
 //        UserTestResult userTestResult = userTestResultRepository.findByUser(user)
 //                .orElseGet(() -> {

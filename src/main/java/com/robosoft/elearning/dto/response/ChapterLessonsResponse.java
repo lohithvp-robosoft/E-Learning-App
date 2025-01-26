@@ -3,17 +3,67 @@ package com.robosoft.elearning.dto.response;
 import java.util.List;
 
 public class ChapterLessonsResponse {
-    private List<LessonWithTopicResponse> lessons;
+    private Long chapterId;
+    private String chapterName;
+    private Long lessonId;
+    private String lessonName;
+    private Long lessonIndex;
+    private List<TopicWithTopicsResponse>  topics;
 
-    public ChapterLessonsResponse(List<LessonWithTopicResponse> lessons) {
-        this.lessons = lessons;
+    public ChapterLessonsResponse(Long chapterId, String chapterName, Long lessonId, String lessonName, Long lessonIndex, List<TopicWithTopicsResponse> topics) {
+        this.chapterId = chapterId;
+        this.chapterName = chapterName;
+        this.lessonId = lessonId;
+        this.lessonName = lessonName;
+        this.lessonIndex = lessonIndex;
+        this.topics = topics;
     }
 
-    public List<LessonWithTopicResponse> getLessons() {
-        return lessons;
+    public Long getChapterId() {
+        return chapterId;
     }
 
-    public void setLessons(List<LessonWithTopicResponse> lessons) {
-        this.lessons = lessons;
+    public void setChapterId(Long chapterId) {
+        this.chapterId = chapterId;
+    }
+
+    public String getChapterName() {
+        return chapterName;
+    }
+
+    public void setChapterName(String chapterName) {
+        this.chapterName = chapterName;
+    }
+
+    public Long getLessonId() {
+        return lessonId;
+    }
+
+    public void setLessonId(Long lessonId) {
+        this.lessonId = lessonId;
+    }
+
+    public String getLessonName() {
+        return lessonName;
+    }
+
+    public void setLessonName(String lessonName) {
+        this.lessonName = lessonName;
+    }
+
+    public Long getLessonIndex() {
+        return lessonIndex;
+    }
+
+    public void setLessonIndex(Long lessonIndex) {
+        this.lessonIndex = lessonIndex;
+    }
+
+    public List<TopicWithTopicsResponse> getTopics() {
+        return topics;
+    }
+
+    public void setTopics(List<TopicWithTopicsResponse> topics) {
+        this.topics = topics;
     }
 }

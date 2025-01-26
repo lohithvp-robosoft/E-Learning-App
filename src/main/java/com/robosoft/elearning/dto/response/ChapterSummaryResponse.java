@@ -2,36 +2,31 @@ package com.robosoft.elearning.dto.response;
 
 public class ChapterSummaryResponse {
 
-    private Long Id;
+    private Long id;
     private String chapterName;
     private String chapterImg;
     private boolean isCurrentlyStudying;
+    private Long subjectId;
+    private String subjectName;
 
-    public ChapterSummaryResponse() {
-    }
+    public ChapterSummaryResponse() {}
 
-
-    public ChapterSummaryResponse(Long id, String chapterName, String chapterImg, boolean isCurrentlyStudying) {
-        Id = id;
+    public ChapterSummaryResponse(Long id, String chapterName, String chapterImg, boolean isCurrentlyStudying, Long subjectId, String subjectName) {
+        this.id = id;
         this.chapterName = chapterName;
         this.chapterImg = chapterImg;
         this.isCurrentlyStudying = isCurrentlyStudying;
+        this.subjectId = subjectId;
+        this.subjectName = subjectName;
     }
 
-    public boolean isCurrentlyStudying() {
-        return isCurrentlyStudying;
-    }
-
-    public void setCurrentlyStudying(boolean currentlyStudying) {
-        isCurrentlyStudying = currentlyStudying;
-    }
-
+    // Getters and Setters
     public Long getId() {
-        return Id;
+        return id;
     }
 
     public void setId(Long id) {
-        Id = id;
+        this.id = id;
     }
 
     public String getChapterName() {
@@ -50,5 +45,27 @@ public class ChapterSummaryResponse {
         this.chapterImg = chapterImg;
     }
 
+    public boolean isCurrentlyStudying() {
+        return isCurrentlyStudying;
+    }
 
+    public void setCurrentlyStudying(boolean currentlyStudying) {
+        isCurrentlyStudying = currentlyStudying;
+    }
+
+    public Long getSubjectId() {
+        return subjectId;
+    }
+
+    public void setSubjectId(Long subjectId) {
+        this.subjectId = subjectId;
+    }
+
+    public String getSubjectName() {
+        return subjectName;
+    }
+
+    public void setSubjectName(String subjectName) {
+        this.subjectName = subjectName;
+    }
 }

@@ -1,14 +1,12 @@
 package com.robosoft.elearning.controller;
 
+import com.robosoft.elearning.dto.request.LessonRequest;
 import com.robosoft.elearning.dto.response.*;
 import com.robosoft.elearning.services.LessonService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -34,20 +32,27 @@ public class LessonController {
         return lessonService.getLessonsByChapterId(chapterId);
     }
 
-//    @GetMapping("/chapter/{chapterId}/lessons")
-//    public ResponseEntity<ResponseDTO<ChapterLessonsResponse>> getLessonsDetailsByChapterId(
-//            @PathVariable long chapterId) {
-//        return lessonService.getLessonsDetailsByChapterId(chapterId);
-//    }
+    @GetMapping("/lesson-by-chapter/subject/{subjectId}")
+    ResponseEntity<ResponseDTO<List<CurrentlyStudyingLessonResponse1>>> getCurrentlyStudyingLessonByChapterId1(@PathVariable Long subjectId, HttpServletRequest request){
+        return lessonService.getCurrentlyStudyingLessonByChapterId1(subjectId, request);
 
-    @GetMapping("/chapter/{chapterId}/lessons/topics")
-    public ResponseEntity<ResponseDTO<ChapterLessonTopicResponse>> getLessonsWithTopicsByChapterId(@PathVariable long chapterId) {
-        return lessonService.getLessonsWithTopicsByChapterId(chapterId);
     }
 
-    @GetMapping("/lessons")
-    public ResponseEntity<ResponseDTO<List<LessonWithTopicResponse>>> getLessonsWithTopics(HttpServletRequest request) {
-        return lessonService.getLessonsDetails(request);
+
+    @PostMapping("/createLesson")
+    public ResponseEntity<ResponseDTO<LessonResponse>> createLesson(@RequestBody LessonRequest lessonRequest) {
+        return lessonService.createLesson(lessonRequest);
     }
 
+    @PutMapping("/updateLesson/{id}")
+    public ResponseEntity<ResponseDTO<LessonResponse>> updateLesson(
+            @PathVariable long id,
+            @RequestBody LessonRequest lessonRequest) {
+        return lessonService.updateLesson(id, lessonRequest);
+    }
+
+    @DeleteMapping("/deleteLesson/{id}")
+    public ResponseEntity<ResponseDTO<Void>> deleteLesson(@PathVariable long id) {
+        return lessonService.deleteLesson(id);
+    }
 }

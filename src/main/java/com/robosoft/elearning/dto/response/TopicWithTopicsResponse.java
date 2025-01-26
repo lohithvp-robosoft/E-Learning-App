@@ -7,13 +7,23 @@ public class TopicWithTopicsResponse {
     private String heading;
     private String subheading;
     private String icon;
+    private Long topicId;
 
 
-    public TopicWithTopicsResponse(Level level, String heading, String icon, String subheading) {
+    public TopicWithTopicsResponse(Level level, String heading, String icon, String subheading, Long topicId) {
         this.level = level;
         this.heading = heading;
         this.icon = icon;
         this.subheading = subheading;
+        this.topicId=topicId;
+    }
+
+    public Long getTopicId() {
+        return topicId;
+    }
+
+    public void setTopicId(Long topicId) {
+        this.topicId = topicId;
     }
 
     public Level getLevel() {

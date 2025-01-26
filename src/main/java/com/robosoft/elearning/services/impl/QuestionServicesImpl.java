@@ -63,15 +63,15 @@ package com.robosoft.elearning.services.impl;
 //
 //        int totalQuestions = questionRepository.countByTestId(testId);
 //        Lesson lesson = test.getLesson();
-//        Long lessonId = lesson.getId();
+//        Long lessonId = lesson.getTopicId();
 //        String lessonName = lesson.getLessonName();
-//        Long chapterId = lesson.getChapter().getId();
-//        Long subjectId = lesson.getChapter().getSubject().getId();
+//        Long chapterId = lesson.getChapter().getTopicId();
+//        Long subjectId = lesson.getChapter().getSubject().getTopicId();
 //
 //        int lessonIndex = lessonRepository.countByChapterIdAndIdLessThan(chapterId,lessonId) + 1;
 //        int chapterIndex = chapterRepository.countBySubjectIdAndIdLessThan(subjectId,chapterId) + 1;
 //
-//        UserTestProgress userTestProgress = new UserTestProgress(user,test,firstQuestion.getId(),totalQuestions,lessonIndex,lessonName,chapterIndex);
+//        UserTestProgress userTestProgress = new UserTestProgress(user,test,firstQuestion.getTopicId(),totalQuestions,lessonIndex,lessonName,chapterIndex);
 //        userTestProgressRepository.save(userTestProgress);
 //
 //        QuestionResponse questionResponse = entityMapperUtil.convertToQuestionResponse(firstQuestion, null,1,totalQuestions,lessonIndex,lessonName, chapterIndex);
@@ -84,20 +84,20 @@ package com.robosoft.elearning.services.impl;
 //    @Override
 //    public ResponseEntity<ResponseDTO<QuestionResponse>> navigateAndSubmitAnswer(HttpServletRequest request,Long testId, Long nextQuestionId, Integer selectedOption, boolean isForward) {
 //        User user = jwtUtils.getUserDataFromRequest(request);
-//        UserTestProgress userTestProgress = userTestProgressRepository.findByUserIdAndTestId(user.getId(), testId).orElseThrow(() -> new NotFoundException("User test progress not found"));
+//        UserTestProgress userTestProgress = userTestProgressRepository.findByUserIdAndTestId(user.getTopicId(), testId).orElseThrow(() -> new NotFoundException("User test progress not found"));
 //
 //        Question currentQuestion = questionRepository.findByIdAndTestId(userTestProgress.getCurrentQuestionId(), testId).orElseThrow(() -> new NotFoundException("Current Question Not Found"));
 //
 //        if (selectedOption != null) {
-//            userTestProgress.getSelectedAnswers().put(currentQuestion.getId(), selectedOption);
+//            userTestProgress.getSelectedAnswers().put(currentQuestion.getTopicId(), selectedOption);
 //            userTestProgress.setTotalAnsweredQuestions(userTestProgress.getSelectedAnswers().size());
-//            boolean wasCorrectBefore = userTestProgress.getCorrectlyAnsweredQuestionsId().contains(currentQuestion.getId());
+//            boolean wasCorrectBefore = userTestProgress.getCorrectlyAnsweredQuestionsId().contains(currentQuestion.getTopicId());
 //            boolean isCorrectNow = selectedOption == currentQuestion.getCorrectOption();
 //            if (isCorrectNow && !wasCorrectBefore) {
-//                userTestProgress.getCorrectlyAnsweredQuestionsId().add(currentQuestion.getId());
+//                userTestProgress.getCorrectlyAnsweredQuestionsId().add(currentQuestion.getTopicId());
 //                userTestProgress.setTotalScore(userTestProgress.getTotalScore() + 1);
 //            } else if (!isCorrectNow && wasCorrectBefore) {
-//                userTestProgress.getCorrectlyAnsweredQuestionsId().remove(currentQuestion.getId());
+//                userTestProgress.getCorrectlyAnsweredQuestionsId().remove(currentQuestion.getTopicId());
 //                userTestProgress.setTotalScore(userTestProgress.getTotalScore() - 1);
 //            }
 //        }
@@ -107,10 +107,10 @@ package com.robosoft.elearning.services.impl;
 //
 //        if (nextQuestionId == null) {
 //            if (isForward) {
-//                nextQuestion = questionRepository.findFirstByTestIdAndIdGreaterThanOrderById(testId, currentQuestion.getId())
+//                nextQuestion = questionRepository.findFirstByTestIdAndIdGreaterThanOrderById(testId, currentQuestion.getTopicId())
 //                        .orElseThrow(() -> new NotFoundException("No more questions ahead"));
 //            } else {
-//                nextQuestion = questionRepository.findFirstByTestIdAndIdLessThanOrderByIdDesc(testId, currentQuestion.getId())
+//                nextQuestion = questionRepository.findFirstByTestIdAndIdLessThanOrderByIdDesc(testId, currentQuestion.getTopicId())
 //                        .orElseThrow(() -> new NotFoundException("No previous questions available"));
 //            }
 //        } else {
@@ -118,12 +118,12 @@ package com.robosoft.elearning.services.impl;
 //                    .orElseThrow(() -> new NotFoundException("No Question Found"));
 //        }
 //
-//        userTestProgress.setCurrentQuestionId(nextQuestion.getId());
+//        userTestProgress.setCurrentQuestionId(nextQuestion.getTopicId());
 //        userTestProgressRepository.save(userTestProgress);
 //
-//        Integer previouslySelectedOption = userTestProgress.getSelectedAnswers().get(nextQuestion.getId());
+//        Integer previouslySelectedOption = userTestProgress.getSelectedAnswers().get(nextQuestion.getTopicId());
 //
-//        int currentQuestionIndex = questionRepository.countByTestIdAndIdLessThan(testId, nextQuestion.getId()) + 1;
+//        int currentQuestionIndex = questionRepository.countByTestIdAndIdLessThan(testId, nextQuestion.getTopicId()) + 1;
 //        int totalQuestions = userTestProgress.getTotalNumberOfQuestions();
 //
 //
@@ -136,7 +136,7 @@ package com.robosoft.elearning.services.impl;
 //    @Override
 //    public ResponseEntity<ResponseDTO<TestSubmitResponse>> submitTest(HttpServletRequest request, Long testId, boolean isTimeOut) {
 //        User user = jwtUtils.getUserDataFromRequest(request);
-//        UserTestProgress userTestProgress = userTestProgressRepository.findByUserIdAndTestId(user.getId(), testId)
+//        UserTestProgress userTestProgress = userTestProgressRepository.findByUserIdAndTestId(user.getTopicId(), testId)
 //                .orElseThrow(() -> new NotFoundException("User test progress not found"));
 //
 //        int totalQuestions = userTestProgress.getTotalNumberOfQuestions();
@@ -214,7 +214,7 @@ package com.robosoft.elearning.services.impl;
 //    public ResponseEntity<ResponseDTO<List<QuestionSetResponse>>> getQuestionSet(HttpServletRequest request, Long testId) {
 //        User user = jwtUtils.getUserDataFromRequest(request);
 //
-//        UserTestProgress userTestProgress = userTestProgressRepository.findByUserIdAndTestId(user.getId(), testId)
+//        UserTestProgress userTestProgress = userTestProgressRepository.findByUserIdAndTestId(user.getTopicId(), testId)
 //                .orElseThrow(() -> new NotFoundException("User test progress not found for this test"));
 //
 //        List<Question> questions = questionRepository.findByTestIdOrderById(testId);
