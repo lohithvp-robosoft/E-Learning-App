@@ -49,7 +49,9 @@ public class NotificationServicesImpl implements NotificationServices {
     }
 
     @Override
-    public ResponseEntity<ResponseDTO<List<NotificationResponse>>> getNotifications(Long userId) {
+    public ResponseEntity<ResponseDTO<List<NotificationResponse>>> getNotifications(HttpServletRequest request) {
+        User user = jwtUtils.getUserDataFromRequest(request);
+        Long userId = user.getId();
         List<Notification> notificationList = notificationRepository.findByUserIdOrderByTimestampDesc(userId);
         List<NotificationResponse> notificationResponseList = notificationList.stream()
                 .map(notification -> mapperUtil.toNotificationResponse(notification))
@@ -58,7 +60,9 @@ public class NotificationServicesImpl implements NotificationServices {
     }
 
     @Override
-    public ResponseEntity<ResponseDTO<Void>> clearNotifications(Long userId) {
+    public ResponseEntity<ResponseDTO<Void>> clearNotifications(HttpServletRequest request) {
+        User user = jwtUtils.getUserDataFromRequest(request);
+        Long userId = user.getId();
         notificationRepository.deleteByUserId(userId);
         return responseUtil.successResponse(null);
     }

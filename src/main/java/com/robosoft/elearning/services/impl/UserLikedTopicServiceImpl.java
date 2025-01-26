@@ -58,35 +58,28 @@ public class UserLikedTopicServiceImpl implements UserLikedTopicServices {
             return responseUtil.successResponse(null,"Successfully disliked the topic");
         } else {
             userLikedTopicRepository.save(new UserLikedTopic(user, topic));
-            return responseUtil.successResponse(null,"Successfully disliked the topic");
+            return responseUtil.successResponse(null,"Successfully liked the topic");
         }
     }
 
-//    @Override
-//    public ResponseEntity<ResponseDTO<List<UserLikedTopicResponse>>> getLikedTopics(HttpServletRequest request) {
-//        User user = jwtUtils.getUserDataFromRequest(request);
-//        List<UserLikedTopic> likedTopics = userLikedTopicRepository.findByUser(user);
-//
-//        List<Topic> topicList = likedTopics.stream().map(UserLikedTopic::getTopic).collect(Collectors.toList());
-//        List<UserLikedTopicResponse> userLikedTopicResponses = topicList.stream()
-//                .map(topic->{
-//                    Chapter chapter = topic.getLesson().getChapter();
-//                    Subject subject = chapter.getSubject();
-//                    int chapterIndex = chapterRepository.countBySubjectIdAndIdLessThan(subject.getId(), chapter.getId()) + 1;
-//                    return entityMapperUtil.convertToUserLikedTopicResponse(topic,chapterIndex);
-//                }).toList();
-//
-//        return responseUtil.successResponse(userLikedTopicResponses);
-//    }
 
     @Override
-    public ResponseEntity<ResponseDTO<List<UserLikedTopicResponse>>> getLikedTopics(HttpServletRequest request) {
+    public ResponseEntity<ResponseDTO<List<UserLikedTopicResponse>>> getLikedTopics(Long subjectId, HttpServletRequest request) {
         User user = jwtUtils.getUserDataFromRequest(request);
         List<UserLikedTopic> likedTopics = userLikedTopicRepository.findByUser(user);
 
+        if (likedTopics.isEmpty()) {
+            return responseUtil.errorResponse("No liked topic found");
+        }
+
         List<Topic> topicList = likedTopics.stream()
                 .map(UserLikedTopic::getTopic)
+                .filter(topic -> topic.getLesson().getChapter().getSubject().getId().equals(subjectId))
                 .toList();
+
+        if (topicList.isEmpty()) {
+            return responseUtil.errorResponse("No liked topics found for the specified subject");
+        }
 
         List<UserLikedTopicResponse> userLikedTopicResponses = topicList.stream()
                 .map(topic -> {
@@ -95,13 +88,53 @@ public class UserLikedTopicServiceImpl implements UserLikedTopicServices {
                     List<Chapter> chapters = subject.getChapters().stream()
                             .sorted(Comparator.comparing(Chapter::getId))
                             .toList();
-                    int chapterIndex = chapters.indexOf(chapter) + 1;
-
+                    int chapterIndex = 0;
+                    for (int i = 0; i < chapters.size(); i++) {
+                        if (chapters.get(i).getId().equals(chapter.getId())) {
+                            chapterIndex = i + 1;
+                            break;
+                        }
+                    }
                     return entityMapperUtil.convertToUserLikedTopicResponse(topic, chapterIndex);
                 })
                 .toList();
 
         return responseUtil.successResponse(userLikedTopicResponses);
     }
+
+
+//    @Override
+//    public ResponseEntity<ResponseDTO<List<UserLikedTopicResponse>>> getLikedTopics(HttpServletRequest request) {
+//        User user = jwtUtils.getUserDataFromRequest(request);
+//        List<UserLikedTopic> likedTopics = userLikedTopicRepository.findByUser(user);
+//
+//        if(likedTopics.isEmpty()){
+//            return  responseUtil.errorResponse("No liked topic found");
+//        }
+//
+//        List<Topic> topicList = likedTopics.stream()
+//                .map(UserLikedTopic::getTopic)
+//                .toList();
+//
+//        List<UserLikedTopicResponse> userLikedTopicResponses = topicList.stream()
+//                .map(topic -> {
+//                    Chapter chapter = topic.getLesson().getChapter();
+//                    Subject subject = chapter.getSubject();
+//                    List<Chapter> chapters = subject.getChapters().stream()
+//                            .sorted(Comparator.comparing(Chapter::getId))
+//                            .toList();
+//                    int chapterIndex = 0;
+//                    for (int i = 0; i < chapters.size(); i++) {
+//                        if (chapters.get(i).getId().equals(chapter.getId())) {
+//                            chapterIndex = i + 1;
+//                            break;
+//                        }
+//                    }
+//                    return entityMapperUtil.convertToUserLikedTopicResponse(topic, chapterIndex);
+//                })
+//                .toList();
+//
+//        return responseUtil.successResponse(userLikedTopicResponses);
+//    }
 
 }
