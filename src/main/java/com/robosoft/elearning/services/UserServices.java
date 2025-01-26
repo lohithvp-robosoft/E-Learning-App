@@ -31,4 +31,5 @@ public interface UserServices {
 
     ResponseEntity<ResponseDTO<UserDetailResponse>> getProfile(HttpServletRequest request);
 
+
 }

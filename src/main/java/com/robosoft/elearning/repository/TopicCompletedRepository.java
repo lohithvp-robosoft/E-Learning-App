@@ -11,5 +11,7 @@ public interface TopicCompletedRepository extends JpaRepository<TopicCompleted, 
     boolean existsByTopicIdAndUserId(Long topicId, Long userId);
     long countByLessonIdAndUserId(Long lessonId, Long userId);
     long countByLessonAndUserId(Lesson lesson, Long userId);
+
+    long countByTopicIdAndUserId(Long topicId, Long userId);
     Optional<TopicCompleted> findByTopicIdAndUserId(Long topicId, Long userId);
 }

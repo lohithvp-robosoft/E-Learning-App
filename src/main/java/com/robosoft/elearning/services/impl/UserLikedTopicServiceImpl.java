@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -61,20 +62,46 @@ public class UserLikedTopicServiceImpl implements UserLikedTopicServices {
         }
     }
 
+//    @Override
+//    public ResponseEntity<ResponseDTO<List<UserLikedTopicResponse>>> getLikedTopics(HttpServletRequest request) {
+//        User user = jwtUtils.getUserDataFromRequest(request);
+//        List<UserLikedTopic> likedTopics = userLikedTopicRepository.findByUser(user);
+//
+//        List<Topic> topicList = likedTopics.stream().map(UserLikedTopic::getTopic).collect(Collectors.toList());
+//        List<UserLikedTopicResponse> userLikedTopicResponses = topicList.stream()
+//                .map(topic->{
+//                    Chapter chapter = topic.getLesson().getChapter();
+//                    Subject subject = chapter.getSubject();
+//                    int chapterIndex = chapterRepository.countBySubjectIdAndIdLessThan(subject.getId(), chapter.getId()) + 1;
+//                    return entityMapperUtil.convertToUserLikedTopicResponse(topic,chapterIndex);
+//                }).toList();
+//
+//        return responseUtil.successResponse(userLikedTopicResponses);
+//    }
+
     @Override
     public ResponseEntity<ResponseDTO<List<UserLikedTopicResponse>>> getLikedTopics(HttpServletRequest request) {
         User user = jwtUtils.getUserDataFromRequest(request);
         List<UserLikedTopic> likedTopics = userLikedTopicRepository.findByUser(user);
 
-        List<Topic> topicList = likedTopics.stream().map(UserLikedTopic::getTopic).collect(Collectors.toList());
+        List<Topic> topicList = likedTopics.stream()
+                .map(UserLikedTopic::getTopic)
+                .toList();
+
         List<UserLikedTopicResponse> userLikedTopicResponses = topicList.stream()
-                .map(topic->{
+                .map(topic -> {
                     Chapter chapter = topic.getLesson().getChapter();
                     Subject subject = chapter.getSubject();
-                    int chapterIndex = chapterRepository.countBySubjectIdAndIdLessThan(subject.getId(), chapter.getId()) + 1;
-                    return entityMapperUtil.convertToUserLikedTopicResponse(topic,chapterIndex);
-                }).toList();
+                    List<Chapter> chapters = subject.getChapters().stream()
+                            .sorted(Comparator.comparing(Chapter::getId))
+                            .toList();
+                    int chapterIndex = chapters.indexOf(chapter) + 1;
+
+                    return entityMapperUtil.convertToUserLikedTopicResponse(topic, chapterIndex);
+                })
+                .toList();
 
         return responseUtil.successResponse(userLikedTopicResponses);
     }
+
 }

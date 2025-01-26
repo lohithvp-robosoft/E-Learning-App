@@ -1,15 +1,11 @@
 package com.robosoft.elearning.controller;
 
 import com.robosoft.elearning.dto.response.*;
-import com.robosoft.elearning.modal.Question;
 import com.robosoft.elearning.services.QuestionServices;
 import jakarta.servlet.http.HttpServletRequest;
-import org.checkerframework.checker.index.qual.PolySameLen;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/questions")
@@ -20,7 +16,7 @@ public class QuestionController {
 
     @GetMapping("/test/{testId}")
     public ResponseEntity<ResponseDTO<QuestionsListResponse>> getAllQuestions(@PathVariable Long testId, HttpServletRequest request){
-        return questionServices.getAllQuestions(testId,request);
+        return questionServices.beginTheTest(testId,request);
     }
 
     @PostMapping("/{questionId}/test/{testId}")

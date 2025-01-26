@@ -39,15 +39,6 @@ public class UserTestProgress {
     @Column(name = "question_id")
     private Set<Long> correctlyAnsweredQuestionsId;
 
-//    private Long currentQuestionId;
-//    private Double totalScore;
-//    private Integer totalAnsweredQuestions;
-//    private Integer totalNumberOfQuestions;
-//
-//    private Integer lessonIndex;
-//    private String lessonName;
-//    private Integer chapterIndex;
-//
     @Enumerated(EnumType.STRING)
     private TestStatus status;
 
@@ -61,23 +52,13 @@ public class UserTestProgress {
     public  UserTestProgress(User user , Test test) {
         this.user = user;
         this.test = test;
-//        this.totalScore = 0.0;
-//        this.totalAnsweredQuestions = 0;
-//        this.status = TestStatus.IN_PROGRESS;
-//        this.currentQuestionId = questionId;
-//        this.selectedAnswers = new HashMap<>();
-//        this.correctlyAnsweredQuestionsId = new HashSet<>();
-//        this.totalNumberOfQuestions = totalNumberOfQuestions;
-//        this.lessonIndex = lessonIndex;
-//        this.lessonName = lessonName;
-//        this.chapterIndex = chapterIndex;
+        this.status = TestStatus.IN_PROGRESS;
         this.testStartTime = LocalDateTime.now();
     }
 
 
     public UserTestProgress(){}
 
-    // Getters and setters for the fields
     public Long getId() {
         return id;
     }
@@ -110,30 +91,6 @@ public class UserTestProgress {
         this.selectedAnswers = selectedAnswers;
     }
 
-//    public Long getCurrentQuestionId() {
-//        return currentQuestionId;
-//    }
-
-//    public void setCurrentQuestionId(Long currentQuestionId) {
-//        this.currentQuestionId = currentQuestionId;
-//    }
-//
-//    public Double getTotalScore() {
-//        return totalScore;
-//    }
-//
-//    public void setTotalScore(Double totalScore) {
-//        this.totalScore = totalScore;
-//    }
-//
-//    public Integer getTotalAnsweredQuestions() {
-//        return totalAnsweredQuestions;
-//    }
-//
-//    public void setTotalAnsweredQuestions(Integer totalAnsweredQuestions) {
-//        this.totalAnsweredQuestions = totalAnsweredQuestions;
-//    }
-
     public TestStatus getStatus() {
         return status;
     }
@@ -149,39 +106,6 @@ public class UserTestProgress {
     public void setCorrectlyAnsweredQuestionId(Set<Long> correctlyAnsweredQuestionsId) {
         this.correctlyAnsweredQuestionsId = correctlyAnsweredQuestionsId;
     }
-
-//    public Integer getTotalNumberOfQuestions() {
-//        return totalNumberOfQuestions;
-//    }
-//
-//    public void setTotalNumberOfQuestions(Integer totalNumberOfQuestions) {
-//        this.totalNumberOfQuestions = totalNumberOfQuestions;
-//    }
-//
-//    public Integer getLessonIndex() {
-//        return lessonIndex;
-//    }
-//
-//    public void setLessonIndex(Integer lessonIndex) {
-//        this.lessonIndex = lessonIndex;
-//    }
-//
-//    public String getLessonName() {
-//        return lessonName;
-//    }
-//
-//    public void setLessonName(String lessonName) {
-//        this.lessonName = lessonName;
-//    }
-//
-//    public Integer getChapterIndex() {
-//        return chapterIndex;
-//    }
-//
-//    public void setChapterIndex(Integer chapterIndex) {
-//        this.chapterIndex = chapterIndex;
-//    }
-
 
     public LocalDateTime getTestStartTime() {
         return testStartTime;
