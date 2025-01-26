@@ -49,4 +49,9 @@ public class UserStudyProgressController {
             @RequestParam String subjectName, HttpServletRequest request) {
         return userStudyProgressServices.searchBySubjectName(subjectName, request);
     }
+
+    @PostMapping("/viewed/topic/{topicId}")
+    public ResponseEntity<ResponseDTO<Void>> markAsViewed(@PathVariable Long topicId, HttpServletRequest request){
+        return userStudyProgressServices.markTopicAsViewed(topicId,request);
+    }
 }

@@ -23,12 +23,15 @@ public class UserCurrentlyStudying {
     @ManyToOne
     private Topic currentTopic;
 
-    private Integer completedChapterInPercentage;
+    private Float completedChapterInPercentage;
 
-    private Integer completedLessonInPercentage;
+    private Float completedLessonInPercentage;
+
 
     public UserCurrentlyStudying(User user) {
         this.user = user;
+        this.completedChapterInPercentage = 0.f;
+        this.completedLessonInPercentage = 0f;
     }
 
     public UserCurrentlyStudying(){}
@@ -73,11 +76,11 @@ public class UserCurrentlyStudying {
         this.currentLesson = currentLesson;
     }
 
-    public Integer getCompletedChapterInPercentage() {
+    public Float getCompletedChapterInPercentage() {
         return completedChapterInPercentage;
     }
 
-    public void setCompletedChapterInPercentage(Integer completedChapterInPercentage) {
+    public void setCompletedChapterInPercentage(Float completedChapterInPercentage) {
         this.completedChapterInPercentage = completedChapterInPercentage;
     }
 
@@ -89,11 +92,12 @@ public class UserCurrentlyStudying {
         this.currentTopic = currentTopic;
     }
 
-    public Integer getCompletedLessonInPercentage() {
+
+    public Float getCompletedLessonInPercentage() {
         return completedLessonInPercentage;
     }
 
-    public void setCompletedLessonInPercentage(Integer completedLessonInPercentage) {
+    public void setCompletedLessonInPercentage(Float completedLessonInPercentage) {
         this.completedLessonInPercentage = completedLessonInPercentage;
     }
 }
