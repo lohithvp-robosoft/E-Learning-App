@@ -96,93 +96,222 @@ public class LessonServiceImpl implements LessonService {
         return responseUtil.successResponse(responseList);
     }
 
+//    public ResponseEntity<ResponseDTO<List<CurrentlyStudyingLessonResponse1>>> getCurrentlyStudyingLessonByChapterId1(Long chapterId, HttpServletRequest request) {
+//        User user = jwtUtils.getUserDataFromRequest(request);
+//        Long userId = user.getId();
+//        Optional<UserCurrentlyStudying> optionalUserCurrentlyStudying = userCurrentlyStudyingRepository.findByUserIdAndCurrentChapterId(userId,chapterId);
+//        Chapter currentChapter = chapterRepository.findById(chapterId).orElseThrow(
+//                () -> new NotFoundException("Chapter Not Found"));
+//        if (!optionalUserCurrentlyStudying.isPresent()) {
+////            Chapter firstChapter =.get(0);
+//            Chapter firstChapter = currentChapter;
+//            List<Lesson> lessonList = firstChapter.getLessons();
+//
+//            List<CurrentlyStudyingLessonResponse1> currentlyStudyingLessonResponse1List = new ArrayList<>();
+//            Long lessonIndex = 0L;
+//            for (Lesson lesson : lessonList) {
+//                List<TopicWithTopicNameResponse> topicWithTopicNameResponses = new ArrayList<>();
+//                List<Topic> topicList = lesson.getTopics();
+//                for (Topic topic : topicList) {
+//                    TopicWithTopicNameResponse topicWithTopicNameResponse = new TopicWithTopicNameResponse(
+//                            topic.getId(),
+//                            topic.getLessonId(),
+//                            topic.getHeading(),
+//                            topic.getSubHeading(),
+//                            false,
+//                            topic.getLesson().getChapter().getSubject().getId()
+//                    );
+//                    topicWithTopicNameResponses.add(topicWithTopicNameResponse);
+//                }
+//                CurrentlyStudyingLessonResponse1 currentlyStudyingLessonResponse1 = new CurrentlyStudyingLessonResponse1(
+//                        lesson.getId(),
+//                        lesson.getLessonName(),
+//                        ++lessonIndex,
+//                        lesson.getChapter().getId(),
+//                        false,
+//                        0f,
+//                        topicWithTopicNameResponses
+//                );
+//                currentlyStudyingLessonResponse1List.add(currentlyStudyingLessonResponse1);
+//
+//            }
+//            return responseUtil.successResponse(currentlyStudyingLessonResponse1List);
+//        }
+//
+//        UserCurrentlyStudying userCurrentlyStudying1 = optionalUserCurrentlyStudying.get();
+//        List<Lesson> lessons = userCurrentlyStudying1.getCurrentChapter().getLessons();
+//        List<CurrentlyStudyingLessonResponse1> currentlyStudyingLessonResponse1s = new ArrayList<>();
+//
+//        Long lessonIndex = 0L;
+//        boolean isLessonCompleted = true;
+//        boolean userCurrentlyStudying = false;
+//
+//        for (Lesson lesson : lessons) {
+//            List<TopicWithTopicNameResponse> topics = new ArrayList<>();
+//            List<Topic> topicList = topicRepository.findByLessonId(lesson.getId());
+//
+//            topics = topicList.stream()
+//                    .map((topic) -> {
+//                        return new TopicWithTopicNameResponse(topic.getId(),
+//                                topic.getLessonId(),
+//                                topic.getHeading(),
+//                                topic.getSubHeading(),
+//                                topicCompletedRepository.existsByTopicIdAndUserId(topic.getId(), userId),
+//                                topic.getLesson().getChapter().getSubject().getId()
+//                        );
+//                    }).toList();
+//
+//            if (userCurrentlyStudying1.getCurrentLesson().getId() == lesson.getId()) {
+//                isLessonCompleted = false;
+//                userCurrentlyStudying = true;
+//            }
+//            CurrentlyStudyingLessonResponse1 currentlyStudyingLessonResponse1 = new CurrentlyStudyingLessonResponse1(
+//                    lesson.getId(),
+//                    lesson.getLessonName(),
+//                    ++lessonIndex,
+//                    lesson.getChapter().getId(),
+//                    userCurrentlyStudying1.getCurrentLesson().getId() == lesson.getId(),
+//                    isLessonCompleted ? 100 : userCurrentlyStudying ? userCurrentlyStudying1.getCompletedLessonInPercentage() : 0,
+//                    topics
+//            );
+//            userCurrentlyStudying= false;
+//            currentlyStudyingLessonResponse1s.add(currentlyStudyingLessonResponse1);
+//        }
+//        return responseUtil.successResponse(currentlyStudyingLessonResponse1s);
+//    }
 
 
-    public ResponseEntity<ResponseDTO<List<CurrentlyStudyingLessonResponse1>>> getCurrentlyStudyingLessonByChapterId1(Long subjectId, HttpServletRequest request) {
+    public ResponseEntity<ResponseDTO<List<CurrentlyStudyingLessonResponse1>>> getCurrentlyStudyingLessonByChapterId1(
+            Long chapterId, HttpServletRequest request) {
+
         User user = jwtUtils.getUserDataFromRequest(request);
         Long userId = user.getId();
-        Optional<UserCurrentlyStudying> optionalUserCurrentlyStudying = userCurrentlyStudyingRepository.findByUserIdAndSubjectId(userId,subjectId);
-        Subject currentSubject = subjectRepository.findById(subjectId).orElseThrow(
-                () -> new NotFoundException("Subject Not Found"));
+
+        Chapter currentChapter = chapterRepository.findById(chapterId)
+                .orElseThrow(() -> new NotFoundException("Chapter Not Found"));
+
+        Optional<UserCurrentlyStudying> optionalUserCurrentlyStudying = userCurrentlyStudyingRepository.findByUserIdAndCurrentChapterId(userId, chapterId);
+
         if (!optionalUserCurrentlyStudying.isPresent()) {
-            System.out.println("Hello");
-            Chapter firstChapter = currentSubject.getChapters().get(0);
-            List<Lesson> lessonList = firstChapter.getLessons();
+            System.out.println("No currently studying data found for user in this chapter.");
+            List<Lesson> lessonList = currentChapter.getLessons();
 
             List<CurrentlyStudyingLessonResponse1> currentlyStudyingLessonResponse1List = new ArrayList<>();
             Long lessonIndex = 0L;
+
             for (Lesson lesson : lessonList) {
-                List<TopicWithTopicNameResponse> topicWithTopicNameResponses = new ArrayList<>();
-                List<Topic> topicList = lesson.getTopics();
-                for (Topic topic : topicList) {
-                    TopicWithTopicNameResponse topicWithTopicNameResponse = new TopicWithTopicNameResponse(
-                            topic.getId(),
-                            topic.getLessonId(),
-                            topic.getHeading(),
-                            topic.getSubHeading(),
-                            false,
-                            topic.getLesson().getChapter().getSubject().getId()
-                    );
-                    topicWithTopicNameResponses.add(topicWithTopicNameResponse);
-                }
+                List<TopicWithTopicNameResponse> topics = lesson.getTopics().stream()
+                        .map(topic -> new TopicWithTopicNameResponse(
+                                topic.getId(),
+                                topic.getLessonId(),
+                                topic.getHeading(),
+                                topic.getSubHeading(),
+                                false,
+                                topic.getLesson().getChapter().getSubject().getId()
+                        ))
+                        .toList();
+
                 CurrentlyStudyingLessonResponse1 currentlyStudyingLessonResponse1 = new CurrentlyStudyingLessonResponse1(
                         lesson.getId(),
                         lesson.getLessonName(),
                         ++lessonIndex,
                         lesson.getChapter().getId(),
                         false,
-                        0,
-                        topicWithTopicNameResponses
+                        0f,
+                        topics
                 );
-                currentlyStudyingLessonResponse1List.add(currentlyStudyingLessonResponse1);
 
+                currentlyStudyingLessonResponse1List.add(currentlyStudyingLessonResponse1);
             }
             return responseUtil.successResponse(currentlyStudyingLessonResponse1List);
         }
 
         UserCurrentlyStudying userCurrentlyStudying1 = optionalUserCurrentlyStudying.get();
-        List<Lesson> lessons = userCurrentlyStudying1.getCurrentChapter().getLessons();
+        List<Lesson> lessons = currentChapter.getLessons();
         List<CurrentlyStudyingLessonResponse1> currentlyStudyingLessonResponse1s = new ArrayList<>();
 
-//        List<LessonWithTopicResponse> lessonWithTopicResponsesList = new ArrayList<>();
-
         Long lessonIndex = 0L;
-        boolean isLessonCompleted = true;
-        boolean userCurrentlyStudying = false;
+        boolean foundCurrentLesson = false;
 
         for (Lesson lesson : lessons) {
-            List<TopicWithTopicNameResponse> topics = new ArrayList<>();
-            List<Topic> topicList = topicRepository.findByLessonId(lesson.getId());
+            List<TopicWithTopicNameResponse> topics;
 
-            topics = topicList.stream()
-                    .map((topic) -> {
-                        return new TopicWithTopicNameResponse(topic.getId(),
+            if (userCurrentlyStudying1.getCurrentLesson().getId().equals(lesson.getId())) {
+                foundCurrentLesson = true;
+                topics = topicRepository.findByLessonId(lesson.getId())
+                        .stream()
+                        .map(topic -> new TopicWithTopicNameResponse(
+                                topic.getId(),
                                 topic.getLessonId(),
                                 topic.getHeading(),
                                 topic.getSubHeading(),
                                 topicCompletedRepository.existsByTopicIdAndUserId(topic.getId(), userId),
                                 topic.getLesson().getChapter().getSubject().getId()
-                        );
-                    }).toList();
+                        ))
+                        .toList();
 
-            if (userCurrentlyStudying1.getCurrentLesson().getId() == lesson.getId()) {
-                isLessonCompleted = false;
-                userCurrentlyStudying = true;
+                CurrentlyStudyingLessonResponse1 currentlyStudyingLessonResponse1 = new CurrentlyStudyingLessonResponse1(
+                        lesson.getId(),
+                        lesson.getLessonName(),
+                        ++lessonIndex,
+                        lesson.getChapter().getId(),
+                        true,
+                        userCurrentlyStudying1.getCompletedLessonInPercentage(),
+                        topics
+                );
+
+                currentlyStudyingLessonResponse1s.add(currentlyStudyingLessonResponse1);
+            } else if (!foundCurrentLesson) {
+                topics = lesson.getTopics().stream()
+                        .map(topic -> new TopicWithTopicNameResponse(
+                                topic.getId(),
+                                topic.getLessonId(),
+                                topic.getHeading(),
+                                topic.getSubHeading(),
+                                true,
+                                topic.getLesson().getChapter().getSubject().getId()
+                        ))
+                        .toList();
+
+                CurrentlyStudyingLessonResponse1 currentlyStudyingLessonResponse1 = new CurrentlyStudyingLessonResponse1(
+                        lesson.getId(),
+                        lesson.getLessonName(),
+                        ++lessonIndex,
+                        lesson.getChapter().getId(),
+                        false, // Not the current lesson
+                        100f,
+                        topics
+                );
+
+                currentlyStudyingLessonResponse1s.add(currentlyStudyingLessonResponse1);
+            } else {
+                topics = lesson.getTopics().stream()
+                        .map(topic -> new TopicWithTopicNameResponse(
+                                topic.getId(),
+                                topic.getLessonId(),
+                                topic.getHeading(),
+                                topic.getSubHeading(),
+                                false,
+                                topic.getLesson().getChapter().getSubject().getId()
+                        ))
+                        .toList();
+
+                CurrentlyStudyingLessonResponse1 currentlyStudyingLessonResponse1 = new CurrentlyStudyingLessonResponse1(
+                        lesson.getId(),
+                        lesson.getLessonName(),
+                        ++lessonIndex,
+                        lesson.getChapter().getId(),
+                        false, // Not the current lesson
+                        0f, // Not started
+                        topics
+                );
+
+                currentlyStudyingLessonResponse1s.add(currentlyStudyingLessonResponse1);
             }
-            CurrentlyStudyingLessonResponse1 currentlyStudyingLessonResponse1 = new CurrentlyStudyingLessonResponse1(
-                    lesson.getId(),
-                    lesson.getLessonName(),
-                    ++lessonIndex,
-                    lesson.getChapter().getId(),
-                    userCurrentlyStudying1.getCurrentLesson().getId() == lesson.getId(),
-                    isLessonCompleted ? 100 : userCurrentlyStudying ? userCurrentlyStudying1.getCompletedLessonInPercentage() : null,
-                    topics
-            );
-            currentlyStudyingLessonResponse1s.add(currentlyStudyingLessonResponse1);
         }
+
         return responseUtil.successResponse(currentlyStudyingLessonResponse1s);
     }
-
 
 
     private boolean checkTopicCompletion(Long userId, Topic topic) {

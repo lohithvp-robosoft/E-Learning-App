@@ -64,22 +64,17 @@ public class ChapterServiceImpl implements ChapterService {
         return responseUtil.successResponse(chapterResponse);
     }
 
-
-    public ResponseEntity<ResponseDTO<Map<String, Object>>> getChaptersBySubjectId(Long subjectId, HttpServletRequest request) {
+        public ResponseEntity<ResponseDTO<Map<String, Object>>> getChaptersBySubjectId(Long subjectId, HttpServletRequest request) {
         User user = jwtUtils.getUserDataFromRequest(request);
         Subject subject = subjectRepository.findById(subjectId)
                 .orElseThrow(() -> new NotFoundException("Subject not found with ID: " + subjectId));
-        Optional<UserCurrentlyStudying> userCurrentlyStudyingOpt = userCurrentlyStudyingRepository.findByUserIdAndSubjectId(user.getId(), subjectId);
-        Long currentChapterId = userCurrentlyStudyingOpt.map(UserCurrentlyStudying::getCurrentChapter)
-                .map(Chapter::getId)
-                .orElse(null);
+
         List<ChapterSummaryResponse> chapterResponses = chapterRepository.findBySubjectId(subjectId)
                 .stream()
                 .map(chapter -> new ChapterSummaryResponse(
                         chapter.getId(),
                         chapter.getChapterName(),
                         chapter.getChapterImg(),
-                        chapter.getId().equals(currentChapterId),
                         subject.getId(),
                         subject.getSubjectName()
                 ))
@@ -91,6 +86,7 @@ public class ChapterServiceImpl implements ChapterService {
         responseMap.put("chapters", chapterResponses);
         return responseUtil.successResponse(responseMap, "Chapters fetched successfully");
     }
+
 
 
 

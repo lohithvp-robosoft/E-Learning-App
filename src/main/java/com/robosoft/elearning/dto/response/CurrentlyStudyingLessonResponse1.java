@@ -8,11 +8,11 @@ public class CurrentlyStudyingLessonResponse1 {
     private Long lessonIndex;
     private Long chapterId;
     private boolean currentlyStudyingLesson;
-    private int completedLessonInPercentage;
+    private Float completedLessonInPercentage;
     private List<TopicWithTopicNameResponse> topics;
 
     public CurrentlyStudyingLessonResponse1(Long lessonId, String lessonName, Long lessonIndex, Long chapterId,
-                                           boolean currentlyStudyingLesson, int completedLessonInPercentage,
+                                           boolean currentlyStudyingLesson, Float completedLessonInPercentage,
                                            List<TopicWithTopicNameResponse> topics) {
         this.lessonId = lessonId;
         this.lessonName = lessonName;
@@ -63,11 +63,11 @@ public class CurrentlyStudyingLessonResponse1 {
         this.currentlyStudyingLesson = currentlyStudyingLesson;
     }
 
-    public int getCompletedLessonInPercentage() {
+    public Float getCompletedLessonInPercentage() {
         return completedLessonInPercentage;
     }
 
-    public void setCompletedLessonInPercentage(int completedLessonInPercentage) {
+    public void setCompletedLessonInPercentage(Float completedLessonInPercentage) {
         this.completedLessonInPercentage = completedLessonInPercentage;
     }
 

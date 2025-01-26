@@ -5,17 +5,15 @@ public class ChapterSummaryResponse {
     private Long id;
     private String chapterName;
     private String chapterImg;
-    private boolean isCurrentlyStudying;
     private Long subjectId;
     private String subjectName;
 
     public ChapterSummaryResponse() {}
 
-    public ChapterSummaryResponse(Long id, String chapterName, String chapterImg, boolean isCurrentlyStudying, Long subjectId, String subjectName) {
+    public ChapterSummaryResponse(Long id, String chapterName, String chapterImg, Long subjectId, String subjectName) {
         this.id = id;
         this.chapterName = chapterName;
         this.chapterImg = chapterImg;
-        this.isCurrentlyStudying = isCurrentlyStudying;
         this.subjectId = subjectId;
         this.subjectName = subjectName;
     }
@@ -43,14 +41,6 @@ public class ChapterSummaryResponse {
 
     public void setChapterImg(String chapterImg) {
         this.chapterImg = chapterImg;
-    }
-
-    public boolean isCurrentlyStudying() {
-        return isCurrentlyStudying;
-    }
-
-    public void setCurrentlyStudying(boolean currentlyStudying) {
-        isCurrentlyStudying = currentlyStudying;
     }
 
     public Long getSubjectId() {

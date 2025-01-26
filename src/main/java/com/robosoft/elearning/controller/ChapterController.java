@@ -2,8 +2,6 @@ package com.robosoft.elearning.controller;
 
 import com.robosoft.elearning.dto.request.ChapterRequest;
 import com.robosoft.elearning.dto.response.ChapterResponse;
-import com.robosoft.elearning.dto.response.ChapterSummaryResponse;
-import com.robosoft.elearning.dto.response.CurrentlyStudyingLessonResponse;
 import com.robosoft.elearning.dto.response.ResponseDTO;
 import com.robosoft.elearning.services.ChapterService;
 import jakarta.servlet.http.HttpServletRequest;

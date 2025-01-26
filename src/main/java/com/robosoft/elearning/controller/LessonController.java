@@ -32,10 +32,9 @@ public class LessonController {
         return lessonService.getLessonsByChapterId(chapterId);
     }
 
-    @GetMapping("/lesson-by-chapter/subject/{subjectId}")
-    ResponseEntity<ResponseDTO<List<CurrentlyStudyingLessonResponse1>>> getCurrentlyStudyingLessonByChapterId1(@PathVariable Long subjectId, HttpServletRequest request){
-        return lessonService.getCurrentlyStudyingLessonByChapterId1(subjectId, request);
-
+    @GetMapping("/lesson-by-chapter/chapter/{chapterId}")
+    ResponseEntity<ResponseDTO<List<CurrentlyStudyingLessonResponse1>>> getCurrentlyStudyingLessonByChapterId1(@PathVariable Long chapterId, HttpServletRequest request){
+        return lessonService.getCurrentlyStudyingLessonByChapterId1(chapterId, request);
     }
 
 
