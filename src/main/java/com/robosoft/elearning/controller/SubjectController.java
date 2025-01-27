@@ -7,6 +7,7 @@ import com.robosoft.elearning.dto.response.SubjectResponseList;
 import com.robosoft.elearning.services.SubjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,17 +35,19 @@ public class SubjectController {
 
 
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create/subject")
     public ResponseEntity<ResponseDTO<SubjectResponse>> createSubject(@RequestBody SubjectRequest subjectRequest) {
         return subjectService.createSubject(subjectRequest);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/update/{id}")
     public ResponseEntity<ResponseDTO<SubjectResponse>> updateSubject(@PathVariable Long id, @RequestBody SubjectRequest subjectRequest) {
         return subjectService.updateSubject(id, subjectRequest);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<ResponseDTO<Void>> deleteSubject(@PathVariable Long id) {
         return subjectService.deleteSubject(id);

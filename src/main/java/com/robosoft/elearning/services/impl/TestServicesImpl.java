@@ -1,6 +1,7 @@
 package com.robosoft.elearning.services.impl;
 
 import com.robosoft.elearning.controller.TestController;
+import com.robosoft.elearning.dto.request.TestRequest;
 import com.robosoft.elearning.dto.response.ResponseDTO;
 import com.robosoft.elearning.dto.response.TestResponse;
 import com.robosoft.elearning.dto.response.TestSubmitResponse;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -27,6 +29,9 @@ public class TestServicesImpl implements TestServices {
 
     @Autowired
     private TestRepository testRepository;
+
+    @Autowired
+    private LessonRepository lessonRepository;
 
     @Autowired
     private ResponseUtil responseUtil;
@@ -61,8 +66,8 @@ public class TestServicesImpl implements TestServices {
     @Override
     public ResponseEntity<ResponseDTO<List<TestResponse>>> getTestsForLesson(Long lessonId) {
         List<Test> tests = testRepository.findByLessonId(lessonId);
-        if(tests.isEmpty()){
-            throw  new NotFoundException("No Test Available");
+        if (tests.isEmpty()) {
+            throw new NotFoundException("No Test Available");
         }
         List<TestResponse> testResponses = tests.stream()
                 .map(test -> entityMapperUtil.convertToTestResponse(test))
@@ -235,4 +240,66 @@ public class TestServicesImpl implements TestServices {
 //        userTestProgressRepository.delete(userTestProgress);
 //        return responseUtil.successResponse(testSubmitResponse);
 //    }
+
+
+    @Override
+    public ResponseEntity<ResponseDTO<TestResponse>> createTest(TestRequest testRequest) {
+        Test test = new Test();
+        test.setHeading(testRequest.getHeading());
+        test.setLevel(testRequest.getLevel());
+        test.setTestIcon(testRequest.getTestIcon());
+        test.setTotalTime(testRequest.getTotalTime());
+        if (testRequest.getLessonId() != null) {
+            Lesson lesson = lessonRepository.findById(testRequest.getLessonId())
+                    .orElseThrow(() -> new NotFoundException("Lesson not found"));
+            test.setLesson(lesson);
+        }
+        test.setCreatedAt(LocalDateTime.now());
+        test.setUpdatedAt(LocalDateTime.now());
+        Test savedTest = testRepository.save(test);
+
+        TestResponse response = convertToDTO(savedTest);
+        return responseUtil.successResponse(response, "Test created successfully");
+    }
+
+    @Override
+    public ResponseEntity<ResponseDTO<TestResponse>> updateTest(Long id, TestRequest testRequest) {
+        Test test = testRepository.findById(id).orElseThrow(() -> new NotFoundException("Test not found"));
+        test.setHeading(testRequest.getHeading());
+        test.setLevel(testRequest.getLevel());
+        test.setTestIcon(testRequest.getTestIcon());
+        test.setTotalTime(testRequest.getTotalTime());
+        if (testRequest.getLessonId() != null) {
+            Lesson lesson = lessonRepository.findById(testRequest.getLessonId())
+                    .orElseThrow(() -> new NotFoundException("Lesson not found"));
+            test.setLesson(lesson);
+        }
+        test.setUpdatedAt(LocalDateTime.now());
+        Test updatedTest = testRepository.save(test);
+
+        TestResponse response = convertToDTO(updatedTest);
+        return responseUtil.successResponse(response, "Test updated successfully");
+    }
+
+    @Override
+    public ResponseEntity<ResponseDTO<String>> deleteTest(Long id) {
+        Test test = testRepository.findById(id).orElseThrow(() -> new NotFoundException("Test not found"));
+        testRepository.delete(test);
+        return responseUtil.successResponse("Test deleted successfully");
+    }
+
+    private TestResponse convertToDTO(Test test) {
+        TestResponse dto = new TestResponse();
+        dto.setId(test.getId());
+        dto.setHeading(test.getHeading());
+        dto.setLevel(test.getLevel());
+        dto.setTestIcon(test.getTestIcon());
+        dto.setTotalTime(test.getTotalTime());
+        if (test.getLesson() != null) {
+            dto.setLessonId(test.getLesson().getId());
+        }
+        dto.setCreatedAt(test.getCreatedAt());
+        dto.setUpdatedAt(test.getUpdatedAt());
+        return dto;
+    }
 }

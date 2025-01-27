@@ -110,6 +110,13 @@ public class Test {
         this.testIcon = testIcon;
     }
 
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 //    public Integer getTotalNumberOfQuestion() {
 //        return totalNumberOfQuestion;
 //    }

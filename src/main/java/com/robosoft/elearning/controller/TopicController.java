@@ -7,6 +7,7 @@ import com.robosoft.elearning.dto.response.TopicResponse;
 import com.robosoft.elearning.services.TopicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,7 +31,7 @@ public class TopicController {
         return topicService.getTopicById(id);
     }
 
-    @GetMapping("/chapter/{chapterId}/lessons/{lessonId}/topics")
+    @GetMapping("/topics/chapter/{chapterId}/lessons/{lessonId}")
     public ResponseEntity<ResponseDTO<ChapterLessonsResponse>> getTopicsByChapterAndLesson(
             @PathVariable Long chapterId,
             @PathVariable Long lessonId) {
@@ -38,11 +39,13 @@ public class TopicController {
     }
 
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/createTopic")
     public ResponseEntity<ResponseDTO<TopicResponse>> createTopic(@RequestBody TopicRequest topicRequest) {
         return topicService.createTopic(topicRequest);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/updateTopic/{id}")
     public ResponseEntity<ResponseDTO<TopicResponse>> updateTopic(
             @PathVariable long id,
@@ -50,6 +53,7 @@ public class TopicController {
         return topicService.updateTopic(id, topicRequest);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/deleteTopic/{id}")
     public ResponseEntity<ResponseDTO<Void>> deleteTopic(@PathVariable long id) {
         return topicService.deleteTopic(id);
