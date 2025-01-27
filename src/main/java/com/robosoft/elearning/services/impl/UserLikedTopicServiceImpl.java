@@ -88,13 +88,13 @@ public class UserLikedTopicServiceImpl implements UserLikedTopicServices {
                     List<Chapter> chapters = subject.getChapters().stream()
                             .sorted(Comparator.comparing(Chapter::getId))
                             .toList();
-                    int chapterIndex = 0;
-                    for (int i = 0; i < chapters.size(); i++) {
-                        if (chapters.get(i).getId().equals(chapter.getId())) {
-                            chapterIndex = i + 1;
-                            break;
-                        }
-                    }
+                    int chapterIndex = chapters.indexOf(chapter)+1;
+//                    for (int i = 0; i < chapters.size(); i++) {
+//                        if (chapters.get(i).getId().equals(chapter.getId())) {
+//                            chapterIndex = i + 1;
+//                            break;
+//                        }
+//                    }
                     return entityMapperUtil.convertToUserLikedTopicResponse(topic, chapterIndex);
                 })
                 .toList();
