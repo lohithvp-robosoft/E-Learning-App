@@ -6,6 +6,7 @@ import com.robosoft.elearning.services.LessonService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,12 +38,13 @@ public class LessonController {
         return lessonService.getCurrentlyStudyingLessonByChapterId1(chapterId, request);
     }
 
-
-    @PostMapping("/createLesson")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/createLessons")
     public ResponseEntity<ResponseDTO<LessonResponse>> createLesson(@RequestBody LessonRequest lessonRequest) {
         return lessonService.createLesson(lessonRequest);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/updateLesson/{id}")
     public ResponseEntity<ResponseDTO<LessonResponse>> updateLesson(
             @PathVariable long id,
@@ -50,6 +52,7 @@ public class LessonController {
         return lessonService.updateLesson(id, lessonRequest);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/deleteLesson/{id}")
     public ResponseEntity<ResponseDTO<Void>> deleteLesson(@PathVariable long id) {
         return lessonService.deleteLesson(id);

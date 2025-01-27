@@ -17,6 +17,7 @@ public class TestResponse {
     private Integer totalNumberOfQuestions;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Long lessonId;
 
     public TestResponse() {
     }
@@ -32,6 +33,14 @@ public class TestResponse {
         this.totalNumberOfQuestions = totalNumberOfQuestions;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+    }
+
+    public Long getLessonId() {
+        return lessonId;
+    }
+
+    public void setLessonId(Long lessonId) {
+        this.lessonId = lessonId;
     }
 
     public Long getId() {

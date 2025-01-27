@@ -9,6 +9,7 @@ import com.robosoft.elearning.services.ContentService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,13 +30,13 @@ public class ContentController {
         return contentService.goToPage(lessonId, topicId, pageNumber, request);
     }
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create")
     public ResponseEntity<ResponseDTO<String>> createContent(@RequestBody ContentRequest contentRequest) {
         return contentService.createContent(contentRequest);
     }
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/update/{contentId}")
     public ResponseEntity<ResponseDTO<String>> updateContent(
             @PathVariable Long contentId,
@@ -44,7 +45,8 @@ public class ContentController {
         return contentService.updateContent(contentId, contentRequest);
     }
 
-    @DeleteMapping("/delete/{contentId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/delete/content/{contentId}")
     public ResponseEntity<ResponseDTO<String>> deleteContent(@PathVariable Long contentId) {
         return contentService.deleteContent(contentId);
     }

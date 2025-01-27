@@ -1,5 +1,7 @@
 package com.robosoft.elearning.services.impl;
 
+import com.robosoft.elearning.dto.request.CreateQuestionRequest;
+import com.robosoft.elearning.dto.request.UpdateQuestionRequest;
 import com.robosoft.elearning.dto.response.*;
 import com.robosoft.elearning.exception.NotFoundException;
 import com.robosoft.elearning.jwt.JwtUtils;
@@ -148,6 +150,54 @@ public class QuestionServicesImpl implements QuestionServices {
             userTestProgress.getCorrectlyAnsweredQuestionsId().remove(questionId);
         }
     }
+
+
+    @Override
+    @Transactional
+    public ResponseEntity<ResponseDTO<QuestionResponse>> createQuestion(CreateQuestionRequest request) {
+        Test test = testRepository.findById(request.getTestId())
+                .orElseThrow(() -> new NotFoundException("Test Not Found"));
+
+        Question question = new Question();
+        question.setTest(test);
+        question.setQuestionStatement(request.getQuestionStatement());
+        question.setQuestionImageUrl(request.getQuestionImageUrl());
+        question.setCorrectOption(request.getCorrectOption());
+
+        questionRepository.save(question);
+
+        QuestionResponse response = entityMapperUtil.convertToQuestionResponse(question);
+        return responseUtil.successResponse(response);
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<ResponseDTO<QuestionResponse>> updateQuestion(Long questionId, UpdateQuestionRequest request) {
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new NotFoundException("Question Not Found"));
+
+        question.setQuestionStatement(request.getQuestionStatement());
+        question.setQuestionImageUrl(request.getQuestionImageUrl());
+        question.setCorrectOption(request.getCorrectOption());
+
+        questionRepository.save(question);
+
+        QuestionResponse response = entityMapperUtil.convertToQuestionResponse(question);
+        return responseUtil.successResponse(response);
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<ResponseDTO<Void>> deleteQuestion(Long questionId) {
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new NotFoundException("Question Not Found"));
+
+        questionRepository.delete(question);
+        return responseUtil.successResponse(null);
+    }
+
+
+
 
 
 }

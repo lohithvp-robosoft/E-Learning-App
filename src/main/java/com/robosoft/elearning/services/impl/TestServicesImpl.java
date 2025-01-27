@@ -1,6 +1,7 @@
 package com.robosoft.elearning.services.impl;
 
 import com.robosoft.elearning.controller.TestController;
+import com.robosoft.elearning.dto.request.TestRequest;
 import com.robosoft.elearning.dto.response.ResponseDTO;
 import com.robosoft.elearning.dto.response.TestResponse;
 import com.robosoft.elearning.dto.response.TestSubmitResponse;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -27,6 +29,9 @@ public class TestServicesImpl implements TestServices {
 
     @Autowired
     private TestRepository testRepository;
+
+    @Autowired
+    private LessonRepository lessonRepository;
 
     @Autowired
     private ResponseUtil responseUtil;
@@ -61,8 +66,8 @@ public class TestServicesImpl implements TestServices {
     @Override
     public ResponseEntity<ResponseDTO<List<TestResponse>>> getTestsForLesson(Long lessonId) {
         List<Test> tests = testRepository.findByLessonId(lessonId);
-        if(tests.isEmpty()){
-            throw  new NotFoundException("No Test Available");
+        if (tests.isEmpty()) {
+            throw new NotFoundException("No Test Available");
         }
         List<TestResponse> testResponses = tests.stream()
                 .map(test -> entityMapperUtil.convertToTestResponse(test))
@@ -167,5 +172,134 @@ public class TestServicesImpl implements TestServices {
                 remarksComment,
                 remarkSubComment
         );
+    }
+
+
+//    @Override
+//    public ResponseEntity<ResponseDTO<TestSubmitResponse>> submitTest(Long testId, HttpServletRequest request, boolean isTimeOut) {
+//        User user = jwtUtils.getUserDataFromRequest(request);
+//        UserTestProgress userTestProgress = userTestProgressRepository.findByUserIdAndTestId(user.getTopicId(),testId)
+//                .orElseThrow(() -> new NotFoundException("User Test Progress Not Found"));
+//        UserTestResult userTestResult = userTestResultRepository.findByUser(user)
+//                .orElseGet(() -> {
+//                    UserTestResult newResult = new UserTestResult();
+//                    newResult.setUser(user);
+//                    newResult.setAverageScore(0.0);
+//                    newResult.setHighestScore(0.0);
+//                    return userTestResultRepository.save(newResult);
+//                });
+//        UserTestScore userTestScore = new UserTestScore();
+//        int totalQuestions = userTestProgress.getTest().getQuestions().size();
+//        Integer totalCorrectAnswer = userTestProgress.getCorrectlyAnsweredQuestionsId().size();
+//        Integer totalAttemptedQuestion = userTestProgress.getSelectedAnswers().size();
+//        Integer securedMarksInPercentage = (int) (((float) totalCorrectAnswer / totalQuestions) * 100);
+//        userTestScore.setTest(userTestProgress.getTest());
+//        userTestScore.setUserTestResult(userTestResult);
+//        userTestScore.setTotalCorrectAnswers(totalCorrectAnswer);
+//        userTestScore.setTotalAnsweredQuestions(totalAttemptedQuestion);
+//        userTestScore.setTotalMarks(securedMarksInPercentage);
+//
+//        userTestScoreRepository.save(userTestScore);
+//        List<UserTestScore> scores = userTestResult.getUserTestScores();
+//        double totalScore = scores.stream().mapToDouble(UserTestScore::getTotalMarks).sum() + securedMarksInPercentage;
+//        int scoreCount = scores.size() + 1;
+//        double newAverageScore = totalScore / scoreCount;
+//        double newHighestScore = Math.max(userTestResult.getHighestScore(), securedMarksInPercentage);
+//        userTestResult.setAverageScore(newAverageScore);
+//        userTestResult.setHighestScore(newHighestScore);
+//        userTestResultRepository.save(userTestResult);
+//
+//        String remarksComment;
+//        int notCorrect = totalQuestions - totalCorrectAnswer;
+//        String remarkSubComment = "You are "+ notCorrect +" correct questions away from 100%, You can do it" ;
+//        if (isTimeOut) {
+//            remarksComment = "Oooops";
+//            remarkSubComment = "You ran out of time.\nYour test has been submitted by default.";
+//        } else if (securedMarksInPercentage == 100) {
+//            remarksComment = "Excellent";
+//            remarkSubComment = "Outstanding performance!";
+//        }else if (securedMarksInPercentage >= 90) {
+//            remarksComment = "Bravo";
+//        }
+//        else if (securedMarksInPercentage >= 75) {
+//            remarksComment = "Good";
+//        } else if (securedMarksInPercentage >= 50) {
+//            remarksComment = "Average";
+//        } else {
+//            remarksComment = "Poor";
+//        }
+//
+//        TestSubmitResponse testSubmitResponse = new TestSubmitResponse(
+//                securedMarksInPercentage,
+//                totalAttemptedQuestion,
+//                totalQuestions,
+//                remarksComment,
+//                remarkSubComment
+//        );
+//
+//        userTestProgressRepository.delete(userTestProgress);
+//        return responseUtil.successResponse(testSubmitResponse);
+//    }
+
+
+    @Override
+    public ResponseEntity<ResponseDTO<TestResponse>> createTest(TestRequest testRequest) {
+        Test test = new Test();
+        test.setHeading(testRequest.getHeading());
+        test.setLevel(testRequest.getLevel());
+        test.setTestIcon(testRequest.getTestIcon());
+        test.setTotalTime(testRequest.getTotalTime());
+        if (testRequest.getLessonId() != null) {
+            Lesson lesson = lessonRepository.findById(testRequest.getLessonId())
+                    .orElseThrow(() -> new NotFoundException("Lesson not found"));
+            test.setLesson(lesson);
+        }
+        test.setCreatedAt(LocalDateTime.now());
+        test.setUpdatedAt(LocalDateTime.now());
+        Test savedTest = testRepository.save(test);
+
+        TestResponse response = convertToDTO(savedTest);
+        return responseUtil.successResponse(response, "Test created successfully");
+    }
+
+    @Override
+    public ResponseEntity<ResponseDTO<TestResponse>> updateTest(Long id, TestRequest testRequest) {
+        Test test = testRepository.findById(id).orElseThrow(() -> new NotFoundException("Test not found"));
+        test.setHeading(testRequest.getHeading());
+        test.setLevel(testRequest.getLevel());
+        test.setTestIcon(testRequest.getTestIcon());
+        test.setTotalTime(testRequest.getTotalTime());
+        if (testRequest.getLessonId() != null) {
+            Lesson lesson = lessonRepository.findById(testRequest.getLessonId())
+                    .orElseThrow(() -> new NotFoundException("Lesson not found"));
+            test.setLesson(lesson);
+        }
+        test.setUpdatedAt(LocalDateTime.now());
+        Test updatedTest = testRepository.save(test);
+
+        TestResponse response = convertToDTO(updatedTest);
+        return responseUtil.successResponse(response, "Test updated successfully");
+    }
+
+    @Override
+    public ResponseEntity<ResponseDTO<String>> deleteTest(Long id) {
+        Test test = testRepository.findById(id).orElseThrow(() -> new NotFoundException("Test not found"));
+        testRepository.delete(test);
+        return responseUtil.successResponse("Test deleted successfully");
+    }
+
+    private TestResponse convertToDTO(Test test) {
+        TestResponse dto = new TestResponse();
+        dto.setId(test.getId());
+        dto.setHeading(test.getHeading());
+        dto.setLevel(test.getLevel());
+        dto.setTestIcon(test.getTestIcon());
+        dto.setTotalTime(test.getTotalTime());
+        if (test.getLesson() != null) {
+            dto.setLessonId(test.getLesson().getId());
+        }
+        dto.setCreatedAt(test.getCreatedAt());
+        dto.setUpdatedAt(test.getUpdatedAt());
+        return dto;
     }
 }
