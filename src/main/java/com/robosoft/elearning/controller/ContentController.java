@@ -14,16 +14,16 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/content")
 public class ContentController {
 
     @Autowired
     private ContentService contentService;
 
-    @GetMapping("/go-to-page/topics/lesson")
+    @GetMapping("/topics/{topicId}/lesson/{lessonId}")
     public ResponseEntity<ResponseDTO<PaginatedContentResponse>> goToPage(
-            @RequestParam Long lessonId,
-            @RequestParam Long topicId,
+            @PathVariable Long lessonId,
+            @PathVariable Long topicId,
             @RequestParam int pageNumber,
             HttpServletRequest request) {
         return contentService.goToPage(lessonId, topicId, pageNumber, request);
