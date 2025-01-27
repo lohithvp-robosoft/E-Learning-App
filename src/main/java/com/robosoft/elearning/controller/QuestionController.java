@@ -27,49 +27,6 @@ public class QuestionController {
         return questionServices.saveOptionForAQuestion(testId, questionId,selectedOption, request);
     }
 
-//    @PostMapping("/{questionId}/test/{testId}")
-//    public ResponseEntity<ResponseDTO<Void>> savedOption(){
-//        return null;
-//    }
-
-//    @GetMapping("/tests/{testId}/begin")
-//    public ResponseEntity<ResponseDTO<QuestionResponse>> beginTest(
-//            HttpServletRequest request,
-//            @PathVariable Long testId) {
-//        return questionServices.beginTest(request,testId);
-//    }
-
-//    @GetMapping("/tests/{testId}/navigate")
-//    public ResponseEntity<ResponseDTO<QuestionResponse>> navigateAndSubmitAnswer(
-//            HttpServletRequest request,
-//            @PathVariable Long testId,
-//            @RequestParam(required = false) Long nextQuestionId,
-//            @RequestParam(required = false) Integer selectedOption,
-//            @RequestParam(required = false, defaultValue = "true") boolean isForward) {
-//        return questionServices.navigateAndSubmitAnswer(request, testId, nextQuestionId, selectedOption, isForward);
-//    }
-
-//    @GetMapping("/tests/{testId}/submit")
-//    public ResponseEntity<ResponseDTO<TestSubmitResponse>> submitTest(
-//            HttpServletRequest request,
-//            @PathVariable Long testId,
-//            @RequestParam(defaultValue = "false") boolean isTimeOut) {
-//        return questionServices.submitTest(request, testId, isTimeOut);
-//    }
-
-//    @GetMapping("/tests/{testId}/set")
-//    public ResponseEntity<ResponseDTO<List<QuestionSetResponse>>> getQuestionSet(
-//            HttpServletRequest request,
-//            @PathVariable Long testId) {
-//        return questionServices.getQuestionSet(request, testId);
-//    }
-
-
-
-
-
-
-
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create-question")
     public ResponseEntity<ResponseDTO<QuestionResponse>> createQuestion(@RequestBody CreateQuestionRequest request) {

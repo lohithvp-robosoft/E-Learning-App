@@ -13,9 +13,9 @@ public interface NotificationServices {
 
     void saveNotification(String title, String message, Long userId);
 
-    ResponseEntity<ResponseDTO<List<NotificationResponse>>> getNotifications(Long userId);
+    ResponseEntity<ResponseDTO<List<NotificationResponse>>> getNotifications(HttpServletRequest request);
 
-    ResponseEntity<ResponseDTO<Void>> clearNotifications(Long userId);
+    ResponseEntity<ResponseDTO<Void>> clearNotifications(HttpServletRequest request);
 
     ResponseEntity<ResponseDTO<Void>> toggleNotification(HttpServletRequest request);
 }

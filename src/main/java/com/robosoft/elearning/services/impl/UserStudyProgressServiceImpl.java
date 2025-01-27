@@ -61,39 +61,6 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
     @Autowired
     private UserRepository userRepository;
 
-//    ========================================================================
-//    @Transactional
-//    @Override
-//    public ResponseEntity<ResponseDTO<Void>> markTopicAsCompleted(Long topicId, HttpServletRequest request) {
-//        User user = jwtUtils.getUserDataFromRequest(request);
-//        long userId = user.getId();
-//
-//        Topic topic = fetchTopicById(topicId);
-//        Lesson lesson = topic.getLesson();
-//        Chapter chapter = lesson.getChapter();
-//        Subject subject = chapter.getSubject();
-//
-//        if (isTopicAlreadyCompleted(topicId, userId)) {
-//            return responseUtil.successResponse(null, "Topic already completed");
-//        }
-//
-//        saveTopicCompletion(topicId, userId, lesson);
-//
-//
-//        if (areAllTopicsInLessonCompleted(lesson, userId)) {
-//            markLessonAsCompleted(lesson, userId, chapter);
-//
-//            if (areAllLessonsInChapterCompleted(chapter.getId(), userId)) {
-//                markChapterAsCompleted(chapter, userId, subject);
-//
-//                updateSubjectCompletionPercentage(chapter.getSubject(), userId);
-//            }
-//        }
-//        return responseUtil.successResponse(null);
-//    }
-//====================================================
-
-
     @Transactional
     @Override
     public ResponseEntity<ResponseDTO<Void>> markTopicAsCompleted(Long topicId, HttpServletRequest request) {
@@ -140,6 +107,24 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
         }
         float updatedCompletionPercentage = ((float) previousCompletedChapters / currentTotalChapters) * 100;
         user.setChaptersCompletedInPercentage((int) updatedCompletionPercentage);
+
+
+
+//        userCurrentlyStudyingRepository.save(studyingSubject);
+//        List<UserCurrentlyStudying> userCurrentlyStudyingList = userCurrentlyStudyingRepository.findAllByUserId(userId);
+//        if(userCurrentlyStudyingList.isEmpty()){
+//            user.setChaptersCompletedInPercentage(0);
+//        }else{
+//            int totalCompletedPercentage = 0;
+//            int NoOfCurrentlyStudying = userCurrentlyStudyingList.size();
+//            for (UserCurrentlyStudying studying : userCurrentlyStudyingList) {
+//                totalCompletedPercentage += studying.getCompletedChapterInPercentage();
+//            }
+//
+//            int averageCompletedPercentage = totalCompletedPercentage / NoOfCurrentlyStudying;
+//
+//            user.setChaptersCompletedInPercentage(averageCompletedPercentage);
+//        }
 
         int totalTopicsInLesson = lesson.getTopics().size();
         float completedTopicPerLesson = 1.0f / totalTopicsInLesson;
@@ -189,6 +174,23 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
         studyingSubject.setSubject(subject);
 
         userCurrentlyStudyingRepository.save(studyingSubject);
+//        //
+//        List<UserCurrentlyStudying> userCurrentlyStudyingList = userCurrentlyStudyingRepository.findAllByUserId(userId);
+//        if(userCurrentlyStudyingList.isEmpty()){
+//            user.setChaptersCompletedInPercentage(0);
+//        }else{
+//            int totalCompletedPercentage = 0;
+//            int NoOfCurrentlyStudying = userCurrentlyStudyingList.size();
+//            for (UserCurrentlyStudying studying : userCurrentlyStudyingList) {
+//                totalCompletedPercentage += studying.getCompletedChapterInPercentage();
+//            }
+//
+//            int averageCompletedPercentage = totalCompletedPercentage / NoOfCurrentlyStudying;
+//
+//            user.setChaptersCompletedInPercentage(averageCompletedPercentage);
+//        }
+
+        //
 
         return responseUtil.successResponse(null);
     }
@@ -245,46 +247,35 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
 //        userCurrentlyStudyingRepository.save(studyingSubject);
 //    }
 
-    @Transactional
-    @Override
-    public ResponseEntity<ResponseDTO<Void>> updateCurrentProgress(Long topicId, Long subjectId, HttpServletRequest request) {
-        User user = jwtUtils.getUserDataFromRequest(request);
-
-//        System.out.println("Hello");
-        UserCurrentlyStudying studyingSubject = userCurrentlyStudyingRepository
-                .findByUserIdAndSubjectId(user.getId(), subjectId)
-                .orElseGet(() -> new UserCurrentlyStudying(user));
-
-        if (topicId != null) {
-            Topic topic = topicRepository.findById(topicId)
-                    .orElseThrow(() -> new NotFoundException("Topic not found"));
-
-            Lesson lesson = topic.getLesson();
-            Chapter chapter = lesson.getChapter();
-            Subject subject = chapter.getSubject();
-
-            studyingSubject.setCurrentChapter(chapter);
-            studyingSubject.setCurrentLesson(lesson);
-            studyingSubject.setCurrentTopic(topic);
-            studyingSubject.setSubject(subject);
-
-//            int completedChapterPercentage = calculateSubjectCompletionPercentage(chapter.getId(), user.getId());
-//            int completedChapterPercentage = calculateSubjectCompletionPercentage(subjectId, user.getId()); THIS ONE
-//            int completedChapterPercentage = calculateSubjectCompletionPercentage(subjectId, user.getId(), topicId);
-//            int completedLessonPercentage = calculateLessonCompletionPercentage(lesson, user.getId()); //THIS ONE
-//            System.out.println(completedChapterPercentage);
-//            System.out.println(completedLessonPercentage);
-//            studyingSubject.setCompletedChapterInPercentage(completedChapterPercentage); THIS ONE
-
-//            THIS ONE
-//            studyingSubject.setCompletedLessonInPercentage(completedLessonPercentage);
-
-            userCurrentlyStudyingRepository.save(studyingSubject);
-        }
-
-//        updateUserAverageChapterCompletion(user);
-        return responseUtil.successResponse(null);
-    }
+//    @Transactional
+//    @Override
+//    public ResponseEntity<ResponseDTO<Void>> updateCurrentProgress(Long topicId, Long subjectId, HttpServletRequest request) {
+//        User user = jwtUtils.getUserDataFromRequest(request);
+//
+////        System.out.println("Hello");
+//        UserCurrentlyStudying studyingSubject = userCurrentlyStudyingRepository
+//                .findByUserIdAndSubjectId(user.getId(), subjectId)
+//                .orElseGet(() -> new UserCurrentlyStudying(user));
+//
+//        if (topicId != null) {
+//            Topic topic = topicRepository.findById(topicId)
+//                    .orElseThrow(() -> new NotFoundException("Topic not found"));
+//
+//            Lesson lesson = topic.getLesson();
+//            Chapter chapter = lesson.getChapter();
+//            Subject subject = chapter.getSubject();
+//
+//            studyingSubject.setCurrentChapter(chapter);
+//            studyingSubject.setCurrentLesson(lesson);
+//            studyingSubject.setCurrentTopic(topic);
+//            studyingSubject.setSubject(subject);
+//
+//            userCurrentlyStudyingRepository.save(studyingSubject);
+//        }
+//
+////        updateUserAverageChapterCompletion(user);
+//        return responseUtil.successResponse(null);
+//    }
 
     @Override
     public ResponseEntity<ResponseDTO<List<UserCurrentlyStudyingResponse>>> getAllUserCurrentlyStudying(HttpServletRequest request) {
@@ -300,17 +291,35 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
     }
 
     @Override
-    public ResponseEntity<ResponseDTO<UserCurrentlyStudyingResponse>> getUserCurrentlyStudying(Long subjectId, HttpServletRequest request) {
+    public ResponseEntity<ResponseDTO<List<UserCurrentlyStudyingResponse>>> getUserCurrentlyStudying(Long subjectId, HttpServletRequest request) {
         User user = jwtUtils.getUserDataFromRequest(request);
 
-        UserCurrentlyStudying userCurrentlyStudying = userCurrentlyStudyingRepository
-                .findByUserIdAndSubjectId(user.getId(), subjectId)
-                .orElseThrow(() -> new NotFoundException("User currently studying record not found for the specified subject"));
+        List<UserCurrentlyStudying> userCurrentlyStudyingList = userCurrentlyStudyingRepository
+                .findByUserIdAndSubjectId(user.getId(), subjectId);
 
-        UserCurrentlyStudyingResponse userCurrentlyStudyingResponse = entityMapperUtil.convertToUserCurrentlyStudyingResponse(userCurrentlyStudying);
+        if (userCurrentlyStudyingList.isEmpty()) {
+            throw new NotFoundException("User currently studying records not found for the specified subject");
+        }
 
-        return responseUtil.successResponse(userCurrentlyStudyingResponse);
+        List<UserCurrentlyStudyingResponse> userCurrentlyStudyingResponses = userCurrentlyStudyingList.stream()
+                .map(entityMapperUtil::convertToUserCurrentlyStudyingResponse)
+                .toList();
+
+        return responseUtil.successResponse(userCurrentlyStudyingResponses);
     }
+
+//    @Override
+//    public ResponseEntity<ResponseDTO<List<UserCurrentlyStudyingResponse>>> getUserCurrentlyStudying(Long subjectId, HttpServletRequest request) {
+//        User user = jwtUtils.getUserDataFromRequest(request);
+//
+//        List<UserCurrentlyStudying> userCurrentlyStudying = userCurrentlyStudyingRepository
+//                .findByUserIdAndSubjectId(user.getId(), subjectId)
+//                .orElseThrow(() -> new NotFoundException("User currently studying record not found for the specified subject"));
+//
+//        UserCurrentlyStudyingResponse userCurrentlyStudyingResponse = entityMapperUtil.convertToUserCurrentlyStudyingResponse(userCurrentlyStudying);
+//
+//        return responseUtil.successResponse(userCurrentlyStudyingResponse);
+//    }
 
     @Override
     public ResponseEntity<ResponseDTO<List<UserCurrentlyStudyingResponse>>> searchBySubjectName(String subjectName, HttpServletRequest request) {
