@@ -10,5 +10,5 @@ import java.util.List;
 public interface UserLikedTopicServices {
     ResponseEntity<ResponseDTO<Void>> toggleLike(Long topicId, HttpServletRequest request);
 
-    ResponseEntity<ResponseDTO<List<UserLikedTopicResponse>>> getLikedTopics(HttpServletRequest request);
+    ResponseEntity<ResponseDTO<List<UserLikedTopicResponse>>> getLikedTopics(Long subjectId, HttpServletRequest request);
 }

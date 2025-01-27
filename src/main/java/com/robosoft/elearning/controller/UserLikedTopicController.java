@@ -17,13 +17,13 @@ public class UserLikedTopicController {
     @Autowired
     private UserLikedTopicServices userLikedTopicServices;
 
-    @GetMapping
-    public ResponseEntity<ResponseDTO<List<UserLikedTopicResponse>>> getLickedTopic(HttpServletRequest request){
-        return userLikedTopicServices.getLikedTopics(request);
+    @GetMapping("/subjects/{subjectId}")
+    public ResponseEntity<ResponseDTO<List<UserLikedTopicResponse>>> getLickedTopic(@PathVariable Long subjectId, HttpServletRequest request){
+        return userLikedTopicServices.getLikedTopics(subjectId,request);
     }
 
 
-    @PostMapping("/toggle/topic/{topicId}")
+    @PutMapping("/toggle/topic/{topicId}")
     public ResponseEntity<ResponseDTO<Void>> toggleLike(@PathVariable long topicId, HttpServletRequest request){
         return userLikedTopicServices.toggleLike(topicId,request);
     }

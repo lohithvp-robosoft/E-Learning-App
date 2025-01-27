@@ -69,7 +69,6 @@ public class QuestionController {
 
 
 
-
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create-question")
     public ResponseEntity<ResponseDTO<QuestionResponse>> createQuestion(@RequestBody CreateQuestionRequest request) {

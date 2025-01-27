@@ -55,7 +55,7 @@ public class UserController {
         return userServices.login(loginRequest);
     }
 
-    @PostMapping("/refresh-Token")
+    @GetMapping("/refresh-Token")
     public ResponseEntity<ResponseDTO<RefreshTokenResponse>> generateAccessTokenFromRefreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
         return userServices.generateAccessTokenFromRefreshToken(refreshTokenRequest);
     }
@@ -75,12 +75,12 @@ public class UserController {
         return userServices.forgotPassword(forgotPasswordRequest);
     }
 
-    @GetMapping("/reset-password")
+    @PostMapping("/reset-password")
     public ResponseEntity<ResponseDTO<Void>> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest, HttpServletRequest request) {
         return userServices.resetPassword(resetPasswordRequest,request);
     }
 
-    @GetMapping("/forgot-reset-password")
+    @PostMapping("/forgot-reset-password")
     public ResponseEntity<ResponseDTO<Void>> forgotResetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest, @RequestParam String otp) {
         return userServices.forgotResetPassword(resetPasswordRequest,otp);
     }

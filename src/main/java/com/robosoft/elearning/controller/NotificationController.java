@@ -17,14 +17,14 @@ public class NotificationController {
     @Autowired
     private NotificationServices notificationService;
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<ResponseDTO<List<NotificationResponse>>> getNotifications(@PathVariable Long userId) {
-        return notificationService.getNotifications(userId);
+    @GetMapping()
+    public ResponseEntity<ResponseDTO<List<NotificationResponse>>> getNotifications(HttpServletRequest request) {
+        return notificationService.getNotifications(request);
     }
 
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<ResponseDTO<Void>> clearNotifications(@PathVariable Long userId) {
-        return notificationService.clearNotifications(userId);
+    @DeleteMapping()
+    public ResponseEntity<ResponseDTO<Void>> clearNotifications(HttpServletRequest request) {
+        return notificationService.clearNotifications(request);
 
     }
 

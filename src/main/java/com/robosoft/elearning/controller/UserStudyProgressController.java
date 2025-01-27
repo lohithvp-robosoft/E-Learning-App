@@ -23,7 +23,7 @@ public class UserStudyProgressController {
     }
 
     @GetMapping("/subjects/{subjectId}")
-    public ResponseEntity<ResponseDTO<UserCurrentlyStudyingResponse>> getUserCurrentlyStudyingBySubjectId(@PathVariable long subjectId, HttpServletRequest request){
+    public ResponseEntity<ResponseDTO<List<UserCurrentlyStudyingResponse>>> getUserCurrentlyStudyingBySubjectId(@PathVariable long subjectId, HttpServletRequest request){
         return userStudyProgressServices.getUserCurrentlyStudying(subjectId,request);
     }
 
@@ -35,14 +35,14 @@ public class UserStudyProgressController {
         return userStudyProgressServices.markTopicAsCompleted(topicId, request);
     }
 
-    @PutMapping("/subject/{subjectId}/topic/{topicId}/update")
-    public ResponseEntity<ResponseDTO<Void>> updateCurrentProgress(
-            @PathVariable Long subjectId,
-            @PathVariable Long topicId,
-            HttpServletRequest request
-    ) {
-        return userStudyProgressServices.updateCurrentProgress(topicId, subjectId, request);
-    }
+//    @PutMapping("/subject/{subjectId}/topic/{topicId}/update")
+//    public ResponseEntity<ResponseDTO<Void>> updateCurrentProgress(
+//            @PathVariable Long subjectId,
+//            @PathVariable Long topicId,
+//            HttpServletRequest request
+//    ) {
+//        return userStudyProgressServices.updateCurrentProgress(topicId, subjectId, request);
+//    }
 
     @GetMapping("/search")
     public ResponseEntity<ResponseDTO<List<UserCurrentlyStudyingResponse>>> searchBySubjectName(
