@@ -53,6 +53,9 @@ public class NotificationServicesImpl implements NotificationServices {
         User user = jwtUtils.getUserDataFromRequest(request);
         Long userId = user.getId();
         List<Notification> notificationList = notificationRepository.findByUserIdOrderByTimestampDesc(userId);
+        if(notificationList.isEmpty()){
+            throw new NotFoundException("No Notification Found");
+        }
         List<NotificationResponse> notificationResponseList = notificationList.stream()
                 .map(notification -> mapperUtil.toNotificationResponse(notification))
                 .collect(Collectors.toList());
