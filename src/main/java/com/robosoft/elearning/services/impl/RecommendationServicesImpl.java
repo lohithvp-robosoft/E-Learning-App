@@ -29,6 +29,7 @@ public class RecommendationServicesImpl implements RecommendationServices {
                 .flatMap(subject -> subject.getChapters().stream().limit(1))
                 .map(chapter -> new ChapterRecommendationResponse(
                         chapter.getId(),
+                        chapter.getSubject().getId(),
                         chapter.getSubject().getSubjectName(),
                         chapter.getChapterName(),
                         chapter.getChapterImg()

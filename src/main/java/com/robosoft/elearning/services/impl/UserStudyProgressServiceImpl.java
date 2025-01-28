@@ -94,37 +94,22 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
                 .findByUserIdAndCurrentChapterId(user.getId(), chapter.getId())
                 .orElseGet(() -> new UserCurrentlyStudying(user));
 
-        int currentTotalChapters = userCurrentlyStudyingRepository.countByUserId(userId);
-        int previousTotalChapters = currentTotalChapters;
-        if (studyingSubject.getCompletedChapterInPercentage() == 0) {
-            previousTotalChapters--;
-        }
-
-        int previousCompletedChapters = (int) Math.round((user.getChaptersCompletedInPercentage() / 100.0) * previousTotalChapters);
-
-        if (isChapterCompleted) {
-            previousCompletedChapters++;
-        }
-        float updatedCompletionPercentage = ((float) previousCompletedChapters / currentTotalChapters) * 100;
-        user.setChaptersCompletedInPercentage((int) updatedCompletionPercentage);
-
-
-
-//        userCurrentlyStudyingRepository.save(studyingSubject);
-//        List<UserCurrentlyStudying> userCurrentlyStudyingList = userCurrentlyStudyingRepository.findAllByUserId(userId);
-//        if(userCurrentlyStudyingList.isEmpty()){
-//            user.setChaptersCompletedInPercentage(0);
-//        }else{
-//            int totalCompletedPercentage = 0;
-//            int NoOfCurrentlyStudying = userCurrentlyStudyingList.size();
-//            for (UserCurrentlyStudying studying : userCurrentlyStudyingList) {
-//                totalCompletedPercentage += studying.getCompletedChapterInPercentage();
-//            }
-//
-//            int averageCompletedPercentage = totalCompletedPercentage / NoOfCurrentlyStudying;
-//
-//            user.setChaptersCompletedInPercentage(averageCompletedPercentage);
+        //
+//        int currentTotalChapters = userCurrentlyStudyingRepository.countByUserId(userId);
+//        int previousTotalChapters = currentTotalChapters;
+//        if (studyingSubject.getCompletedChapterInPercentage() == 0) {
+//            previousTotalChapters--;
 //        }
+//
+//        int previousCompletedChapters = (int) Math.round((user.getChaptersCompletedInPercentage() / 100.0) * previousTotalChapters);
+//
+//        if (isChapterCompleted) {
+//            previousCompletedChapters++;
+//        }
+//        float updatedCompletionPercentage = ((float) previousCompletedChapters / currentTotalChapters) * 100;
+//        user.setChaptersCompletedInPercentage((int) updatedCompletionPercentage);
+//
+
 
         int totalTopicsInLesson = lesson.getTopics().size();
         float completedTopicPerLesson = 1.0f / totalTopicsInLesson;
@@ -142,8 +127,23 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
         studyingSubject.setSubject(subject);
 
 
-        userRepository.save(user);
         userCurrentlyStudyingRepository.save(studyingSubject);
+
+        List<UserCurrentlyStudying> userCurrentlyStudyingList = userCurrentlyStudyingRepository.findAllByUserId(userId);
+        if(userCurrentlyStudyingList.isEmpty()){
+            user.setChaptersCompletedInPercentage(0);
+        }else{
+            int totalCompletedPercentage = 0;
+            int NoOfCurrentlyStudying = userCurrentlyStudyingList.size();
+            for (UserCurrentlyStudying studying : userCurrentlyStudyingList) {
+                totalCompletedPercentage += studying.getCompletedChapterInPercentage();
+            }
+
+            int averageCompletedPercentage = totalCompletedPercentage / NoOfCurrentlyStudying;
+
+            user.setChaptersCompletedInPercentage(averageCompletedPercentage);
+            userRepository.save(user);
+        }
 
 
         return responseUtil.successResponse(null);
@@ -162,35 +162,36 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
 
         boolean alreadyExists = userCurrentlyStudyingRepository.existsByUserIdAndCurrentChapterId(userId, chapter.getId());
 
-        if (alreadyExists) {
-            return responseUtil.successResponse(null, "User is already studying this topic.");
+        if (!alreadyExists) {
+            UserCurrentlyStudying studyingSubject = new UserCurrentlyStudying(user);
+
+            studyingSubject.setCurrentChapter(chapter);
+            studyingSubject.setCurrentLesson(lesson);
+            studyingSubject.setCurrentTopic(topic);
+            studyingSubject.setSubject(subject);
+            userCurrentlyStudyingRepository.save(studyingSubject);
         }
 
-        UserCurrentlyStudying studyingSubject = new UserCurrentlyStudying(user);
 
-        studyingSubject.setCurrentChapter(chapter);
-        studyingSubject.setCurrentLesson(lesson);
-        studyingSubject.setCurrentTopic(topic);
-        studyingSubject.setSubject(subject);
-
-        userCurrentlyStudyingRepository.save(studyingSubject);
-//        //
-//        List<UserCurrentlyStudying> userCurrentlyStudyingList = userCurrentlyStudyingRepository.findAllByUserId(userId);
-//        if(userCurrentlyStudyingList.isEmpty()){
-//            user.setChaptersCompletedInPercentage(0);
-//        }else{
-//            int totalCompletedPercentage = 0;
-//            int NoOfCurrentlyStudying = userCurrentlyStudyingList.size();
-//            for (UserCurrentlyStudying studying : userCurrentlyStudyingList) {
-//                totalCompletedPercentage += studying.getCompletedChapterInPercentage();
-//            }
-//
-//            int averageCompletedPercentage = totalCompletedPercentage / NoOfCurrentlyStudying;
-//
-//            user.setChaptersCompletedInPercentage(averageCompletedPercentage);
-//        }
 
         //
+        List<UserCurrentlyStudying> userCurrentlyStudyingList = userCurrentlyStudyingRepository.findAllByUserId(userId);
+        if(userCurrentlyStudyingList.isEmpty()){
+            user.setChaptersCompletedInPercentage(0);
+        }else{
+            float totalCompletedPercentage = 0;
+            int NoOfCurrentlyStudying = userCurrentlyStudyingList.size();
+            System.out.println("Total Size :"+NoOfCurrentlyStudying);
+            for (UserCurrentlyStudying studying : userCurrentlyStudyingList) {
+                totalCompletedPercentage += studying.getCompletedChapterInPercentage();
+            }
+
+            float averageCompletedPercentage = totalCompletedPercentage / NoOfCurrentlyStudying;
+            user.setChaptersCompletedInPercentage((int) averageCompletedPercentage);
+        }
+        userRepository.save(user);
+//
+
 
         return responseUtil.successResponse(null);
     }
@@ -231,51 +232,6 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
         ChapterCompleted chapterCompleted = new ChapterCompleted(chapter.getId(), userId, subject);
         chapterCompletedRepository.save(chapterCompleted);
     }
-
-//    private void updateSubjectCompletionPercentage(Subject subject, long userId) {
-//        List<Chapter> totalChapters = subject.getChapters();
-//        long totalChapterCount = totalChapters.size();
-//        long completedChapters = chapterCompletedRepository.countBySubjectIdAndUserId(subject.getId(), userId);
-//
-//        float completedPercentage = (float) ((completedChapters * 100) / totalChapterCount);
-//
-//        UserCurrentlyStudying studyingSubject = userCurrentlyStudyingRepository
-//                .findByUserIdAndSubjectId(userId, subject.getId())
-//                .orElseThrow(() -> new NotFoundException("User Currently Studying Subject Not Found"));
-//
-//        studyingSubject.setCompletedChapterInPercentage(completedPercentage);
-//        userCurrentlyStudyingRepository.save(studyingSubject);
-//    }
-
-//    @Transactional
-//    @Override
-//    public ResponseEntity<ResponseDTO<Void>> updateCurrentProgress(Long topicId, Long subjectId, HttpServletRequest request) {
-//        User user = jwtUtils.getUserDataFromRequest(request);
-//
-////        System.out.println("Hello");
-//        UserCurrentlyStudying studyingSubject = userCurrentlyStudyingRepository
-//                .findByUserIdAndSubjectId(user.getId(), subjectId)
-//                .orElseGet(() -> new UserCurrentlyStudying(user));
-//
-//        if (topicId != null) {
-//            Topic topic = topicRepository.findById(topicId)
-//                    .orElseThrow(() -> new NotFoundException("Topic not found"));
-//
-//            Lesson lesson = topic.getLesson();
-//            Chapter chapter = lesson.getChapter();
-//            Subject subject = chapter.getSubject();
-//
-//            studyingSubject.setCurrentChapter(chapter);
-//            studyingSubject.setCurrentLesson(lesson);
-//            studyingSubject.setCurrentTopic(topic);
-//            studyingSubject.setSubject(subject);
-//
-//            userCurrentlyStudyingRepository.save(studyingSubject);
-//        }
-//
-////        updateUserAverageChapterCompletion(user);
-//        return responseUtil.successResponse(null);
-//    }
 
     @Override
     public ResponseEntity<ResponseDTO<List<UserCurrentlyStudyingResponse>>> getAllUserCurrentlyStudying(HttpServletRequest request) {
