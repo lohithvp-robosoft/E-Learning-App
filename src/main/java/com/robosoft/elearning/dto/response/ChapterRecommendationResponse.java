@@ -2,12 +2,14 @@ package com.robosoft.elearning.dto.response;
 
 public class ChapterRecommendationResponse {
     private Long chapterId;
+    private Long subjectId;
     private String subjectName;
     private String chapterName;
     private String chapterImage;
 
-    public ChapterRecommendationResponse(Long chapterId, String subjectName, String chapterName, String chapterImage) {
+    public ChapterRecommendationResponse(Long chapterId, Long subjectId, String subjectName, String chapterName, String chapterImage) {
         this.chapterId = chapterId;
+        this.subjectId = subjectId;
         this.subjectName = subjectName;
         this.chapterName = chapterName;
         this.chapterImage = chapterImage;
@@ -43,5 +45,13 @@ public class ChapterRecommendationResponse {
 
     public void setChapterImage(String chapterImage) {
         this.chapterImage = chapterImage;
+    }
+
+    public Long getSubjectId() {
+        return subjectId;
+    }
+
+    public void setSubjectId(Long subjectId) {
+        this.subjectId = subjectId;
     }
 }

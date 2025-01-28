@@ -143,6 +143,7 @@ public class EntityMapperUtil {
         return subjects.stream()
                 .map(currentlyStudying -> new UserCurrentlyStudyingResponse(
                         currentlyStudying.getId(),
+                        currentlyStudying.getSubject().getId(),
                         currentlyStudying.getSubject() != null ? currentlyStudying.getSubject().getSubjectName() : null,
                         currentlyStudying.getCompletedChapterInPercentage(),
                         currentlyStudying.getCurrentChapter() != null ? currentlyStudying.getCurrentChapter().getChapterName() : null,
@@ -160,6 +161,7 @@ public class EntityMapperUtil {
     public UserCurrentlyStudyingResponse convertToUserCurrentlyStudyingResponse(UserCurrentlyStudying currentlyStudying) {
         return new UserCurrentlyStudyingResponse(
                 currentlyStudying.getId(),
+                currentlyStudying.getSubject().getId(),
                 currentlyStudying.getSubject() != null ? currentlyStudying.getSubject().getSubjectName() : null,
                 currentlyStudying.getCompletedChapterInPercentage(),
                 currentlyStudying.getCurrentChapter() != null ? currentlyStudying.getCurrentChapter().getChapterName() : null,

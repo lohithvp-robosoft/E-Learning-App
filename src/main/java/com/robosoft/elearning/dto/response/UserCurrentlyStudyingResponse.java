@@ -126,6 +126,7 @@ import java.util.Map;
 
 public class UserCurrentlyStudyingResponse {
     private Long id;
+    private Long subjectId;
     private String subjectName;
     private String chapterImageUrl;
     private Float completedChapterInPercentage;
@@ -136,8 +137,9 @@ public class UserCurrentlyStudyingResponse {
     private String currentLessonTitle;
     private String currentTopicTitle;
 
-    public UserCurrentlyStudyingResponse(Long id, String subjectName, Float completedChapterInPercentage, String currentChapterTitle, long currentChapterId, long currentLessonId, String currentLessonTitle, String currentTopicTitle, String chapterImageUrl, Float currentlyStudingLessonInPercentage) {
+    public UserCurrentlyStudyingResponse(Long id, Long subjectId, String subjectName, Float completedChapterInPercentage, String currentChapterTitle, long currentChapterId, long currentLessonId, String currentLessonTitle, String currentTopicTitle, String chapterImageUrl, Float currentlyStudingLessonInPercentage) {
         this.id = id;
+        this.subjectId = subjectId;
         this.subjectName = subjectName;
         this.completedChapterInPercentage = completedChapterInPercentage;
         this.currentChapterId = currentChapterId;
@@ -243,5 +245,13 @@ public class UserCurrentlyStudyingResponse {
 
     public void setCurrentlyStudingLessonInPercentage(Float currentlyStudingLessonInPercentage) {
         this.currentlyStudingLessonInPercentage = currentlyStudingLessonInPercentage;
+    }
+
+    public Long getSubjectId() {
+        return subjectId;
+    }
+
+    public void setSubjectId(Long subjectId) {
+        this.subjectId = subjectId;
     }
 }

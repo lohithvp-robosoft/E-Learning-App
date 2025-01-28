@@ -167,7 +167,7 @@ public class JwtUtils {
             throw new JwtException("Invalid JWT token");
         }
 
-        // Step 3: Extract user ID from the token
+        // Step 3: * user ID from the token
         Long userId = Long.parseLong(getUserIdFromJwtToken(token));
 
         // Step 4: Fetch the user data from the database using the user ID
