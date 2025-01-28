@@ -22,10 +22,6 @@ public class AwsConfig {
     @Value("${aws.s3.bucket.name}")
     private String bucketName;
 
-//    @Bean
-//    public BasicAWSCredentials awsCredentials() {
-//        return new BasicAWSCredentials(awsAccessKeyId, awsSecretAccessKey);
-//    }
 
     @Bean
     public AwsBasicCredentials awsBasicCredentials() {

@@ -16,7 +16,6 @@ public class NotificationResponse {
         this.timestamp = timestamp;
     }
 
-    // Getters and setters
     public Long getId() {
         return id;
     }

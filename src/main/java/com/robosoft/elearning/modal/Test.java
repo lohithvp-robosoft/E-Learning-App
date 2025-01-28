@@ -117,12 +117,6 @@ public class Test {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
-//    public Integer getTotalNumberOfQuestion() {
-//        return totalNumberOfQuestion;
-//    }
-//
-//    public void setTotalNumberOfQuestion(Integer totalNumberOfQuestion) {
-//        this.totalNumberOfQuestion = totalNumberOfQuestion;
-//    }
+
 }
 

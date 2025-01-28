@@ -30,8 +30,6 @@ public class EmailHandler {
             message.setText(emailContent);
             javaMailSender.send(message);
         } catch (MailAuthenticationException e) {
-//            log.error("Mail Authentication failed for email: {}", toEmail, e);
-//            log.error("Authentication failed with error: {}", e.getMessage());
             throw new com.robosoft.elearning.exception.MailAuthenticationException();
         }
     }

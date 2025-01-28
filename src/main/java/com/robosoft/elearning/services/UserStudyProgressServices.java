@@ -13,7 +13,6 @@ public interface UserStudyProgressServices {
 
     ResponseEntity<ResponseDTO<Void>> markTopicAsCompleted(Long topicId, HttpServletRequest request);
 
-//    ResponseEntity<ResponseDTO<Void>>  updateCurrentProgress(Long topicId, Long subjectId, HttpServletRequest request);
 
     ResponseEntity<ResponseDTO<List<UserCurrentlyStudyingResponse>>> getAllUserCurrentlyStudying(HttpServletRequest request);
 

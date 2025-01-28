@@ -231,14 +231,6 @@ public class UserCurrentlyStudyingResponse {
         this.currentLessonId = currentLessonId;
     }
 
-//    public Map<Long, Integer> getCurrentlyStudingLessonInPercentage() {
-//        return currentlyStudingLessonInPercentage;
-//    }
-//
-//    public void setCurrentlyStudingLessonInPercentage(Map<Long, Integer> currentlyStudingLessonInPercentage) {
-//        this.currentlyStudingLessonInPercentage = currentlyStudingLessonInPercentage;
-//    }
-
     public Float getCurrentlyStudingLessonInPercentage() {
         return currentlyStudingLessonInPercentage;
     }

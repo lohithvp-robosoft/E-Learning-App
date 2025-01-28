@@ -101,11 +101,6 @@ public class Content {
         return topic;
     }
 
-//    public void setTopic(Topic topic) {
-//        this.topic = topic;
-//    }
-
-
     public String getHeading() {
         return heading;
     }
@@ -121,10 +116,6 @@ public class Content {
     public void setLesson(Lesson lesson) {
         this.lesson = lesson;
     }
-// public void setTopic(Topic topic) {
-    //  this.topic = topic;
-    //}
-
 
     @Override
     public String toString() {

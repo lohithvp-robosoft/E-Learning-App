@@ -15,7 +15,7 @@ public class ContentAudio {
     private String transcription;
 
     @ManyToOne
-    @JoinColumn(name = "content_id")  // Explicitly specify the foreign key column
+    @JoinColumn(name = "content_id")
     private Content content;
 
     public Long getId() {

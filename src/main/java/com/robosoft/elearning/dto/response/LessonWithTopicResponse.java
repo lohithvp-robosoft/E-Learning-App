@@ -10,14 +10,6 @@ public class LessonWithTopicResponse {
     private int completedLessonInPercentage;
     private List<TopicWithTopicNameResponse> topics;
 
-//    public LessonWithTopicResponse(Long chapterId, Long lessonIndex, String lessonName, List<TopicWithTopicNameResponse> topics) {
-//        this.chapterId = chapterId;
-//        this.lessonIndex = lessonIndex;
-//        this.lessonName = lessonName;
-//        this.topics = topics;
-//    }
-
-
     public LessonWithTopicResponse(Long id, Long chapterId, Long lessonIndex, String lessonName, int completedLessonInPercentage, List<TopicWithTopicNameResponse> topics) {
         this.id = id;
         this.chapterId = chapterId;

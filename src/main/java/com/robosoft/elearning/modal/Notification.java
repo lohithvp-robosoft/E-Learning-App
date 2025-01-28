@@ -68,5 +68,4 @@ public class Notification {
         this.user = user;
     }
 
-    // Getters and setters
 }

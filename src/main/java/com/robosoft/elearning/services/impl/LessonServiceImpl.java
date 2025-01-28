@@ -216,8 +216,8 @@ public class LessonServiceImpl implements LessonService {
                         lesson.getLessonName(),
                         ++lessonIndex,
                         lesson.getChapter().getId(),
-                        false, // Not the current lesson
-                        0f, // Not started
+                        false,
+                        0f,
                         topics
                 );
 

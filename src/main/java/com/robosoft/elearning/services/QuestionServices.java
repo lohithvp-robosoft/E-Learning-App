@@ -10,13 +10,6 @@ import org.springframework.stereotype.Service;
 @Service
 public interface QuestionServices {
 
-//    ResponseEntity<ResponseDTO<QuestionResponse>> beginTest(HttpServletRequest request,Long testId);
-//
-//    ResponseEntity<ResponseDTO<QuestionResponse>> navigateAndSubmitAnswer(HttpServletRequest request, Long testId, Long nextQuestionId, Integer selectedOption, boolean isForward);
-//
-//    ResponseEntity<ResponseDTO<TestSubmitResponse>> submitTest(HttpServletRequest request, Long testId, boolean isTimeOut);
-//
-//    ResponseEntity<ResponseDTO<List<QuestionSetResponse>>> getQuestionSet(HttpServletRequest request, Long testId);
 ResponseEntity<ResponseDTO<QuestionResponse>> createQuestion(CreateQuestionRequest request);
     ResponseEntity<ResponseDTO<QuestionResponse>> updateQuestion(Long questionId, UpdateQuestionRequest request);
     ResponseEntity<ResponseDTO<Void>> deleteQuestion(Long questionId);

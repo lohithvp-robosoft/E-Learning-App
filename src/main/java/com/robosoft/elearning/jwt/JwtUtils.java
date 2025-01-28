@@ -159,26 +159,20 @@ public class JwtUtils {
     }
 
     public User getUserDataFromRequest(HttpServletRequest request) {
-        // Step 1: Get the JWT token from the request header
         String token = getJwtFromHeader(request);
 
-        // Step 2: Validate the token (you can use your existing validateJwtToken method)
         if (!validateJwtToken(token)) {
             throw new JwtException("Invalid JWT token");
         }
 
-        // Step 3: * user ID from the token
         Long userId = Long.parseLong(getUserIdFromJwtToken(token));
 
-        // Step 4: Fetch the user data from the database using the user ID
-        // Assuming you have a method to fetch the user by ID. You can use a repository or a service.
         User user = getUserById(userId);
 
-        return user;  // Return the user object
+        return user;
     }
 
     private User getUserById(Long userId) {
-        // Replace this with your actual method to fetch the user from the repository.
         return userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
     }
@@ -187,5 +181,3 @@ public class JwtUtils {
 }
 
 
-
-//                .claim("jti", UUID.randomUUID().toString())

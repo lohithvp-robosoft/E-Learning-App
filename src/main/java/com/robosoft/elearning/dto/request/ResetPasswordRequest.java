@@ -26,10 +26,6 @@ public class ResetPasswordRequest {
         return newPassword;
     }
 
-//    public ResetPasswordRequest(String email, String newPassword) {
-//        this.email = email;
-//        this.newPassword = newPassword;
-//    }
 @JsonCreator
 public ResetPasswordRequest(
         @JsonProperty("email") String email,
