@@ -96,91 +96,6 @@ public class LessonServiceImpl implements LessonService {
         return responseUtil.successResponse(responseList);
     }
 
-//    public ResponseEntity<ResponseDTO<List<CurrentlyStudyingLessonResponse1>>> getCurrentlyStudyingLessonByChapterId1(Long chapterId, HttpServletRequest request) {
-//        User user = jwtUtils.getUserDataFromRequest(request);
-//        Long userId = user.getId();
-//        Optional<UserCurrentlyStudying> optionalUserCurrentlyStudying = userCurrentlyStudyingRepository.findByUserIdAndCurrentChapterId(userId,chapterId);
-//        Chapter currentChapter = chapterRepository.findById(chapterId).orElseThrow(
-//                () -> new NotFoundException("Chapter Not Found"));
-//        if (!optionalUserCurrentlyStudying.isPresent()) {
-////            Chapter firstChapter =.get(0);
-//            Chapter firstChapter = currentChapter;
-//            List<Lesson> lessonList = firstChapter.getLessons();
-//
-//            List<CurrentlyStudyingLessonResponse1> currentlyStudyingLessonResponse1List = new ArrayList<>();
-//            Long lessonIndex = 0L;
-//            for (Lesson lesson : lessonList) {
-//                List<TopicWithTopicNameResponse> topicWithTopicNameResponses = new ArrayList<>();
-//                List<Topic> topicList = lesson.getTopics();
-//                for (Topic topic : topicList) {
-//                    TopicWithTopicNameResponse topicWithTopicNameResponse = new TopicWithTopicNameResponse(
-//                            topic.getId(),
-//                            topic.getLessonId(),
-//                            topic.getHeading(),
-//                            topic.getSubHeading(),
-//                            false,
-//                            topic.getLesson().getChapter().getSubject().getId()
-//                    );
-//                    topicWithTopicNameResponses.add(topicWithTopicNameResponse);
-//                }
-//                CurrentlyStudyingLessonResponse1 currentlyStudyingLessonResponse1 = new CurrentlyStudyingLessonResponse1(
-//                        lesson.getId(),
-//                        lesson.getLessonName(),
-//                        ++lessonIndex,
-//                        lesson.getChapter().getId(),
-//                        false,
-//                        0f,
-//                        topicWithTopicNameResponses
-//                );
-//                currentlyStudyingLessonResponse1List.add(currentlyStudyingLessonResponse1);
-//
-//            }
-//            return responseUtil.successResponse(currentlyStudyingLessonResponse1List);
-//        }
-//
-//        UserCurrentlyStudying userCurrentlyStudying1 = optionalUserCurrentlyStudying.get();
-//        List<Lesson> lessons = userCurrentlyStudying1.getCurrentChapter().getLessons();
-//        List<CurrentlyStudyingLessonResponse1> currentlyStudyingLessonResponse1s = new ArrayList<>();
-//
-//        Long lessonIndex = 0L;
-//        boolean isLessonCompleted = true;
-//        boolean userCurrentlyStudying = false;
-//
-//        for (Lesson lesson : lessons) {
-//            List<TopicWithTopicNameResponse> topics = new ArrayList<>();
-//            List<Topic> topicList = topicRepository.findByLessonId(lesson.getId());
-//
-//            topics = topicList.stream()
-//                    .map((topic) -> {
-//                        return new TopicWithTopicNameResponse(topic.getId(),
-//                                topic.getLessonId(),
-//                                topic.getHeading(),
-//                                topic.getSubHeading(),
-//                                topicCompletedRepository.existsByTopicIdAndUserId(topic.getId(), userId),
-//                                topic.getLesson().getChapter().getSubject().getId()
-//                        );
-//                    }).toList();
-//
-//            if (userCurrentlyStudying1.getCurrentLesson().getId() == lesson.getId()) {
-//                isLessonCompleted = false;
-//                userCurrentlyStudying = true;
-//            }
-//            CurrentlyStudyingLessonResponse1 currentlyStudyingLessonResponse1 = new CurrentlyStudyingLessonResponse1(
-//                    lesson.getId(),
-//                    lesson.getLessonName(),
-//                    ++lessonIndex,
-//                    lesson.getChapter().getId(),
-//                    userCurrentlyStudying1.getCurrentLesson().getId() == lesson.getId(),
-//                    isLessonCompleted ? 100 : userCurrentlyStudying ? userCurrentlyStudying1.getCompletedLessonInPercentage() : 0,
-//                    topics
-//            );
-//            userCurrentlyStudying= false;
-//            currentlyStudyingLessonResponse1s.add(currentlyStudyingLessonResponse1);
-//        }
-//        return responseUtil.successResponse(currentlyStudyingLessonResponse1s);
-//    }
-
-
     public ResponseEntity<ResponseDTO<List<CurrentlyStudyingLessonResponse1>>> getCurrentlyStudyingLessonByChapterId1(
             Long chapterId, HttpServletRequest request) {
 
@@ -323,14 +238,6 @@ public class LessonServiceImpl implements LessonService {
         long completedTopics = topicCompletedRepository.countByLessonAndUserId(lesson, userId);
         return totalTopics > 0 ? (int) ((completedTopics * 100) / totalTopics) : 0;
     }
-
-
-
-
-
-
-
-
 
     @Override
     public ResponseEntity<ResponseDTO<LessonResponse>> createLesson(LessonRequest lessonRequest) {

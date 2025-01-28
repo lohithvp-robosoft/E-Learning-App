@@ -20,7 +20,6 @@ public class RecommendationController {
 
     @GetMapping("/chapters")
     public ResponseEntity<ResponseDTO<List<ChapterRecommendationResponse>>> getChapterRecommendations() {
-
         return recommendationService.getChapterRecommendations();
     }
 

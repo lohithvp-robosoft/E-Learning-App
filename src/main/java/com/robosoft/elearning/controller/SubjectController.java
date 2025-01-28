@@ -33,8 +33,6 @@ public class SubjectController {
         return subjectService.searchSubjectByName(keyword);
     }
 
-
-
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create/subject")
     public ResponseEntity<ResponseDTO<SubjectResponse>> createSubject(@RequestBody SubjectRequest subjectRequest) {

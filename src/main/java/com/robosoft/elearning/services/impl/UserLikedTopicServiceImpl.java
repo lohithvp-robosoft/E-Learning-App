@@ -102,39 +102,4 @@ public class UserLikedTopicServiceImpl implements UserLikedTopicServices {
         return responseUtil.successResponse(userLikedTopicResponses);
     }
 
-
-//    @Override
-//    public ResponseEntity<ResponseDTO<List<UserLikedTopicResponse>>> getLikedTopics(HttpServletRequest request) {
-//        User user = jwtUtils.getUserDataFromRequest(request);
-//        List<UserLikedTopic> likedTopics = userLikedTopicRepository.findByUser(user);
-//
-//        if(likedTopics.isEmpty()){
-//            return  responseUtil.errorResponse("No liked topic found");
-//        }
-//
-//        List<Topic> topicList = likedTopics.stream()
-//                .map(UserLikedTopic::getTopic)
-//                .toList();
-//
-//        List<UserLikedTopicResponse> userLikedTopicResponses = topicList.stream()
-//                .map(topic -> {
-//                    Chapter chapter = topic.getLesson().getChapter();
-//                    Subject subject = chapter.getSubject();
-//                    List<Chapter> chapters = subject.getChapters().stream()
-//                            .sorted(Comparator.comparing(Chapter::getId))
-//                            .toList();
-//                    int chapterIndex = 0;
-//                    for (int i = 0; i < chapters.size(); i++) {
-//                        if (chapters.get(i).getId().equals(chapter.getId())) {
-//                            chapterIndex = i + 1;
-//                            break;
-//                        }
-//                    }
-//                    return entityMapperUtil.convertToUserLikedTopicResponse(topic, chapterIndex);
-//                })
-//                .toList();
-//
-//        return responseUtil.successResponse(userLikedTopicResponses);
-//    }
-
 }

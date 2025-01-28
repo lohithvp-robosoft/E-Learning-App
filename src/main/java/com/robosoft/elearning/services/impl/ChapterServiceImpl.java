@@ -87,11 +87,6 @@ public class ChapterServiceImpl implements ChapterService {
         return responseUtil.successResponse(responseMap, "Chapters fetched successfully");
     }
 
-
-
-
-
-
     @Override
     public ResponseEntity<ResponseDTO<ChapterResponse>> createChapter(ChapterRequest chapterRequest) {
         Chapter chapter = new Chapter();

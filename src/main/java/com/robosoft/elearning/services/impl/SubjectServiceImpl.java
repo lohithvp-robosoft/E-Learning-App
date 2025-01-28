@@ -137,11 +137,4 @@ public class SubjectServiceImpl implements SubjectService {
         return responseUtil.successResponse(null, deleteSubjectSuccessMessage);
     }
 
-
-
-
-
-
-
-
 }

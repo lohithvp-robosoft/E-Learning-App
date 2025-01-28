@@ -101,12 +101,6 @@ public class ContentServiceImpl implements ContentService {
         return responseUtil.successResponse(responseDTO, "Content fetched successfully");
     }
 
-
-
-
-
-
-
     @Override
     public ResponseEntity<ResponseDTO<String>> createContent(ContentRequest contentRequest) {
         Lesson lesson = lessonRepository.findById(contentRequest.getLessonId())
