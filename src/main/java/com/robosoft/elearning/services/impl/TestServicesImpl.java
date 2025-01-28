@@ -83,6 +83,8 @@ public class TestServicesImpl implements TestServices {
         UserTestProgress userTestProgress = getUserTestProgress(user, testId);
         UserTestResult userTestResult = getOrCreateUserTestResult(user);
 
+        markTestComplete(testId, user.getId());// This is calculate progress
+
         UserTestScore userTestScore = calculateUserTestScore(userTestProgress, userTestResult);
         userTestScoreRepository.save(userTestScore);
 
@@ -234,4 +236,46 @@ public class TestServicesImpl implements TestServices {
         dto.setUpdatedAt(test.getUpdatedAt());
         return dto;
     }
+
+    @Autowired
+    private  ChapterRepository chapterRepository;
+
+    @Autowired
+    private UserCurrentlyStudyingRepository userCurrentlyStudyingRepository;
+
+    private void markTestComplete(Long testId, Long userId){
+        if(userTestScoreRepository.existsByUserIdAndTestId(userId,testId)){
+           return;
+        }
+        Test test = testRepository.findById(testId).orElseThrow(()-> new NotFoundException("Test not found"));
+        Chapter chapter = test.getLesson().getChapter();
+        int totalTestCountInChapter = chapter.getLessons().stream()
+                .mapToInt(lesson -> lesson.getTests().size())
+                .sum();
+
+        float testCompletedPercent = (float) 1 / totalTestCountInChapter;
+        UserCurrentlyStudying userCurrentlyStudying = userCurrentlyStudyingRepository.findByUserIdAndCurrentChapterId(userId,chapter.getId()).orElseThrow(()-> new RuntimeException("Please complete a Lesson to take test"));
+
+        userCurrentlyStudying.setCompletedChapterInPercentage(userCurrentlyStudying.getCompletedChapterInPercentage()+ testCompletedPercent);
+        userCurrentlyStudyingRepository.save(userCurrentlyStudying);
+
+        User user = userRepository.findById(userId).orElseThrow(()-> new NotFoundException("User Not Found"));
+        List<UserCurrentlyStudying> userCurrentlyStudyingList = userCurrentlyStudyingRepository.findAllByUserId(userId);
+        if(userCurrentlyStudyingList.isEmpty()){
+            user.setChaptersCompletedInPercentage(0f);
+        }else{
+            float totalCompletedPercentage = 0;
+            int noOfCurrentlyStudying = userCurrentlyStudyingList.size();
+            for (UserCurrentlyStudying studying : userCurrentlyStudyingList) {
+                totalCompletedPercentage += studying.getCompletedChapterInPercentage();
+            }
+
+            float averageCompletedPercentage = totalCompletedPercentage / noOfCurrentlyStudying;
+
+            user.setChaptersCompletedInPercentage(averageCompletedPercentage);
+            userRepository.save(user);
+        }
+
+    }
+
 }

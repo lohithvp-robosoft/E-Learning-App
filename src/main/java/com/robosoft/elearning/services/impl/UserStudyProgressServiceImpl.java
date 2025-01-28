@@ -15,12 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
@@ -115,9 +110,13 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
         float completedTopicPerLesson = 1.0f / totalTopicsInLesson;
         int totalLessonsInChapter = chapter.getLessons().size();
         float completedTopicPerChapter = completedTopicPerLesson /totalLessonsInChapter;
-        float completedTopicPerChapterInPercentage =  (completedTopicPerChapter * 100);
+//        float completedTopicPerChapterInPercentage =  (completedTopicPerChapter * 100);
+        float completedTopicPerChapterInPercentage =  (completedTopicPerChapter * 80);
         float chapterPercentage = studyingSubject.getCompletedChapterInPercentage()+completedTopicPerChapterInPercentage;
-        studyingSubject.setCompletedChapterInPercentage(chapterPercentage > 100 ? 100f : chapterPercentage);
+        float maxChapterPercentage = 80f; // Max allowed for content completion
+        studyingSubject.setCompletedChapterInPercentage(Math.min(chapterPercentage, maxChapterPercentage));
+
+//        studyingSubject.setCompletedChapterInPercentage(chapterPercentage > 100 ? 100f : chapterPercentage);
         float completedLessonPercentage = calculateLessonCompletionPercentage(lesson, userId);
         studyingSubject.setCompletedLessonInPercentage(completedLessonPercentage);
 
@@ -131,15 +130,15 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
 
         List<UserCurrentlyStudying> userCurrentlyStudyingList = userCurrentlyStudyingRepository.findAllByUserId(userId);
         if(userCurrentlyStudyingList.isEmpty()){
-            user.setChaptersCompletedInPercentage(0);
+            user.setChaptersCompletedInPercentage(0f);
         }else{
-            int totalCompletedPercentage = 0;
-            int NoOfCurrentlyStudying = userCurrentlyStudyingList.size();
+            float totalCompletedPercentage = 0;
+            int noOfCurrentlyStudying = userCurrentlyStudyingList.size();
             for (UserCurrentlyStudying studying : userCurrentlyStudyingList) {
                 totalCompletedPercentage += studying.getCompletedChapterInPercentage();
             }
 
-            int averageCompletedPercentage = totalCompletedPercentage / NoOfCurrentlyStudying;
+            float averageCompletedPercentage = totalCompletedPercentage / noOfCurrentlyStudying;
 
             user.setChaptersCompletedInPercentage(averageCompletedPercentage);
             userRepository.save(user);
@@ -177,17 +176,16 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
         //
         List<UserCurrentlyStudying> userCurrentlyStudyingList = userCurrentlyStudyingRepository.findAllByUserId(userId);
         if(userCurrentlyStudyingList.isEmpty()){
-            user.setChaptersCompletedInPercentage(0);
+            user.setChaptersCompletedInPercentage(0f);
         }else{
             float totalCompletedPercentage = 0;
-            int NoOfCurrentlyStudying = userCurrentlyStudyingList.size();
-            System.out.println("Total Size :"+NoOfCurrentlyStudying);
+            int noOfCurrentlyStudying = userCurrentlyStudyingList.size();
             for (UserCurrentlyStudying studying : userCurrentlyStudyingList) {
                 totalCompletedPercentage += studying.getCompletedChapterInPercentage();
             }
 
-            float averageCompletedPercentage = totalCompletedPercentage / NoOfCurrentlyStudying;
-            user.setChaptersCompletedInPercentage((int) averageCompletedPercentage);
+            float averageCompletedPercentage = totalCompletedPercentage / noOfCurrentlyStudying;
+            user.setChaptersCompletedInPercentage(averageCompletedPercentage);
         }
         userRepository.save(user);
 //

@@ -34,7 +34,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserCurrentlyStudying> currentlyStudyingSubjects;
 
-    private int chaptersCompletedInPercentage;
+    private Float chaptersCompletedInPercentage;
 
     public User(Long userId) {
     }
@@ -172,11 +172,11 @@ public class User {
         this.currentlyStudyingSubjects = currentlyStudyingSubjects;
     }
 
-    public int getChaptersCompletedInPercentage() {
+    public Float getChaptersCompletedInPercentage() {
         return chaptersCompletedInPercentage;
     }
 
-    public void setChaptersCompletedInPercentage(int chaptersCompletedInPercentage) {
+    public void setChaptersCompletedInPercentage(Float chaptersCompletedInPercentage) {
         this.chaptersCompletedInPercentage = chaptersCompletedInPercentage;
     }
 

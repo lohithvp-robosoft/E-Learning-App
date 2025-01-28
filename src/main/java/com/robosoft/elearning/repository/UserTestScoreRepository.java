@@ -12,4 +12,5 @@ public interface  UserTestScoreRepository extends JpaRepository<UserTestScore, L
     List<UserTestScore> findByUser(User user);
     List<UserTestScore> findByTestAndUser(Test test, User user);
     List<UserTestScore> findByTestIdInAndUser(List<Long> testIds, User user);
+    boolean existsByUserIdAndTestId(Long userId, Long testId);
 }

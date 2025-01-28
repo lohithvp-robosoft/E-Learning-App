@@ -10,7 +10,7 @@ public class UserDetailResponse {
     @JsonProperty("userName")
     private String userName;
     private String email;
-    private int completerChapterInPercentage;
+    private Float completerChapterInPercentage;
 
     private UserTestResultResponse testResult;
 
@@ -40,11 +40,11 @@ public class UserDetailResponse {
         this.email = email;
     }
 
-    public int getCompleterChapterInPercentage() {
+    public Float getCompleterChapterInPercentage() {
         return completerChapterInPercentage;
     }
 
-    public void setCompleterChapterInPercentage(int completerChapterInPercentage) {
+    public void setCompleterChapterInPercentage(Float completerChapterInPercentage) {
         this.completerChapterInPercentage = completerChapterInPercentage;
     }
 
