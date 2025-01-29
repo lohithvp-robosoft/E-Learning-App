@@ -4,6 +4,7 @@ import com.google.firebase.database.core.Repo;
 import com.robosoft.elearning.dto.request.TestRequest;
 import com.robosoft.elearning.dto.response.ResponseDTO;
 import com.robosoft.elearning.dto.response.TestResponse;
+import com.robosoft.elearning.dto.response.TestResponseList;
 import com.robosoft.elearning.dto.response.TestSubmitResponse;
 import com.robosoft.elearning.services.TestServices;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,8 +23,8 @@ public class TestController {
     private TestServices testServices;
 
     @GetMapping("/lessons/{lessonId}")
-    public ResponseEntity<ResponseDTO<List<TestResponse>>> getTestsForLesson(@PathVariable Long lessonId) {
-        return testServices.getTestsForLesson(lessonId);
+    public ResponseEntity<ResponseDTO<TestResponseList>> getTestsForLesson(@PathVariable Long lessonId, HttpServletRequest request) {
+        return testServices.getTestsForLesson(lessonId, request);
     }
 
     @GetMapping("/{testId}")

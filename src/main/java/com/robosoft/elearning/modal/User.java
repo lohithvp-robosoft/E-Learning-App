@@ -34,7 +34,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserCurrentlyStudying> currentlyStudyingSubjects;
 
-    private Float chaptersCompletedInPercentage;
+    private Float chaptersCompletedInPercentage = 0.0f;
 
     public User(Long userId) {
     }

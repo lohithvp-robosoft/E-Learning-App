@@ -4,6 +4,7 @@ import com.robosoft.elearning.controller.TestController;
 import com.robosoft.elearning.dto.request.TestRequest;
 import com.robosoft.elearning.dto.response.ResponseDTO;
 import com.robosoft.elearning.dto.response.TestResponse;
+import com.robosoft.elearning.dto.response.TestResponseList;
 import com.robosoft.elearning.dto.response.TestSubmitResponse;
 import com.robosoft.elearning.exception.NotFoundException;
 import com.robosoft.elearning.jwt.JwtUtils;
@@ -63,8 +64,11 @@ public class TestServicesImpl implements TestServices {
         return responseUtil.successResponse(testResponse);
     }
 
+    @Autowired
+    private LessonCompletedRepository lessonCompletedRepository;
+
     @Override
-    public ResponseEntity<ResponseDTO<List<TestResponse>>> getTestsForLesson(Long lessonId) {
+    public ResponseEntity<ResponseDTO<TestResponseList>> getTestsForLesson(Long lessonId, HttpServletRequest request) {
         List<Test> tests = testRepository.findByLessonId(lessonId);
         if (tests.isEmpty()) {
             throw new NotFoundException("No Test Available");
@@ -73,7 +77,11 @@ public class TestServicesImpl implements TestServices {
                 .map(test -> entityMapperUtil.convertToTestResponse(test))
                 .toList();
 
-        return responseUtil.successResponse(testResponses);
+        User user = jwtUtils.getUserDataFromRequest(request);
+        boolean isLessonCompleted = lessonCompletedRepository.existsByLessonIdAndUserId(lessonId, user.getId());
+
+        TestResponseList testResponseList = new TestResponseList(isLessonCompleted, testResponses);
+        return responseUtil.successResponse(testResponseList);
     }
 
 
