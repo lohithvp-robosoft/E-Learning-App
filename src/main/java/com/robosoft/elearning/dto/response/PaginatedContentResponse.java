@@ -9,12 +9,14 @@ public class PaginatedContentResponse {
     private Long lessonId;
     private String heading;
     private Long topicId;
+    private Long lessonIndex;
 
-    public PaginatedContentResponse(List<ContentResponse> content, int totalPages, int currentPage, Long lessonId, String heading, Long topicId) {
+    public PaginatedContentResponse(List<ContentResponse> content,Long lessonIndex, int totalPages, int currentPage, Long lessonId, String heading, Long topicId) {
         this.content = content;
         this.totalPages = totalPages;
         this.currentPage = currentPage;
         this.lessonId = lessonId;
+        this.lessonIndex=lessonIndex;
         this.heading = heading;
         this.topicId = topicId;
     }
@@ -65,5 +67,13 @@ public class PaginatedContentResponse {
 
     public void setTopicId(Long topicId) {
         this.topicId = topicId;
+    }
+
+    public Long getLessonIndex() {
+        return lessonIndex;
+    }
+
+    public void setLessonIndex(Long lessonIndex) {
+        this.lessonIndex = lessonIndex;
     }
 }

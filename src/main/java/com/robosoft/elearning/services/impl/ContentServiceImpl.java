@@ -6,10 +6,7 @@ import com.robosoft.elearning.dto.response.PaginatedContentResponse;
 import com.robosoft.elearning.dto.response.ResponseDTO;
 import com.robosoft.elearning.exception.NotFoundException;
 import com.robosoft.elearning.jwt.JwtUtils;
-import com.robosoft.elearning.modal.Content;
-import com.robosoft.elearning.modal.Lesson;
-import com.robosoft.elearning.modal.Topic;
-import com.robosoft.elearning.modal.User;
+import com.robosoft.elearning.modal.*;
 import com.robosoft.elearning.repository.ContentRepository;
 import com.robosoft.elearning.repository.LessonRepository;
 import com.robosoft.elearning.repository.TopicRepository;
@@ -26,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -122,6 +120,20 @@ public class ContentServiceImpl implements ContentService {
             throw new NotFoundException("Lesson not found for the given lesson ID.");
         }
         Lesson lesson = lessonOptional.get();
+        Chapter chapter = lesson.getChapter();
+        if (chapter == null) {
+            throw new NotFoundException("No chapter found for the given lesson.");
+        }
+
+        List<Lesson> allLessons = lessonRepository.findByChapterId(chapter.getId());  // Assuming Chapter has an ID and findByChapterId exists
+
+        // Sort lessons if necessary (by ID or any other field)
+        allLessons = allLessons.stream()
+                .sorted(Comparator.comparing(Lesson::getId))
+                .collect(Collectors.toList());
+
+        // Find the index of the current lesson in the sorted lessons list
+        int lessonIndex = allLessons.indexOf(lesson) + 1;
         List<Topic> topics = topicRepository.findByLessonId(lessonId);
         if (topics.isEmpty()) {
             throw new NotFoundException("No topics found for the given lesson ID.");
@@ -142,6 +154,7 @@ public class ContentServiceImpl implements ContentService {
                 .collect(Collectors.toList());
         PaginatedContentResponse responseDTO = new PaginatedContentResponse(
                 contentDTOs,
+                (long) lessonIndex,
                 contentPage.getTotalPages(),
                 contentPage.getNumber() + 1,
                 lesson.getId(),
