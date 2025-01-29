@@ -131,7 +131,7 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
 
         List<UserCurrentlyStudying> userCurrentlyStudyingList = userCurrentlyStudyingRepository.findAllByUserId(userId);
         if(userCurrentlyStudyingList.isEmpty()){
-            user.setChaptersCompletedInPercentage(0);
+            user.setChaptersCompletedInPercentage(0.0f);
         }else{
             int totalCompletedPercentage = 0;
             int NoOfCurrentlyStudying = userCurrentlyStudyingList.size();
@@ -139,7 +139,7 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
                 totalCompletedPercentage += studying.getCompletedChapterInPercentage();
             }
 
-            int averageCompletedPercentage = totalCompletedPercentage / NoOfCurrentlyStudying;
+            Float averageCompletedPercentage = (float) totalCompletedPercentage / NoOfCurrentlyStudying;
 
             user.setChaptersCompletedInPercentage(averageCompletedPercentage);
             userRepository.save(user);
@@ -177,7 +177,7 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
         //
         List<UserCurrentlyStudying> userCurrentlyStudyingList = userCurrentlyStudyingRepository.findAllByUserId(userId);
         if(userCurrentlyStudyingList.isEmpty()){
-            user.setChaptersCompletedInPercentage(0);
+            user.setChaptersCompletedInPercentage(0.0f);
         }else{
             float totalCompletedPercentage = 0;
             int NoOfCurrentlyStudying = userCurrentlyStudyingList.size();
@@ -187,7 +187,7 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
             }
 
             float averageCompletedPercentage = totalCompletedPercentage / NoOfCurrentlyStudying;
-            user.setChaptersCompletedInPercentage((int) averageCompletedPercentage);
+            user.setChaptersCompletedInPercentage(averageCompletedPercentage);
         }
         userRepository.save(user);
 //
