@@ -110,9 +110,9 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
         float completedTopicPerLesson = 1.0f / totalTopicsInLesson;
         int totalLessonsInChapter = chapter.getLessons().size();
         float completedTopicPerChapter = completedTopicPerLesson /totalLessonsInChapter;
-        float completedTopicPerChapterInPercentage =  (completedTopicPerChapter * 100);
+        float completedTopicPerChapterInPercentage =  (completedTopicPerChapter * 80);
         float chapterPercentage = studyingSubject.getCompletedChapterInPercentage()+completedTopicPerChapterInPercentage;
-        studyingSubject.setCompletedChapterInPercentage(chapterPercentage > 100 ? 100f : chapterPercentage);
+        studyingSubject.setCompletedChapterInPercentage(chapterPercentage > 80 ? 80f : chapterPercentage);
         float completedLessonPercentage = calculateLessonCompletionPercentage(lesson, userId);
         studyingSubject.setCompletedLessonInPercentage(completedLessonPercentage);
 
