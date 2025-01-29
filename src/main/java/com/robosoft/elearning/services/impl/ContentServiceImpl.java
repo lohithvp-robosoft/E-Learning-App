@@ -145,7 +145,8 @@ public class ContentServiceImpl implements ContentService {
                 contentPage.getNumber() + 1,
                 lesson.getId(),
                 lesson.getLessonName(),
-                topics.isEmpty() ? null : topics.get(0).getId()
+                topicId
+              //  topics.isEmpty() ? null : topics.get(0).getId()
         );
         return responseUtil.successResponse(responseDTO, "Content fetched successfully");
     }
