@@ -91,8 +91,6 @@ public class TestServicesImpl implements TestServices {
         long totalTopicsCount = topicRepository.countByLesson(lesson);
         long completedTopicsCount = topicCompletedRepository.countByLessonIdAndUserId(lesson.getId(), userId);
 
-        System.out.println("totalTopicsCount " + totalTopicsCount);
-        System.out.println("completedTopicsCount" + completedTopicsCount);
         return totalTopicsCount == completedTopicsCount;
     }
 
@@ -273,7 +271,7 @@ public class TestServicesImpl implements TestServices {
                 .mapToInt(lesson -> lesson.getTests().size())
                 .sum();
 
-        float testCompletedPercent = (float)  (1 / totalTestCountInChapter) * 20;
+        float testCompletedPercent = (1.0f / totalTestCountInChapter) * 20;
         System.out.println("totalTestCountInChapter "+ totalTestCountInChapter);
         System.out.println("testCompletedPercent "+ testCompletedPercent);
         UserCurrentlyStudying userCurrentlyStudying = userCurrentlyStudyingRepository.findByUserIdAndCurrentChapterId(userId, chapter.getId()).orElseThrow(() -> new RuntimeException("Please complete a Lesson to take test"));
