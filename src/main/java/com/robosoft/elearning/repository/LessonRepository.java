@@ -8,7 +8,6 @@ import java.util.Optional;
 public interface LessonRepository extends JpaRepository<Lesson, Long> {
 
     int countByChapterIdAndIdLessThan(Long chapterId, Long lessonId);
-
     long countByChapterId(long chapterId);
 
     List<Lesson> findByChapterId(Long chapterId);

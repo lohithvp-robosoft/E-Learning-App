@@ -6,10 +6,7 @@ import com.robosoft.elearning.dto.response.PaginatedContentResponse;
 import com.robosoft.elearning.dto.response.ResponseDTO;
 import com.robosoft.elearning.exception.NotFoundException;
 import com.robosoft.elearning.jwt.JwtUtils;
-import com.robosoft.elearning.modal.Content;
-import com.robosoft.elearning.modal.Lesson;
-import com.robosoft.elearning.modal.Topic;
-import com.robosoft.elearning.modal.User;
+import com.robosoft.elearning.modal.*;
 import com.robosoft.elearning.repository.ContentRepository;
 import com.robosoft.elearning.repository.LessonRepository;
 import com.robosoft.elearning.repository.TopicRepository;
@@ -26,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -52,12 +50,59 @@ public class ContentServiceImpl implements ContentService {
     @Autowired
     private ResponseUtil responseUtil;
 
-    public ResponseEntity<ResponseDTO<PaginatedContentResponse>> goToPage(
-            Long lessonId,
-            Long topicId,
-            int pageNumber,
-            HttpServletRequest request
-    ) {
+
+
+//    public ResponseEntity<ResponseDTO<PaginatedContentResponse>> goToPage(Long lessonId, Long topicId, int pageNumber, HttpServletRequest request) {
+//        User user = jwtUtils.getUserDataFromRequest(request);
+//        final int DEFAULT_PAGE_SIZE = 10;
+//        if (pageNumber < 1) {
+//            return responseUtil.errorResponse("Invalid page number", HttpStatus.BAD_REQUEST.value());
+//        }
+//
+//        Pageable pageable = PageRequest.of(pageNumber - 1, DEFAULT_PAGE_SIZE);
+//        Page<Content> contentPage = contentRepository.findByLessonIdAndTopicId(lessonId, topicId, pageable);
+//        if (contentPage.isEmpty()) {
+//            throw new NotFoundException("No content found for the given lesson ID and topic ID.");
+//        }
+//
+//        Optional<Lesson> lessonOptional = lessonRepository.findById(lessonId);
+//        if (!lessonOptional.isPresent()) {
+//            throw new NotFoundException("Lesson not found for the given lesson ID.");
+//        }
+//        Lesson lesson = lessonOptional.get();
+//        Optional<Topic> topicOptional = topicRepository.findById(topicId);
+//        if (!topicOptional.isPresent()) {
+//            throw new NotFoundException("Topic not found for the given topic ID.");
+//        }
+//        Topic topic = topicOptional.get();
+//        List<ContentResponse> contentDTOs = contentPage.getContent()
+//                .stream()
+//                .map(content -> {
+//                    boolean userLiked = userLikedTopicRepository.existsByUserIdAndTopicId(user.getId(), topic.getId());
+//                    return new ContentResponse(
+//                            content.getId(),
+//                            content.getHeading(),
+//                            content.getContentType(),
+//                            content.getContentImg(),
+//                            content.getInfo(),
+//                            userLiked
+//                    );
+//                })
+//                .collect(Collectors.toList());
+//        PaginatedContentResponse responseDTO = new PaginatedContentResponse(
+//                contentDTOs,
+//                contentPage.getTotalPages(),
+//                contentPage.getNumber() + 1,
+//                lesson.getId(),
+//                topic.getHeading(),
+//                topic.getId()
+//        );
+//        return responseUtil.successResponse(responseDTO, "Content fetched successfully");
+//    }
+
+
+
+    public ResponseEntity<ResponseDTO<PaginatedContentResponse>> goToPage(Long lessonId, Long topicId, int pageNumber, HttpServletRequest request) {
         User user = jwtUtils.getUserDataFromRequest(request);
         final int DEFAULT_PAGE_SIZE = 1;
 
@@ -67,30 +112,36 @@ public class ContentServiceImpl implements ContentService {
 
         Pageable pageable = PageRequest.of(pageNumber - 1, DEFAULT_PAGE_SIZE);
         Page<Content> contentPage = contentRepository.findByLessonId(lessonId, pageable);
-
         if (contentPage.isEmpty()) {
             throw new NotFoundException("No content found for the given lesson ID.");
         }
-
         Optional<Lesson> lessonOptional = lessonRepository.findById(lessonId);
         if (!lessonOptional.isPresent()) {
             throw new NotFoundException("Lesson not found for the given lesson ID.");
         }
-
         Lesson lesson = lessonOptional.get();
-        List<Topic> topics = topicRepository.findByLessonId(lessonId);
+        Chapter chapter = lesson.getChapter();
+        if (chapter == null) {
+            throw new NotFoundException("No chapter found for the given lesson.");
+        }
 
+        List<Lesson> allLessons = lessonRepository.findByChapterId(chapter.getId());  // Assuming Chapter has an ID and findByChapterId exists
+
+        // Sort lessons if necessary (by ID or any other field)
+        allLessons = allLessons.stream()
+                .sorted(Comparator.comparing(Lesson::getId))
+                .collect(Collectors.toList());
+
+        // Find the index of the current lesson in the sorted lessons list
+        int lessonIndex = allLessons.indexOf(lesson) + 1;
+        List<Topic> topics = topicRepository.findByLessonId(lessonId);
         if (topics.isEmpty()) {
             throw new NotFoundException("No topics found for the given lesson ID.");
         }
-
         List<ContentResponse> contentDTOs = contentPage.getContent()
                 .stream()
                 .map(content -> {
-                    boolean userLiked = userLikedTopicRepository.existsByUserIdAndTopicId(
-                            user.getId(),
-                            content.getTopic().getId()
-                    );
+                    boolean userLiked = userLikedTopicRepository.existsByUserIdAndTopicId(user.getId(), content.getTopic().getId());
                     return new ContentResponse(
                             content.getId(),
                             content.getHeading(),
@@ -101,18 +152,20 @@ public class ContentServiceImpl implements ContentService {
                     );
                 })
                 .collect(Collectors.toList());
-
         PaginatedContentResponse responseDTO = new PaginatedContentResponse(
                 contentDTOs,
+                (long) lessonIndex,
                 contentPage.getTotalPages(),
                 contentPage.getNumber() + 1,
                 lesson.getId(),
                 lesson.getLessonName(),
-                topics.isEmpty() ? null : topics.get(0).getId()
+//                topics.isEmpty() ? null : topics.get(0).getId()
+                topicId
         );
-
         return responseUtil.successResponse(responseDTO, "Content fetched successfully");
     }
+
+
 
 
     @Override
