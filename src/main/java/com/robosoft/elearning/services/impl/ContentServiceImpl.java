@@ -125,14 +125,11 @@ public class ContentServiceImpl implements ContentService {
             throw new NotFoundException("No chapter found for the given lesson.");
         }
 
-        List<Lesson> allLessons = lessonRepository.findByChapterId(chapter.getId());  // Assuming Chapter has an ID and findByChapterId exists
-
-        // Sort lessons if necessary (by ID or any other field)
+        List<Lesson> allLessons = lessonRepository.findByChapterId(chapter.getId());
         allLessons = allLessons.stream()
                 .sorted(Comparator.comparing(Lesson::getId))
                 .collect(Collectors.toList());
 
-        // Find the index of the current lesson in the sorted lessons list
         int lessonIndex = allLessons.indexOf(lesson) + 1;
         List<Topic> topics = topicRepository.findByLessonId(lessonId);
         if (topics.isEmpty()) {
@@ -148,6 +145,9 @@ public class ContentServiceImpl implements ContentService {
                             content.getContentType(),
                             content.getContentImg(),
                             content.getInfo(),
+                            content.getVideoUrl(),
+                            content.getThumbnail(),
+                            content.getAudioUrl(),
                             userLiked
                     );
                 })
