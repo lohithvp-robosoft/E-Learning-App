@@ -7,18 +7,29 @@ import com.robosoft.elearning.dto.response.TopicResponse;
 import com.robosoft.elearning.dto.response.TopicWithTopicsResponse;
 import com.robosoft.elearning.exception.NotFoundException;
 import com.robosoft.elearning.modal.Chapter;
+import com.robosoft.elearning.modal.Content;
 import com.robosoft.elearning.modal.Lesson;
 import com.robosoft.elearning.modal.Topic;
 import com.robosoft.elearning.repository.ChapterRepository;
+import com.robosoft.elearning.repository.ContentRepository;
 import com.robosoft.elearning.repository.LessonRepository;
 import com.robosoft.elearning.repository.TopicRepository;
 import com.robosoft.elearning.services.TopicService;
 import com.robosoft.elearning.util.EntityMapperUtil;
 import com.robosoft.elearning.util.ResponseUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,6 +52,9 @@ public class TopicServiceImpl implements TopicService {
     @Autowired
     private ChapterRepository chapterRepository;
 
+    @Autowired
+    private ContentRepository contentRepository;
+
     @Override
     public ResponseEntity<ResponseDTO<List<TopicResponse>>> getAllTopics() {
         List<Topic> topics = topicRepository.findAll();
@@ -62,7 +76,41 @@ public class TopicServiceImpl implements TopicService {
 
 
 
+//
+//    public ResponseEntity<ResponseDTO<ChapterLessonsResponse>> getTopicsByChapterAndLesson(Long chapterId, Long lessonId) {
+//
+//        Chapter chapter = chapterRepository.findById(chapterId)
+//                .orElseThrow(() -> new NotFoundException("Chapter not found"));
+//
+//        Lesson lesson = lessonRepository.findById(lessonId)
+//                .orElseThrow(() -> new NotFoundException("Lesson not found"));
+//
+//        List<Topic> topics = topicRepository.findByLessonId(lessonId);
+//        List<TopicWithTopicsResponse> topicResponses = topics.stream()
+//                .map(topic -> new TopicWithTopicsResponse(
+//                        topic.getLevel(),
+//                        topic.getHeading(),
+//                        topic.getIcon(),
+//                        topic.getSubHeading(),
+//                        topic.getId(),
+//                        topic.getPageStartsFrom()
+//                ))
+//                .collect(Collectors.toList());
+//        ChapterLessonsResponse chapterLessonResponse = new ChapterLessonsResponse(
+//                chapter.getId(),
+//                chapter.getChapterName(),
+//                lesson.getId(),
+//                lesson.getLessonName(),
+//                lessonId,
+//                topicResponses
+//        );
+//        return responseUtil.successResponse(chapterLessonResponse);
+//    }
 
+
+
+
+    //2nd trail
     public ResponseEntity<ResponseDTO<ChapterLessonsResponse>> getTopicsByChapterAndLesson(Long chapterId, Long lessonId) {
 
         Chapter chapter = chapterRepository.findById(chapterId)
@@ -72,23 +120,36 @@ public class TopicServiceImpl implements TopicService {
                 .orElseThrow(() -> new NotFoundException("Lesson not found"));
 
         List<Topic> topics = topicRepository.findByLessonId(lessonId);
-        List<TopicWithTopicsResponse> topicResponses = topics.stream()
-                .map(topic -> new TopicWithTopicsResponse(
-                        topic.getLevel(),
-                        topic.getHeading(),
-                        topic.getIcon(),
-                        topic.getSubHeading(),
-                        topic.getId()
-                ))
-                .collect(Collectors.toList());
+        topics.sort(Comparator.comparing(Topic::getId));
+
+        int currentPage = 1;
+        List<TopicWithTopicsResponse> topicResponses = new ArrayList<>();
+
+        for (Topic topic : topics) {
+            topic.setPageStartsFrom(currentPage);
+            int pagesForThisTopic = 3;
+
+            topicResponses.add(new TopicWithTopicsResponse(
+                    topic.getLevel(),
+                    topic.getHeading(),
+                    topic.getIcon(),
+                    topic.getSubHeading(),
+                    topic.getId(),
+                    topic.getPageStartsFrom()
+            ));
+            currentPage += pagesForThisTopic;
+        }
+
         ChapterLessonsResponse chapterLessonResponse = new ChapterLessonsResponse(
                 chapter.getId(),
                 chapter.getChapterName(),
                 lesson.getId(),
                 lesson.getLessonName(),
                 lessonId,
+
                 topicResponses
         );
+
         return responseUtil.successResponse(chapterLessonResponse);
     }
 

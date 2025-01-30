@@ -23,6 +23,8 @@ public class Topic {
     @JoinColumn(name = "lesson_id")
     private Lesson lesson;
 
+    private int pageStartsFrom;
+
     private String icon;
 
     @OneToMany(mappedBy = "topic", cascade = CascadeType.ALL)
@@ -92,5 +94,11 @@ public class Topic {
         this.lessonId = lessonId;
     }
 
+    public int getPageStartsFrom() {
+        return pageStartsFrom;
+    }
 
+    public void setPageStartsFrom(int pageStartsFrom) {
+        this.pageStartsFrom = pageStartsFrom;
+    }
 }

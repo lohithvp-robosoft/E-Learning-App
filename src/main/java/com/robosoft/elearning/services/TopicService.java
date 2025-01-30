@@ -11,8 +11,8 @@ import java.util.List;
 public interface TopicService {
     ResponseEntity<ResponseDTO<List<TopicResponse>>> getAllTopics();
     ResponseEntity<ResponseDTO<TopicResponse>> getTopicById(long id);
-    ResponseEntity<ResponseDTO<ChapterLessonsResponse>> getTopicsByChapterAndLesson(Long chapterId, Long lessonId);
     ResponseEntity<ResponseDTO<TopicResponse>> createTopic(TopicRequest topicRequest);
+    ResponseEntity<ResponseDTO<ChapterLessonsResponse>> getTopicsByChapterAndLesson(Long chapterId, Long lessonId);
     ResponseEntity<ResponseDTO<TopicResponse>> updateTopic(long id, TopicRequest topicRequest);
     ResponseEntity<ResponseDTO<Void>> deleteTopic(long id);
 
