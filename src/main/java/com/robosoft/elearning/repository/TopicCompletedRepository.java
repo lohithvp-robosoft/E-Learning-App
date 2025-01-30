@@ -14,4 +14,5 @@ public interface TopicCompletedRepository extends JpaRepository<TopicCompleted, 
 
     long countByTopicIdAndUserId(Long topicId, Long userId);
     Optional<TopicCompleted> findByTopicIdAndUserId(Long topicId, Long userId);
+    long countByLessonId(Long lessonId);
 }

@@ -55,6 +55,11 @@ public class TestServicesImpl implements TestServices {
     @Autowired
     private UserTestScoreRepository userTestScoreRepository;
 
+    @Autowired
+    private TopicCompletedRepository topicCompletedRepository;
+
+    @Autowired
+    private TopicRepository topicRepository;
 
     @Override
     public ResponseEntity<ResponseDTO<TestResponse>> getOneTest(Long testId) {
@@ -63,9 +68,6 @@ public class TestServicesImpl implements TestServices {
 
         return responseUtil.successResponse(testResponse);
     }
-
-    @Autowired
-    private LessonCompletedRepository lessonCompletedRepository;
 
     @Override
     public ResponseEntity<ResponseDTO<TestResponseList>> getTestsForLesson(Long lessonId, HttpServletRequest request) {
@@ -77,11 +79,21 @@ public class TestServicesImpl implements TestServices {
                 .map(test -> entityMapperUtil.convertToTestResponse(test))
                 .toList();
 
+        Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new NotFoundException("Lesson Not Found"));
         User user = jwtUtils.getUserDataFromRequest(request);
-        boolean isLessonCompleted = lessonCompletedRepository.existsByLessonIdAndUserId(lessonId, user.getId());
+        boolean isLessonCompleted = isLessonCompleted(lesson, user.getId());
 
         TestResponseList testResponseList = new TestResponseList(isLessonCompleted, testResponses);
         return responseUtil.successResponse(testResponseList);
+    }
+
+    private boolean isLessonCompleted(Lesson lesson, Long userId) {
+        long totalTopicsCount = topicRepository.countByLesson(lesson);
+        long completedTopicsCount = topicCompletedRepository.countByLessonIdAndUserId(lesson.getId(), userId);
+
+        System.out.println("totalTopicsCount " + totalTopicsCount);
+        System.out.println("completedTopicsCount" + completedTopicsCount);
+        return totalTopicsCount == completedTopicsCount;
     }
 
 
@@ -246,32 +258,34 @@ public class TestServicesImpl implements TestServices {
     }
 
     @Autowired
-    private  ChapterRepository chapterRepository;
+    private ChapterRepository chapterRepository;
 
     @Autowired
     private UserCurrentlyStudyingRepository userCurrentlyStudyingRepository;
 
-    private void markTestComplete(Long testId, Long userId){
-        if(userTestScoreRepository.existsByUserIdAndTestId(userId,testId)){
-           return;
+    private void markTestComplete(Long testId, Long userId) {
+        if (userTestScoreRepository.existsByUserIdAndTestId(userId, testId)) {
+            return;
         }
-        Test test = testRepository.findById(testId).orElseThrow(()-> new NotFoundException("Test not found"));
+        Test test = testRepository.findById(testId).orElseThrow(() -> new NotFoundException("Test not found"));
         Chapter chapter = test.getLesson().getChapter();
         int totalTestCountInChapter = chapter.getLessons().stream()
                 .mapToInt(lesson -> lesson.getTests().size())
                 .sum();
 
-        float testCompletedPercent = (float) 1 / totalTestCountInChapter;
-        UserCurrentlyStudying userCurrentlyStudying = userCurrentlyStudyingRepository.findByUserIdAndCurrentChapterId(userId,chapter.getId()).orElseThrow(()-> new RuntimeException("Please complete a Lesson to take test"));
+        float testCompletedPercent = (float)  (1 / totalTestCountInChapter) * 20;
+        System.out.println("totalTestCountInChapter "+ totalTestCountInChapter);
+        System.out.println("testCompletedPercent "+ testCompletedPercent);
+        UserCurrentlyStudying userCurrentlyStudying = userCurrentlyStudyingRepository.findByUserIdAndCurrentChapterId(userId, chapter.getId()).orElseThrow(() -> new RuntimeException("Please complete a Lesson to take test"));
 
-        userCurrentlyStudying.setCompletedChapterInPercentage(userCurrentlyStudying.getCompletedChapterInPercentage()+ testCompletedPercent);
+        userCurrentlyStudying.setCompletedChapterInPercentage(userCurrentlyStudying.getCompletedChapterInPercentage() + testCompletedPercent);
         userCurrentlyStudyingRepository.save(userCurrentlyStudying);
 
-        User user = userRepository.findById(userId).orElseThrow(()-> new NotFoundException("User Not Found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User Not Found"));
         List<UserCurrentlyStudying> userCurrentlyStudyingList = userCurrentlyStudyingRepository.findAllByUserId(userId);
-        if(userCurrentlyStudyingList.isEmpty()){
+        if (userCurrentlyStudyingList.isEmpty()) {
             user.setChaptersCompletedInPercentage(0f);
-        }else{
+        } else {
             float totalCompletedPercentage = 0;
             int noOfCurrentlyStudying = userCurrentlyStudyingList.size();
             for (UserCurrentlyStudying studying : userCurrentlyStudyingList) {
@@ -280,6 +294,7 @@ public class TestServicesImpl implements TestServices {
 
             float averageCompletedPercentage = totalCompletedPercentage / noOfCurrentlyStudying;
 
+            user.setChaptersCompletedInPercentage(Math.min(averageCompletedPercentage, 100f));
             user.setChaptersCompletedInPercentage(averageCompletedPercentage);
             userRepository.save(user);
         }
