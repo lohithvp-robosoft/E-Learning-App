@@ -82,8 +82,6 @@ public class Lesson {
         this.topics = topics;
     }
 
-
-
     public Level getLevel() {
         return level;
     }
@@ -106,6 +104,17 @@ public class Lesson {
 
     public void setSubheading(String subheading) {
         this.subheading = subheading;
+    }
+
+    public void calculatePageNumbers() {
+        int currentPage = 1;
+
+        for (Topic topic : topics) {
+            topic.setPageStartsFrom(currentPage);
+            // You can adjust this logic if you want to add specific page numbers for each topic
+            // For example, if each topic takes 10 pages, you can increment by 10
+            currentPage += 10; // Assuming each topic spans 10 pages, adjust as necessary
+        }
     }
 }
 

@@ -9,6 +9,34 @@ public class ContentRequest {
     private ContentType contentType; // e.g., text, video, image, etc.
     private String contentImg; // URL or base64 string for the image
     private String info;
+    private String videoUrl;
+    private String thumbnail;
+    private String audioUrl;
+
+
+    public String getVideoUrl() {
+        return videoUrl;
+    }
+
+    public void setVideoUrl(String videoUrl) {
+        this.videoUrl = videoUrl;
+    }
+
+    public String getThumbnail() {
+        return thumbnail;
+    }
+
+    public void setThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
+    }
+
+    public String getAudioUrl() {
+        return audioUrl;
+    }
+
+    public void setAudioUrl(String audioUrl) {
+        this.audioUrl = audioUrl;
+    }
 
     public Long getLessonId() {
         return lessonId;

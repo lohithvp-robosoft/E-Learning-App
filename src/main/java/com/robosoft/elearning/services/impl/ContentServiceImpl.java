@@ -104,7 +104,7 @@ public class ContentServiceImpl implements ContentService {
 
     public ResponseEntity<ResponseDTO<PaginatedContentResponse>> goToPage(Long lessonId, Long topicId, int pageNumber, HttpServletRequest request) {
         User user = jwtUtils.getUserDataFromRequest(request);
-        final int DEFAULT_PAGE_SIZE = 1;
+        final int DEFAULT_PAGE_SIZE = 2;
 
         if (pageNumber < 1) {
             return responseUtil.errorResponse("Invalid page number", HttpStatus.BAD_REQUEST.value());
@@ -125,14 +125,11 @@ public class ContentServiceImpl implements ContentService {
             throw new NotFoundException("No chapter found for the given lesson.");
         }
 
-        List<Lesson> allLessons = lessonRepository.findByChapterId(chapter.getId());  // Assuming Chapter has an ID and findByChapterId exists
-
-        // Sort lessons if necessary (by ID or any other field)
+        List<Lesson> allLessons = lessonRepository.findByChapterId(chapter.getId());
         allLessons = allLessons.stream()
                 .sorted(Comparator.comparing(Lesson::getId))
                 .collect(Collectors.toList());
 
-        // Find the index of the current lesson in the sorted lessons list
         int lessonIndex = allLessons.indexOf(lesson) + 1;
         List<Topic> topics = topicRepository.findByLessonId(lessonId);
         if (topics.isEmpty()) {
@@ -148,6 +145,9 @@ public class ContentServiceImpl implements ContentService {
                             content.getContentType(),
                             content.getContentImg(),
                             content.getInfo(),
+                            content.getVideoUrl(),
+                            content.getThumbnail(),
+                            content.getAudioUrl(),
                             userLiked
                     );
                 })
