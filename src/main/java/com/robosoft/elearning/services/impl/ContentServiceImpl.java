@@ -104,7 +104,7 @@ public class ContentServiceImpl implements ContentService {
 
     public ResponseEntity<ResponseDTO<PaginatedContentResponse>> goToPage(Long lessonId, Long topicId, int pageNumber, HttpServletRequest request) {
         User user = jwtUtils.getUserDataFromRequest(request);
-        final int DEFAULT_PAGE_SIZE = 1;
+        final int DEFAULT_PAGE_SIZE = 2;
 
         if (pageNumber < 1) {
             return responseUtil.errorResponse("Invalid page number", HttpStatus.BAD_REQUEST.value());
