@@ -10,11 +10,10 @@ import com.robosoft.elearning.modal.*;
 import com.robosoft.elearning.repository.ContentRepository;
 import com.robosoft.elearning.repository.LessonRepository;
 import com.robosoft.elearning.repository.TopicRepository;
-import com.robosoft.elearning.repository.UserLikedTopicRepository;
+import com.robosoft.elearning.repository.UserLikedPageRepository;
 import com.robosoft.elearning.services.ContentService;
 import com.robosoft.elearning.util.ResponseUtil;
 import jakarta.servlet.http.HttpServletRequest;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,7 +40,7 @@ public class ContentServiceImpl implements ContentService {
     private TopicRepository topicRepository;
 
     @Autowired
-    private UserLikedTopicRepository userLikedTopicRepository;
+    private UserLikedPageRepository userLikedPageRepository;
 
 
     @Autowired
@@ -138,7 +137,7 @@ public class ContentServiceImpl implements ContentService {
         List<ContentResponse> contentDTOs = contentPage.getContent()
                 .stream()
                 .map(content -> {
-                    boolean userLiked = userLikedTopicRepository.existsByUserIdAndTopicId(user.getId(), content.getTopic().getId());
+                    boolean userLiked = userLikedPageRepository.existsByUserIdAndTopicId(user.getId(), content.getTopic().getId());
                     return new ContentResponse(
                             content.getId(),
                             content.getHeading(),

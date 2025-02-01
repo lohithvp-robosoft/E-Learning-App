@@ -3,23 +3,25 @@ package com.robosoft.elearning.dto.response;
 import com.robosoft.elearning.modal.Level;
 
 public class UserLikedTopicResponse {
-    private Long id;
+    private Long topicId;
     private String heading;
     private String subHeading;
     private Level level;
     private String icon;
     private String lessonName;
     private Integer chapterIndex;
+    private Integer pageNumber;
 
 
-    public UserLikedTopicResponse(Long id,String heading, String subHeading, Level level, String icon, String lessonName, Integer chapterIndex) {
-        this.id = id;
+    public UserLikedTopicResponse(Long id,String heading, String subHeading, Level level, String icon, String lessonName, Integer chapterIndex, Integer pageNumber) {
+        this.topicId = id;
         this.heading = heading;
         this.subHeading = subHeading;
         this.level = level;
         this.icon = icon;
         this.chapterIndex = chapterIndex;
         this.lessonName = lessonName;
+        this.pageNumber = pageNumber;
     }
 
     public UserLikedTopicResponse() {
@@ -58,12 +60,12 @@ public class UserLikedTopicResponse {
         this.level = level;
     }
 
-    public Long getId() {
-        return id;
+    public Long getTopicId() {
+        return topicId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setTopicId(Long topicId) {
+        this.topicId = topicId;
     }
 
 
@@ -81,5 +83,13 @@ public class UserLikedTopicResponse {
 
     public void setChapterIndex(Integer chapterIndex) {
         this.chapterIndex = chapterIndex;
+    }
+
+    public Integer getPageNumber() {
+        return pageNumber;
+    }
+
+    public void setPageNumber(Integer pageNumber) {
+        this.pageNumber = pageNumber;
     }
 }

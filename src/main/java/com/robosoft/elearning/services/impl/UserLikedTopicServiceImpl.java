@@ -7,7 +7,7 @@ import com.robosoft.elearning.jwt.JwtUtils;
 import com.robosoft.elearning.modal.*;
 import com.robosoft.elearning.repository.ChapterRepository;
 import com.robosoft.elearning.repository.TopicRepository;
-import com.robosoft.elearning.repository.UserLikedTopicRepository;
+import com.robosoft.elearning.repository.UserLikedPageRepository;
 import com.robosoft.elearning.repository.UserRepository;
 import com.robosoft.elearning.services.UserLikedTopicServices;
 import com.robosoft.elearning.util.EntityMapperUtil;
@@ -19,13 +19,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 public class UserLikedTopicServiceImpl implements UserLikedTopicServices {
 
     @Autowired
-    private UserLikedTopicRepository userLikedTopicRepository;
+    private UserLikedPageRepository userLikedPageRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -46,18 +47,18 @@ public class UserLikedTopicServiceImpl implements UserLikedTopicServices {
     private JwtUtils jwtUtils;
 
     @Override
-    public ResponseEntity<ResponseDTO<Void>> toggleLike(Long topicId, HttpServletRequest request) {
+    public ResponseEntity<ResponseDTO<Void>> toggleLikeForPage(Long topicId, int pageNumber,HttpServletRequest request) {
         User user = jwtUtils.getUserDataFromRequest(request);
 
         Topic topic = topicRepository.findById(topicId).orElseThrow(() -> new NotFoundException("Topic not found"));
-        UserLikedTopic userLikedTopic = userLikedTopicRepository.findByUserAndTopic(user, topic);
+        UserLikedPage userLikedPage = userLikedPageRepository.findByUserAndTopicAndPageNumber(user, topic, pageNumber);
 
-        if (userLikedTopic != null) {
-            userLikedTopicRepository.delete(userLikedTopic);
+        if (userLikedPage != null) {
+            userLikedPageRepository.delete(userLikedPage);
 
             return responseUtil.successResponse(null,"Successfully disliked the topic");
         } else {
-            userLikedTopicRepository.save(new UserLikedTopic(user, topic));
+            userLikedPageRepository.save(new UserLikedPage(user, topic, pageNumber));
             return responseUtil.successResponse(null,"Successfully liked the topic");
         }
     }
@@ -66,30 +67,24 @@ public class UserLikedTopicServiceImpl implements UserLikedTopicServices {
     @Override
     public ResponseEntity<ResponseDTO<List<UserLikedTopicResponse>>> getLikedTopics(Long subjectId, HttpServletRequest request) {
         User user = jwtUtils.getUserDataFromRequest(request);
-        List<UserLikedTopic> likedTopics = userLikedTopicRepository.findByUser(user);
+        List<UserLikedPage> likedPages = userLikedPageRepository.findByUser(user); // ✅ Fetch liked pages
 
-        if (likedTopics.isEmpty()) {
-            return responseUtil.errorResponse("No liked topic found");
+        if (likedPages.isEmpty()) {
+            return responseUtil.errorResponse("No liked pages found");
         }
 
-        List<Topic> topicList = likedTopics.stream()
-                .map(UserLikedTopic::getTopic)
-                .filter(topic -> topic.getLesson().getChapter().getSubject().getId().equals(subjectId))
-                .toList();
-
-        if (topicList.isEmpty()) {
-            return responseUtil.errorResponse("No liked topics found for the specified subject");
-        }
-
-        List<UserLikedTopicResponse> userLikedTopicResponses = topicList.stream()
-                .map(topic -> {
+        List<UserLikedTopicResponse> userLikedTopicResponses = likedPages.stream()
+                .filter(likedPage -> likedPage.getTopic().getLesson().getChapter().getSubject().getId().equals(subjectId))
+                .map(likedPage -> {
+                    Topic topic = likedPage.getTopic();
                     Chapter chapter = topic.getLesson().getChapter();
                     Subject subject = chapter.getSubject();
                     List<Chapter> chapters = subject.getChapters().stream()
                             .sorted(Comparator.comparing(Chapter::getId))
                             .toList();
-                    int chapterIndex = chapters.indexOf(chapter)+1;
-                    return entityMapperUtil.convertToUserLikedTopicResponse(topic, chapterIndex);
+                    int chapterIndex = chapters.indexOf(chapter) + 1;
+
+                    return entityMapperUtil.convertToUserLikedTopicResponse(topic, chapterIndex, likedPage.getPageNumber());
                 })
                 .toList();
 

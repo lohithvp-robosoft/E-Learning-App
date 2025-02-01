@@ -8,6 +8,7 @@ import com.robosoft.elearning.repository.ChapterRepository;
 import com.robosoft.elearning.repository.LessonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import software.amazon.awssdk.services.s3.endpoints.internal.Value;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -174,7 +175,7 @@ public class EntityMapperUtil {
         );
     }
 
-    public UserLikedTopicResponse convertToUserLikedTopicResponse(Topic topic, Integer chapterIndex){
+    public UserLikedTopicResponse convertToUserLikedTopicResponse(Topic topic, Integer chapterIndex, Integer pageNo){
 
         return new UserLikedTopicResponse(
                 topic.getId(),
@@ -183,7 +184,8 @@ public class EntityMapperUtil {
                 topic.getLevel(),
                 topic.getIcon(),
                 topic.getLesson().getLessonName(),
-                chapterIndex
+                chapterIndex,
+                pageNo
         );
     }
 
