@@ -11,7 +11,7 @@ import java.util.List;
 @Service
 public interface UserStudyProgressServices {
 
-    ResponseEntity<ResponseDTO<Void>> markTopicAsCompleted(Long topicId, HttpServletRequest request);
+    ResponseEntity<ResponseDTO<Void>> markPageAsCompleted(Long topicId, int pageNumber, HttpServletRequest request);
 
 
     ResponseEntity<ResponseDTO<List<UserCurrentlyStudyingResponse>>> getAllUserCurrentlyStudying(HttpServletRequest request);

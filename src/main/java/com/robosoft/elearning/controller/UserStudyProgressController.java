@@ -28,11 +28,12 @@ public class UserStudyProgressController {
     }
 
     @PostMapping("/topic/{topicId}/completed")
-    public ResponseEntity<ResponseDTO<Void>> markTopicAsCompleted(
+    public ResponseEntity<ResponseDTO<Void>> markPageAsCompleted(
             @PathVariable Long topicId,
+            @RequestParam int pageNumber,
             HttpServletRequest request
     ) {
-        return userStudyProgressServices.markTopicAsCompleted(topicId, request);
+        return userStudyProgressServices.markPageAsCompleted(topicId, pageNumber, request);
     }
 
     @GetMapping("/search")
