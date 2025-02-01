@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface UserLikedTopicServices {
-    ResponseEntity<ResponseDTO<Void>> toggleLike(Long topicId, HttpServletRequest request);
+    ResponseEntity<ResponseDTO<Void>> toggleLikeForPage(Long topicId, int pageNumber, HttpServletRequest request);
 
     ResponseEntity<ResponseDTO<List<UserLikedTopicResponse>>> getLikedTopics(Long subjectId, HttpServletRequest request);
 }

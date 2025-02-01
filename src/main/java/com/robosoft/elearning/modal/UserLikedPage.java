@@ -3,7 +3,7 @@ package com.robosoft.elearning.modal;
 import jakarta.persistence.*;
 
 @Entity
-public class UserLikedTopic {
+public class UserLikedPage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -14,12 +14,16 @@ public class UserLikedTopic {
     @ManyToOne
     private Topic topic;
 
-    public UserLikedTopic(User user, Topic topic) {
+    @Column(nullable = false)
+    private int pageNumber;
+
+    public UserLikedPage(User user, Topic topic, int pageNumber) {
         this.user = user;
         this.topic = topic;
+        this.pageNumber = pageNumber;
     }
 
-    public UserLikedTopic(){}
+    public UserLikedPage(){}
 
     public Long getId() {
         return id;
@@ -43,6 +47,14 @@ public class UserLikedTopic {
 
     public void setTopic(Topic topic) {
         this.topic = topic;
+    }
+
+    public int getPageNumber() {
+        return pageNumber;
+    }
+
+    public void setPageNumber(int pageNumber) {
+        this.pageNumber = pageNumber;
     }
 }
 
