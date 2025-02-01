@@ -24,8 +24,8 @@ public class UserLikedTopicController {
 
 
     @PutMapping("/toggle/topic/{topicId}")
-    public ResponseEntity<ResponseDTO<Void>> toggleLike(@PathVariable long topicId, @RequestParam int pageNo , HttpServletRequest request){
-        return userLikedTopicServices.toggleLikeForPage(topicId,pageNo,request);
+    public ResponseEntity<ResponseDTO<Void>> toggleLike(@PathVariable long topicId, @RequestParam int pageNumber , HttpServletRequest request){
+        return userLikedTopicServices.toggleLikeForPage(topicId,pageNumber,request);
     }
 
 }
