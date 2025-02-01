@@ -17,10 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
@@ -61,9 +59,12 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private  ContentCompletionRepository contentCompletionRepository;
+
     @Transactional
     @Override
-    public ResponseEntity<ResponseDTO<Void>> markTopicAsCompleted(Long topicId, HttpServletRequest request) {
+    public ResponseEntity<ResponseDTO<Void>> markPageAsCompleted(Long topicId, int pageNo, HttpServletRequest request) {
         User user = jwtUtils.getUserDataFromRequest(request);
         long userId = user.getId();
 
@@ -72,6 +73,18 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
         Chapter chapter = lesson.getChapter();
         Subject subject = chapter.getSubject();
 
+        if (contentCompletionRepository.existsByTopicIdAndUserIdAndPageNumber(topicId, userId, pageNo)) {
+            return responseUtil.successResponse(null, "Page already completed");
+        }
+
+        ContentCompletion contentCompletion = new ContentCompletion(topic, userId, pageNo);
+        contentCompletionRepository.save(contentCompletion);
+
+        if (!areAllPagesInTopicCompleted(topic, userId)) {
+            return responseUtil.successResponse(null, "Page marked as completed");
+        }
+
+
         if (isTopicAlreadyCompleted(topicId, userId)) {
             return responseUtil.successResponse(null, "Topic already completed");
         }
@@ -79,13 +92,13 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
         saveTopicCompletion(topicId, userId, lesson);
 
 
-        boolean isChapterCompleted = false;
+//        boolean isChapterCompleted = false;
         if (areAllTopicsInLessonCompleted(lesson, userId)) {
             markLessonAsCompleted(lesson, userId, chapter);
 
             if (areAllLessonsInChapterCompleted(chapter.getId(), userId)) {
                 markChapterAsCompleted(chapter, userId, subject);
-                isChapterCompleted = true;
+//                isChapterCompleted = true;
 //                updateSubjectCompletionPercentage(chapter.getSubject(), userId);
             }
         }
@@ -93,22 +106,6 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
         UserCurrentlyStudying studyingSubject = userCurrentlyStudyingRepository
                 .findByUserIdAndCurrentChapterId(user.getId(), chapter.getId())
                 .orElseGet(() -> new UserCurrentlyStudying(user));
-
-        //
-//        int currentTotalChapters = userCurrentlyStudyingRepository.countByUserId(userId);
-//        int previousTotalChapters = currentTotalChapters;
-//        if (studyingSubject.getCompletedChapterInPercentage() == 0) {
-//            previousTotalChapters--;
-//        }
-//
-//        int previousCompletedChapters = (int) Math.round((user.getChaptersCompletedInPercentage() / 100.0) * previousTotalChapters);
-//
-//        if (isChapterCompleted) {
-//            previousCompletedChapters++;
-//        }
-//        float updatedCompletionPercentage = ((float) previousCompletedChapters / currentTotalChapters) * 100;
-//        user.setChaptersCompletedInPercentage((int) updatedCompletionPercentage);
-//
 
 
         int totalTopicsInLesson = lesson.getTopics().size();
@@ -134,12 +131,12 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
             user.setChaptersCompletedInPercentage(0.0f);
         }else{
             int totalCompletedPercentage = 0;
-            int NoOfCurrentlyStudying = userCurrentlyStudyingList.size();
+            int noOfCurrentlyStudying = userCurrentlyStudyingList.size();
             for (UserCurrentlyStudying studying : userCurrentlyStudyingList) {
                 totalCompletedPercentage += studying.getCompletedChapterInPercentage();
             }
 
-            Float averageCompletedPercentage = (float) totalCompletedPercentage / NoOfCurrentlyStudying;
+            Float averageCompletedPercentage = (float) totalCompletedPercentage / noOfCurrentlyStudying;
 
             user.setChaptersCompletedInPercentage(averageCompletedPercentage);
             userRepository.save(user);
@@ -147,6 +144,13 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
 
 
         return responseUtil.successResponse(null);
+    }
+
+    private boolean areAllPagesInTopicCompleted(Topic topic, Long userId) {
+        long totalPages = topic.getContents().stream().map(Content::getPageNumber).distinct().count();
+        long completedPages = contentCompletionRepository.findCompletedPagesByTopicIdAndUserId(topic.getId(), userId).size();
+
+        return completedPages == totalPages;
     }
 
     @Transactional
