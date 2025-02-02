@@ -1,9 +1,9 @@
 package com.robosoft.elearning.services.impl;
 
-import com.robosoft.elearning.controller.TestController;
 import com.robosoft.elearning.dto.request.TestRequest;
 import com.robosoft.elearning.dto.response.ResponseDTO;
 import com.robosoft.elearning.dto.response.TestResponse;
+import com.robosoft.elearning.dto.response.TestResponseList;
 import com.robosoft.elearning.dto.response.TestSubmitResponse;
 import com.robosoft.elearning.exception.NotFoundException;
 import com.robosoft.elearning.jwt.JwtUtils;
@@ -11,7 +11,6 @@ import com.robosoft.elearning.modal.*;
 import com.robosoft.elearning.repository.*;
 import com.robosoft.elearning.services.TestServices;
 import com.robosoft.elearning.util.EntityMapperUtil;
-import com.robosoft.elearning.util.ObjectMapperUtil;
 import com.robosoft.elearning.util.ResponseUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
-import static java.util.stream.Collectors.toList;
 
 @Service
 public class TestServicesImpl implements TestServices {
@@ -54,6 +51,9 @@ public class TestServicesImpl implements TestServices {
     @Autowired
     private UserTestScoreRepository userTestScoreRepository;
 
+    @Autowired
+    private LessonCompletedRepository lessonCompletedRepository;
+
 
     @Override
     public ResponseEntity<ResponseDTO<TestResponse>> getOneTest(Long testId) {
@@ -64,7 +64,7 @@ public class TestServicesImpl implements TestServices {
     }
 
     @Override
-    public ResponseEntity<ResponseDTO<List<TestResponse>>> getTestsForLesson(Long lessonId) {
+    public ResponseEntity<ResponseDTO<TestResponseList>> getTestsForLesson(Long lessonId, HttpServletRequest request) {
         List<Test> tests = testRepository.findByLessonId(lessonId);
         if (tests.isEmpty()) {
             throw new NotFoundException("No Test Available");
@@ -73,8 +73,25 @@ public class TestServicesImpl implements TestServices {
                 .map(test -> entityMapperUtil.convertToTestResponse(test))
                 .toList();
 
-        return responseUtil.successResponse(testResponses);
+        Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new NotFoundException("Lesson Not Found"));
+        User user = jwtUtils.getUserDataFromRequest(request);
+        boolean isLessonCompleted = isLessonCompleted(lesson, user.getId());
+
+        TestResponseList testResponseList = new TestResponseList(isLessonCompleted, testResponses);
+        return responseUtil.successResponse(testResponseList);
     }
+
+//    private boolean isLessonCompleted(Lesson lesson, Long userId) {
+//        long totalTopicsCount = topicRepository.countByLesson(lesson);
+//        long completedTopicsCount = topicCompletedRepository.countByLessonIdAndUserId(lesson.getId(), userId);
+//
+//        return totalTopicsCount == completedTopicsCount;
+//    }
+
+    private boolean isLessonCompleted(Lesson lesson, Long userId) {
+        return lessonCompletedRepository.existsByLessonIdAndUserId(lesson.getId(), userId);
+    }
+
 
 
     @Override

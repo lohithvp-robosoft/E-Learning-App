@@ -3,6 +3,7 @@ package com.robosoft.elearning.services;
 import com.robosoft.elearning.dto.request.TestRequest;
 import com.robosoft.elearning.dto.response.ResponseDTO;
 import com.robosoft.elearning.dto.response.TestResponse;
+import com.robosoft.elearning.dto.response.TestResponseList;
 import com.robosoft.elearning.dto.response.TestSubmitResponse;
 import com.robosoft.elearning.modal.Test;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,7 +17,7 @@ import java.util.List;
 public interface TestServices {
 
     ResponseEntity<ResponseDTO<TestResponse>> getOneTest(Long testId);
-    ResponseEntity<ResponseDTO<List<TestResponse>>> getTestsForLesson(Long lessonId);
+    ResponseEntity<ResponseDTO<TestResponseList>> getTestsForLesson(Long lessonId, HttpServletRequest request);
 
     ResponseEntity<ResponseDTO<TestSubmitResponse>> submitTest(Long testId, HttpServletRequest request, boolean isTimeOut);
     ResponseEntity<ResponseDTO<TestResponse>> createTest(TestRequest testRequest);
