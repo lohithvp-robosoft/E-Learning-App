@@ -2,6 +2,8 @@ package com.robosoft.elearning.dto.response;
 
 import com.robosoft.elearning.modal.Level;
 
+import java.util.List;
+
 public class TopicWithTopicsResponse {
     private Level level;
     private String heading;
@@ -9,14 +11,16 @@ public class TopicWithTopicsResponse {
     private String subHeading;
     private Long topicId;
     private int pageStartsFrom;
+    private List<Integer> pageNumbers;
 
-    public TopicWithTopicsResponse(Level level, String heading, String icon, String subHeading, Long topicId, int pageStartsFrom) {
+    public TopicWithTopicsResponse(Level level, String heading, String icon, String subHeading, Long topicId, int pageStartsFrom, List<Integer> pageNumbers) {
         this.level = level;
         this.heading = heading;
         this.icon = icon;
         this.subHeading = subHeading;
         this.topicId = topicId;
         this.pageStartsFrom = pageStartsFrom;
+        this.pageNumbers = pageNumbers;
     }
 
     // Getters and Setters
@@ -66,5 +70,13 @@ public class TopicWithTopicsResponse {
 
     public void setPageStartsFrom(int pageStartsFrom) {
         this.pageStartsFrom = pageStartsFrom;
+    }
+
+    public List<Integer> getPageNumbers() {
+        return pageNumbers;
+    }
+
+    public void setPageNumbers(List<Integer> pageNumbers) {
+        this.pageNumbers = pageNumbers;
     }
 }
