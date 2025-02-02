@@ -14,4 +14,5 @@ public interface UserLikedPageRepository  extends JpaRepository<UserLikedPage, L
     boolean existsByUserIdAndTopicId(Long userId, Long topicId);
 
     UserLikedPage findByUserAndTopicAndPageNumber(User user, Topic topic, int pageNumber);
+    boolean existsByUserIdAndTopicIdAndPageNumber(Long userId, Long topicId, int pageNumber);
 }

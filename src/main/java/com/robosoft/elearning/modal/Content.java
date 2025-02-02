@@ -10,7 +10,6 @@ public class Content {
 
     @Enumerated(EnumType.STRING)
     private ContentType contentType;
-
     @Column(name = "content_img", columnDefinition = "TEXT")
     private String contentImg;
     private String videoUrl;

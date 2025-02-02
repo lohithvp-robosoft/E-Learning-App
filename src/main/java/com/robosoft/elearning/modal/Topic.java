@@ -1,8 +1,6 @@
 package com.robosoft.elearning.modal;
 
 import jakarta.persistence.*;
-import com.robosoft.elearning.dto.response.ContentResponse;
-
 
 import java.util.List;
 @Entity
@@ -26,6 +24,8 @@ public class Topic {
     private int pageStartsFrom;
 
     private String icon;
+
+    private int pages;
 
     @OneToMany(mappedBy = "topic", cascade = CascadeType.ALL)
     private List<Content> contents;
@@ -100,5 +100,13 @@ public class Topic {
 
     public void setPageStartsFrom(int pageStartsFrom) {
         this.pageStartsFrom = pageStartsFrom;
+    }
+
+    public int getPages() {
+        return pages;
+    }
+
+    public void setPages(int pages) {
+        this.pages = pages;
     }
 }
