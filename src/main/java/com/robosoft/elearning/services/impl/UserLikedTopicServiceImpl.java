@@ -77,14 +77,15 @@ public class UserLikedTopicServiceImpl implements UserLikedTopicServices {
                 .filter(likedPage -> likedPage.getTopic().getLesson().getChapter().getSubject().getId().equals(subjectId))
                 .map(likedPage -> {
                     Topic topic = likedPage.getTopic();
-                    Chapter chapter = topic.getLesson().getChapter();
+                    Lesson lesson = topic.getLesson();
+                    Chapter chapter = lesson.getChapter();
                     Subject subject = chapter.getSubject();
                     List<Chapter> chapters = subject.getChapters().stream()
                             .sorted(Comparator.comparing(Chapter::getId))
                             .toList();
                     int chapterIndex = chapters.indexOf(chapter) + 1;
 
-                    return entityMapperUtil.convertToUserLikedTopicResponse(topic, chapterIndex, likedPage.getPageNumber());
+                    return entityMapperUtil.convertToUserLikedTopicResponse(topic, chapterIndex, likedPage.getPageNumber(), chapter.getId(), lesson.getId());
                 })
                 .toList();
 

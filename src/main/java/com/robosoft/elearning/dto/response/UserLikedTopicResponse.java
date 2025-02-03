@@ -11,9 +11,11 @@ public class UserLikedTopicResponse {
     private String lessonName;
     private Integer chapterIndex;
     private Integer pageNumber;
+    private Long chapterId;
+    private Long lessonId;
 
 
-    public UserLikedTopicResponse(Long id,String heading, String subHeading, Level level, String icon, String lessonName, Integer chapterIndex, Integer pageNumber) {
+    public UserLikedTopicResponse(Long id,String heading, String subHeading, Level level, String icon, String lessonName, Integer chapterIndex, Integer pageNumber, Long chapterId, Long lessonId) {
         this.topicId = id;
         this.heading = heading;
         this.subHeading = subHeading;
@@ -22,6 +24,8 @@ public class UserLikedTopicResponse {
         this.chapterIndex = chapterIndex;
         this.lessonName = lessonName;
         this.pageNumber = pageNumber;
+        this.chapterId = chapterId;
+        this.lessonId = lessonId;
     }
 
     public UserLikedTopicResponse() {
@@ -91,5 +95,21 @@ public class UserLikedTopicResponse {
 
     public void setPageNumber(Integer pageNumber) {
         this.pageNumber = pageNumber;
+    }
+
+    public Long getChapterId() {
+        return chapterId;
+    }
+
+    public void setChapterId(Long chapterId) {
+        this.chapterId = chapterId;
+    }
+
+    public Long getLessonId() {
+        return lessonId;
+    }
+
+    public void setLessonId(Long lessonId) {
+        this.lessonId = lessonId;
     }
 }

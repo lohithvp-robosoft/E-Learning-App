@@ -175,7 +175,7 @@ public class EntityMapperUtil {
         );
     }
 
-    public UserLikedTopicResponse convertToUserLikedTopicResponse(Topic topic, Integer chapterIndex, Integer pageNo){
+    public UserLikedTopicResponse convertToUserLikedTopicResponse(Topic topic, Integer chapterIndex, Integer pageNo, Long chapterId, Long lessonId){
 
         return new UserLikedTopicResponse(
                 topic.getId(),
@@ -185,7 +185,9 @@ public class EntityMapperUtil {
                 topic.getIcon(),
                 topic.getLesson().getLessonName(),
                 chapterIndex,
-                pageNo
+                pageNo,
+                chapterId,
+                lessonId
         );
     }
 
