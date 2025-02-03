@@ -104,7 +104,7 @@ public class QuestionServicesImpl implements QuestionServices {
                 .toList();
         int chapterIndex = chapters.indexOf(chapter) + 1;
 //
-        QuestionsListResponse questionsListResponse = new QuestionsListResponse(test.getId(), chapterIndex,lessonIndex,testName,test.getQuestions().size(),questionResponse);
+        QuestionsListResponse questionsListResponse = new QuestionsListResponse(test.getId(), chapterIndex,lessonIndex,testName,test.getQuestions().size(),questionResponse, test.getTotalTime());
         return responseUtil.successResponse(questionsListResponse);
     }
 

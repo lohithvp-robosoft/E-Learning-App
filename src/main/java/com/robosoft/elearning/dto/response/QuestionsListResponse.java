@@ -9,14 +9,16 @@ public class QuestionsListResponse {
     private Long testId;
     private Integer totalQuestions;
     private List<QuestionResponse> questions;
+    private int duration;
 
-    public QuestionsListResponse(Long testId, Integer chapterIndex, Integer lessonIndex, String testName, Integer totalQuestions, List<QuestionResponse> questions) {
+    public QuestionsListResponse(Long testId, Integer chapterIndex, Integer lessonIndex, String testName, Integer totalQuestions, List<QuestionResponse> questions, int duration) {
         this.testId = testId;
         this.chapterIndex = chapterIndex;
         this.lessonIndex = lessonIndex;
         this.testName = testName;
         this.totalQuestions = totalQuestions;
         this.questions = questions;
+        this.duration = duration;
     }
 
     public Integer getChapterIndex() {
@@ -65,5 +67,13 @@ public class QuestionsListResponse {
 
     public void setTestId(Long testId) {
         this.testId = testId;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
     }
 }
