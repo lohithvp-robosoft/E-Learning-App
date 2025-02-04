@@ -149,14 +149,12 @@ public class TopicServiceImpl implements TopicService {
     //3rd trail
     public ResponseEntity<ResponseDTO<ChapterLessonsResponse>> getTopicsByChapterAndLesson(Long chapterId, Long lessonId) {
 
-        // Fetch chapter and lesson from repositories
         Chapter chapter = chapterRepository.findById(chapterId)
                 .orElseThrow(() -> new NotFoundException("Chapter not found"));
 
         Lesson lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new NotFoundException("Lesson not found"));
 
-        // Get the list of topics for the given lesson
         List<Topic> topics = topicRepository.findByLessonId(lessonId);
         topics.sort(Comparator.comparing(Topic::getId));
 
@@ -164,29 +162,27 @@ public class TopicServiceImpl implements TopicService {
 
         int currentPage = 1;
 
-        // Iterate over each topic
         for (Topic topic : topics) {
-            int pagesForThisTopic = topic.getPages();  // Fetch the number of pages for the topic
+            int pagesForThisTopic = topic.getPages();
 
-            // Create a list of page numbers for this topic
             List<Integer> pageNumbers = new ArrayList<>();
-            for (int i = 1; i <= pagesForThisTopic; i++) {
-                pageNumbers.add(currentPage++);  // Add the page number and increment for next topic
-            }
 
-            // Create the response object for this topic
+            int currentTopicPage = 1;
+
+            for (int i = 1; i <= pagesForThisTopic; i++) {
+                pageNumbers.add(currentTopicPage++);
+            }
             topicResponses.add(new TopicWithTopicsResponse(
                     topic.getLevel(),
                     topic.getHeading(),
                     topic.getIcon(),
                     topic.getSubHeading(),
                     topic.getId(),
-                    1,  // Always starts from page 1 for each topic
-                    pageNumbers  // List of page numbers for this topic
+                    1,
+                    pageNumbers
             ));
         }
 
-        // Prepare the final response object with chapter and lesson details
         ChapterLessonsResponse chapterLessonResponse = new ChapterLessonsResponse(
                 chapter.getId(),
                 chapter.getChapterName(),
@@ -196,11 +192,8 @@ public class TopicServiceImpl implements TopicService {
                 topicResponses
         );
 
-        // Return the response
         return responseUtil.successResponse(chapterLessonResponse);
     }
-
-
 
 
 
