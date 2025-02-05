@@ -73,17 +73,19 @@ public class TopicServiceImpl implements TopicService {
                     TopicResponse topicResponse = entityMapperUtil.convertTopicToTopicResponse(topic);
                     return responseUtil.successResponse(topicResponse);
                 })
-                .orElse(responseUtil.errorResponse(topicNotFoundMessage));
+                .orElse(responseUtil.errorResponse("Topic not found"));
     }
 
     public ResponseEntity<ResponseDTO<ChapterLessonsResponse>> getTopicsByChapterAndLesson(Long chapterId, Long lessonId) {
 
+        // Fetch chapter and lesson from repositories
         Chapter chapter = chapterRepository.findById(chapterId)
-                .orElseThrow(() -> new NotFoundException(chapterNotFoundMessage));
+                .orElseThrow(() -> new NotFoundException("Chapter not found"));
 
         Lesson lesson = lessonRepository.findById(lessonId)
-                .orElseThrow(() -> new NotFoundException(lessonNotFoundMessage));
+                .orElseThrow(() -> new NotFoundException("Lesson not found"));
 
+        // Get the list of topics for the given lesson
         List<Topic> topics = topicRepository.findByLessonId(lessonId);
         topics.sort(Comparator.comparing(Topic::getId));
 
@@ -95,8 +97,12 @@ public class TopicServiceImpl implements TopicService {
             int pagesForThisTopic = topic.getPages();
 
             List<Integer> pageNumbers = new ArrayList<>();
+
+            int currentTopicPage = 1;
+
             for (int i = 1; i <= pagesForThisTopic; i++) {
                 pageNumbers.add(currentPage++);
+                pageNumbers.add(currentTopicPage++);
             }
 
             topicResponses.add(new TopicWithTopicsResponse(
@@ -121,6 +127,8 @@ public class TopicServiceImpl implements TopicService {
 
         return responseUtil.successResponse(chapterLessonResponse);
     }
+
+
 
     @Override
     public ResponseEntity<ResponseDTO<TopicResponse>> createTopic(TopicRequest topicRequest) {
