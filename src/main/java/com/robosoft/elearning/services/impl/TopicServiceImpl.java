@@ -78,14 +78,12 @@ public class TopicServiceImpl implements TopicService {
 
     public ResponseEntity<ResponseDTO<ChapterLessonsResponse>> getTopicsByChapterAndLesson(Long chapterId, Long lessonId) {
 
-        // Fetch chapter and lesson from repositories
         Chapter chapter = chapterRepository.findById(chapterId)
                 .orElseThrow(() -> new NotFoundException("Chapter not found"));
 
         Lesson lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new NotFoundException("Lesson not found"));
 
-        // Get the list of topics for the given lesson
         List<Topic> topics = topicRepository.findByLessonId(lessonId);
         topics.sort(Comparator.comparing(Topic::getId));
 
