@@ -77,12 +77,6 @@ public class EntityMapperUtil {
                 question.getQuestionStatement(),
                 question.getOptions(),
                 question.getQuestionImageUrl()
-//                previouslySelectedOption,
-//                currentQuestionIndex,
-//                totalNoOfQuestion,
-//                lessonIndex,
-//                lessonName,
-//                chapterIndex
         );
     }
 

@@ -62,16 +62,28 @@ public class QuestionServicesImpl implements QuestionServices {
     @Value("${device.token}")
     private String deviceToken;
 
+    @Value("${question.error.not-found}")
+    private String questionNotFoundMessage;
+
+    @Value("${test.error.not-found}")
+    private String testNotFoundMessage;
+
+    @Value("${message.error.userNotFound}")
+    private String userNotFoundMessage;
+
+    @Value("${notification.error.notSent}")
+    private String notificationNotSentMessage;
+
     @Override
     public ResponseEntity<ResponseDTO<QuestionsListResponse>> beginTheTest(Long testId, HttpServletRequest request) {
         List<Question> questionsList = questionRepository.findByTestId(testId);
         User user = jwtUtils.getUserDataFromRequest(request);
-        Test test = testRepository.findById(testId).orElseThrow(() -> new NotFoundException("Test Not Found"));
+        Test test = testRepository.findById(testId).orElseThrow(() -> new NotFoundException(testNotFoundMessage));
 
         UserTestProgress userTestProgress = new UserTestProgress(user, test);
 
         if (questionsList.isEmpty()) {
-            throw new NotFoundException("Questions Not Found");
+            throw new NotFoundException(questionNotFoundMessage);
         }
 
 //        sendTestStartNotification(user);
@@ -88,9 +100,6 @@ public class QuestionServicesImpl implements QuestionServices {
         Long chapterId = lesson.getChapter().getId();
         Long subjectId = lesson.getChapter().getSubject().getId();
 
-//        int lessonIndex = lessonRepository.countByChapterIdAndIdLessThan(chapterId,lessonId) + 1;
-//        int chapterIndex = chapterRepository.countBySubjectIdAndIdLessThan(subjectId,chapterId) + 1;
-//
         Chapter chapter = lesson.getChapter();
         Subject subject = chapter.getSubject();
 
@@ -103,21 +112,21 @@ public class QuestionServicesImpl implements QuestionServices {
                 .sorted(Comparator.comparing(Chapter::getId))
                 .toList();
         int chapterIndex = chapters.indexOf(chapter) + 1;
-//
+
         QuestionsListResponse questionsListResponse = new QuestionsListResponse(test.getId(), chapterIndex,lessonIndex,testName,test.getQuestions().size(),questionResponse, test.getTotalTime());
         return responseUtil.successResponse(questionsListResponse);
     }
 
     @Override
     public ResponseEntity<ResponseDTO<Void>> saveOptionForAQuestion(Long testId, Long questionId, Integer selectedOption, HttpServletRequest request) {
-        Question question = questionRepository.findById(questionId).orElseThrow(() -> new NotFoundException("Question Not Found"));
+        Question question = questionRepository.findById(questionId).orElseThrow(() -> new NotFoundException(questionNotFoundMessage));
         if (question.getTest() == null || !question.getTest().getId().equals(testId)) {
-            throw new NotFoundException("The given question does not belong to the specified test.");
+            throw new NotFoundException(questionNotFoundMessage);
         }
         User user = jwtUtils.getUserDataFromRequest(request);
         UserTestProgress userTestProgress = userTestProgressRepository
                 .findByUserIdAndTestId(user.getId(), testId)
-                .orElseThrow(() -> new NotFoundException("User test Progress Not Found"));
+                .orElseThrow(() -> new NotFoundException(userNotFoundMessage));
 
         saveOrRemoveSelectedOption(userTestProgress, question, questionId, selectedOption);
 
@@ -132,7 +141,7 @@ public class QuestionServicesImpl implements QuestionServices {
             try {
                 firebaseService.sendPushNotification(user.getDeviceToken(), title, body, user.getId());
             } catch (Exception e) {
-                throw new RuntimeException("Failed to send push notification", e);
+                throw new RuntimeException(notificationNotSentMessage, e);
             }
         }
     }
@@ -156,7 +165,7 @@ public class QuestionServicesImpl implements QuestionServices {
     @Transactional
     public ResponseEntity<ResponseDTO<QuestionResponse>> createQuestion(CreateQuestionRequest request) {
         Test test = testRepository.findById(request.getTestId())
-                .orElseThrow(() -> new NotFoundException("Test Not Found"));
+                .orElseThrow(() -> new NotFoundException(testNotFoundMessage));
 
         Question question = new Question();
         question.setTest(test);
@@ -174,7 +183,7 @@ public class QuestionServicesImpl implements QuestionServices {
     @Transactional
     public ResponseEntity<ResponseDTO<QuestionResponse>> updateQuestion(Long questionId, UpdateQuestionRequest request) {
         Question question = questionRepository.findById(questionId)
-                .orElseThrow(() -> new NotFoundException("Question Not Found"));
+                .orElseThrow(() -> new NotFoundException(questionNotFoundMessage));
 
         question.setQuestionStatement(request.getQuestionStatement());
         question.setQuestionImageUrl(request.getQuestionImageUrl());
@@ -190,7 +199,7 @@ public class QuestionServicesImpl implements QuestionServices {
     @Transactional
     public ResponseEntity<ResponseDTO<Void>> deleteQuestion(Long questionId) {
         Question question = questionRepository.findById(questionId)
-                .orElseThrow(() -> new NotFoundException("Question Not Found"));
+                .orElseThrow(() -> new NotFoundException(questionNotFoundMessage));
 
         questionRepository.delete(question);
         return responseUtil.successResponse(null);

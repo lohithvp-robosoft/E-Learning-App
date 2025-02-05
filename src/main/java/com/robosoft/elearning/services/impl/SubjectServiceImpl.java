@@ -4,6 +4,7 @@ import com.robosoft.elearning.dto.request.SubjectRequest;
 import com.robosoft.elearning.dto.response.ResponseDTO;
 import com.robosoft.elearning.dto.response.SubjectResponse;
 import com.robosoft.elearning.dto.response.SubjectResponseList;
+import com.robosoft.elearning.exception.NotFoundException;
 import com.robosoft.elearning.jwt.JwtUtils;
 import com.robosoft.elearning.modal.Subject;
 import com.robosoft.elearning.modal.User;
@@ -68,9 +69,6 @@ public class SubjectServiceImpl implements SubjectService {
     private String deleteSubjectSuccessMessage;
 
 
-
-
-
     public ResponseEntity<ResponseDTO<SubjectResponseList>> getAllSubjects() {
         List<SubjectResponse> subjectResponses = subjectRepository.findAll().stream()
                 .map(entityMapperUtil::convertSubjectToSubjectResponse)
@@ -97,14 +95,14 @@ public class SubjectServiceImpl implements SubjectService {
         List<Subject> subjects = subjectRepository.findBySubjectNameContainingIgnoreCase(name);
 
         if (subjects.isEmpty()) {
-            return responseUtil.errorResponse("No subjects found matching the keyword: " + name, 404);
+            return responseUtil.errorResponse(subjectNotFoundMessage);
         }
 
         List<SubjectResponse> subjectResponses = subjects.stream()
                 .map(entityMapperUtil::convertSubjectToSubjectResponse)
                 .toList();
 
-        return responseUtil.successResponse(subjectResponses, "Subjects fetched successfully");
+        return responseUtil.successResponse(subjectResponses, null);
     }
 
 
@@ -119,9 +117,9 @@ public class SubjectServiceImpl implements SubjectService {
     }
 
     @Override
-        public ResponseEntity<ResponseDTO<SubjectResponse>> updateSubject(Long id, SubjectRequest subjectRequest) {
+    public ResponseEntity<ResponseDTO<SubjectResponse>> updateSubject(Long id, SubjectRequest subjectRequest) {
         Subject subject = subjectRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Subject not found"));
+                .orElseThrow(() -> new NotFoundException(subjectNotFoundMessage));
         subject.setSubjectName(subjectRequest.getSubjectName());
         subject.setSubjectIcon(subjectRequest.getSubjectIcon());
         Subject updatedSubject = subjectRepository.save(subject);
@@ -132,7 +130,7 @@ public class SubjectServiceImpl implements SubjectService {
     @Override
     public ResponseEntity<ResponseDTO<Void>> deleteSubject(Long id) {
         Subject subject = subjectRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Subject not found"));
+                .orElseThrow(() -> new NotFoundException(subjectNotFoundMessage));
         subjectRepository.delete(subject);
         return responseUtil.successResponse(null, deleteSubjectSuccessMessage);
     }

@@ -15,6 +15,7 @@ import com.robosoft.elearning.services.ContentService;
 import com.robosoft.elearning.util.ResponseUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -46,38 +47,52 @@ public class ContentServiceImpl implements ContentService {
     @Autowired
     private ResponseUtil responseUtil;
 
-    //3rd trail
+    @Value("${pageNo.error.invalid}")
+    private String invalidPageNoMessage;
+
+    @Value("${content.error.not-found}")
+    private String contentNotFoundMessage;
+
+    @Value("${topic.error.not-found}")
+    private String topicNotFoundMessage;
+
+    @Value("${lesson.error.not-found}")
+    private String lessonNotFoundMessage;
+
+    @Value("${chapter.error.not-found}")
+    private String chapterNotFoundMessage;
+
     public ResponseEntity<ResponseDTO<PaginatedContentResponse>> goToPage(
             Long lessonId, Long topicId, int pageNumber, HttpServletRequest request) {
 
         User user = jwtUtils.getUserDataFromRequest(request);
 
         if (pageNumber < 1) {
-            return responseUtil.errorResponse("Invalid page number", HttpStatus.BAD_REQUEST.value());
+            return responseUtil.errorResponse(invalidPageNoMessage, HttpStatus.BAD_REQUEST.value());
         }
 
         List<Content> contentList = contentRepository.findByTopicIdAndPageNumber(topicId, pageNumber);
         if (contentList.isEmpty()) {
-            throw new NotFoundException("No content found for the given topic ID and page number.");
+            throw new NotFoundException(contentNotFoundMessage);
         }
 
         Optional<Topic> topicOptional = topicRepository.findById(topicId);
         if (!topicOptional.isPresent()) {
-            throw new NotFoundException("Topic not found for the given topic ID.");
+            throw new NotFoundException(topicNotFoundMessage);
         }
         Topic topic = topicOptional.get();
         Lesson lesson = topic.getLesson();
         if (lesson == null) {
-            throw new NotFoundException("No lesson found for the given topic.");
+            throw new NotFoundException(lessonNotFoundMessage);
         }
 
         Optional<Lesson> lessonOptional = lessonRepository.findById(lessonId);
         if (!lessonOptional.isPresent()) {
-            throw new NotFoundException("Lesson not found for the given lesson ID.");
+            throw new NotFoundException(lessonNotFoundMessage);
         }
         Chapter chapter = lesson.getChapter();
         if (chapter == null) {
-            throw new NotFoundException("No chapter found for the given lesson.");
+            throw new NotFoundException(chapterNotFoundMessage);
         }
 
         List<Lesson> allLessons = lessonRepository.findByChapterId(chapter.getId());
@@ -86,7 +101,7 @@ public class ContentServiceImpl implements ContentService {
 
         List<Topic> topics = topicRepository.findByLessonId(lessonId);
         if (topics.isEmpty()) {
-            throw new NotFoundException("No topics found for the given lesson ID.");
+            throw new NotFoundException(topicNotFoundMessage);
         }
 
 
@@ -116,7 +131,7 @@ public class ContentServiceImpl implements ContentService {
                 lesson.getLessonName(),
                 topicId
         );
-        return responseUtil.successResponse(responseDTO, "Content fetched successfully");
+        return responseUtil.successResponse(responseDTO, null);
     }
 
 
@@ -124,9 +139,9 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public ResponseEntity<ResponseDTO<String>> createContent(ContentRequest contentRequest) {
         Lesson lesson = lessonRepository.findById(contentRequest.getLessonId())
-                .orElseThrow(() -> new NotFoundException("Lesson not found for the given ID."));
+                .orElseThrow(() -> new NotFoundException(lessonNotFoundMessage));
         Topic topic = topicRepository.findById(contentRequest.getTopicId())
-                .orElseThrow(() -> new NotFoundException("Topic not found for the given ID."));
+                .orElseThrow(() -> new NotFoundException(topicNotFoundMessage));
         Content content = new Content();
         content.setHeading(contentRequest.getHeading());
         content.setContentType(contentRequest.getContentType());
@@ -134,31 +149,31 @@ public class ContentServiceImpl implements ContentService {
         content.setInfo(contentRequest.getInfo());
 
         contentRepository.save(content);
-        return responseUtil.successResponse("Content created successfully");
+        return responseUtil.successResponse(null);
     }
 
     @Override
     public ResponseEntity<ResponseDTO<String>> updateContent(Long contentId, ContentRequest contentRequest) {
 
         Content content = contentRepository.findById(contentId)
-                .orElseThrow(() -> new NotFoundException("Content not found for the given ID."));
+                .orElseThrow(() -> new NotFoundException(contentNotFoundMessage));
         content.setHeading(contentRequest.getHeading());
         content.setContentType(contentRequest.getContentType());
         content.setContentImg(contentRequest.getContentImg());
         content.setInfo(contentRequest.getInfo());
 
         contentRepository.save(content);
-        return responseUtil.successResponse("Content updated successfully");
+        return responseUtil.successResponse(null);
     }
 
     @Override
     public ResponseEntity<ResponseDTO<String>> deleteContent(Long contentId) {
 
         Content content = contentRepository.findById(contentId)
-                .orElseThrow(() -> new NotFoundException("Content not found for the given ID."));
+                .orElseThrow(() -> new NotFoundException(contentNotFoundMessage));
 
         contentRepository.delete(content);
-        return responseUtil.successResponse("Content deleted successfully");
+        return responseUtil.successResponse(null);
     }
 
 }

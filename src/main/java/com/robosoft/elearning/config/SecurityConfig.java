@@ -66,12 +66,6 @@ public class SecurityConfig {
         return new AuthTokenFilter();
     }
 
-//    @Bean
-//    public ChapterNameResponse chapterNameResponse() {
-//        return new ChapterNameResponse();
-//    }
-
-
     @Bean
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authorizeRequests ->

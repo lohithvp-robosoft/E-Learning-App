@@ -41,6 +41,9 @@ public class NotificationServicesImpl implements NotificationServices {
     @Autowired
     private JwtUtils jwtUtils;
 
+    @Value("${notification.error.not-found}")
+    private String notificationNotFoundMessage;
+
     @Override
     public void saveNotification(String title, String message, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(userNotFound));
@@ -54,7 +57,7 @@ public class NotificationServicesImpl implements NotificationServices {
         Long userId = user.getId();
         List<Notification> notificationList = notificationRepository.findByUserIdOrderByTimestampDesc(userId);
         if(notificationList.isEmpty()){
-            throw new NotFoundException("No Notification Found");
+            throw new NotFoundException(notificationNotFoundMessage);
         }
         List<NotificationResponse> notificationResponseList = notificationList.stream()
                 .map(notification -> mapperUtil.toNotificationResponse(notification))
@@ -75,7 +78,7 @@ public class NotificationServicesImpl implements NotificationServices {
         User user = jwtUtils.getUserDataFromRequest(request);
 
         if (user == null) {
-            return responseUtil.errorResponse("User Not Found");
+            return responseUtil.errorResponse(userNotFound);
         }
 
         user.setNotificationEnabled(!user.isNotificationEnabled());
@@ -84,6 +87,4 @@ public class NotificationServicesImpl implements NotificationServices {
 
         return responseUtil.successResponse(null);
     }
-
-
 }

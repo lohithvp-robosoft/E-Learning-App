@@ -11,6 +11,7 @@ import com.robosoft.elearning.util.EntityMapperUtil;
 import com.robosoft.elearning.util.ResponseUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,7 +61,22 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
     private UserRepository userRepository;
 
     @Autowired
-    private  ContentCompletionRepository contentCompletionRepository;
+    private ContentCompletionRepository contentCompletionRepository;
+
+    @Value("${topic.error.not-found}")
+    private String topicNotFoundMessage;
+
+    @Value("${message.success.pageMarkedCompleted}")
+    private String pageMarkedCompletedMessage;
+
+    @Value("${message.success.pageAlreadyCompleted}")
+    private String pageAlreadyCompletedMessage;
+
+    @Value("${message.success.topic}")
+    private String topicAlreadyCompletedMessage;
+
+    @Value("${userProgress.error.not-found}")
+    private String userProgressNotFoundMessage;
 
     @Transactional
     @Override
@@ -74,48 +90,50 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
         Subject subject = chapter.getSubject();
 
         if (contentCompletionRepository.existsByTopicIdAndUserIdAndPageNumber(topicId, userId, pageNo)) {
-            return responseUtil.successResponse(null, "Page already completed");
+            return responseUtil.successResponse(null, pageAlreadyCompletedMessage);
         }
 
-        ContentCompletion contentCompletion = new ContentCompletion(topic, userId, pageNo);
-        contentCompletionRepository.save(contentCompletion);
+        markPageAsCompletedForUser(topic, userId, pageNo);
 
         if (!areAllPagesInTopicCompleted(topic, userId)) {
-            return responseUtil.successResponse(null, "Page marked as completed");
+            return responseUtil.successResponse(null, pageMarkedCompletedMessage);
         }
 
-
         if (isTopicAlreadyCompleted(topicId, userId)) {
-            return responseUtil.successResponse(null, "Topic already completed");
+            return responseUtil.successResponse(null, topicAlreadyCompletedMessage);
         }
 
         saveTopicCompletion(topicId, userId, lesson);
 
-
-//        boolean isChapterCompleted = false;
         if (areAllTopicsInLessonCompleted(lesson, userId)) {
             markLessonAsCompleted(lesson, userId, chapter);
 
             if (areAllLessonsInChapterCompleted(chapter.getId(), userId)) {
                 markChapterAsCompleted(chapter, userId, subject);
-//                isChapterCompleted = true;
-//                updateSubjectCompletionPercentage(chapter.getSubject(), userId);
             }
         }
 
+        updateUserCurrentlyStudying(user, chapter, lesson, topic, subject);
+
+        updateUserChapterCompletionPercentage(user);
+
+        return responseUtil.successResponse(null);
+    }
+
+    private void markPageAsCompletedForUser(Topic topic, long userId, int pageNo) {
+        ContentCompletion contentCompletion = new ContentCompletion(topic, userId, pageNo);
+        contentCompletionRepository.save(contentCompletion);
+    }
+
+    private void updateUserCurrentlyStudying(User user, Chapter chapter, Lesson lesson, Topic topic, Subject subject) {
         UserCurrentlyStudying studyingSubject = userCurrentlyStudyingRepository
                 .findByUserIdAndCurrentChapterId(user.getId(), chapter.getId())
                 .orElseGet(() -> new UserCurrentlyStudying(user));
 
+        float chapterPercentage = calculateChapterCompletionPercentage(studyingSubject, chapter, lesson, topic);
+        studyingSubject.setCompletedChapterInPercentage(chapterPercentage);
 
-        int totalTopicsInLesson = lesson.getTopics().size();
-        float completedTopicPerLesson = 1.0f / totalTopicsInLesson;
-        int totalLessonsInChapter = chapter.getLessons().size();
-        float completedTopicPerChapter = completedTopicPerLesson /totalLessonsInChapter;
-        float completedTopicPerChapterInPercentage =  (completedTopicPerChapter * 100);
-        float chapterPercentage = studyingSubject.getCompletedChapterInPercentage()+completedTopicPerChapterInPercentage;
-        studyingSubject.setCompletedChapterInPercentage(chapterPercentage > 100 ? 100f : chapterPercentage);
-        float completedLessonPercentage = calculateLessonCompletionPercentage(lesson, userId);
+        float completedLessonPercentage = calculateLessonCompletionPercentage(lesson, user.getId());
         studyingSubject.setCompletedLessonInPercentage(completedLessonPercentage);
 
         studyingSubject.setCurrentChapter(chapter);
@@ -123,13 +141,24 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
         studyingSubject.setCurrentTopic(topic);
         studyingSubject.setSubject(subject);
 
-
         userCurrentlyStudyingRepository.save(studyingSubject);
+    }
 
-        List<UserCurrentlyStudying> userCurrentlyStudyingList = userCurrentlyStudyingRepository.findAllByUserId(userId);
-        if(userCurrentlyStudyingList.isEmpty()){
+    private float calculateChapterCompletionPercentage(UserCurrentlyStudying studyingSubject, Chapter chapter, Lesson lesson, Topic topic) {
+        int totalTopicsInLesson = lesson.getTopics().size();
+        float completedTopicPerLesson = 1.0f / totalTopicsInLesson;
+        int totalLessonsInChapter = chapter.getLessons().size();
+        float completedTopicPerChapter = completedTopicPerLesson / totalLessonsInChapter;
+        float completedTopicPerChapterInPercentage = completedTopicPerChapter * 100;
+
+        return studyingSubject.getCompletedChapterInPercentage() + completedTopicPerChapterInPercentage > 100 ? 100f : studyingSubject.getCompletedChapterInPercentage() + completedTopicPerChapterInPercentage;
+    }
+
+    private void updateUserChapterCompletionPercentage(User user) {
+        List<UserCurrentlyStudying> userCurrentlyStudyingList = userCurrentlyStudyingRepository.findAllByUserId(user.getId());
+        if (userCurrentlyStudyingList.isEmpty()) {
             user.setChaptersCompletedInPercentage(0.0f);
-        }else{
+        } else {
             int totalCompletedPercentage = 0;
             int noOfCurrentlyStudying = userCurrentlyStudyingList.size();
             for (UserCurrentlyStudying studying : userCurrentlyStudyingList) {
@@ -137,13 +166,9 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
             }
 
             Float averageCompletedPercentage = (float) totalCompletedPercentage / noOfCurrentlyStudying;
-
             user.setChaptersCompletedInPercentage(averageCompletedPercentage);
             userRepository.save(user);
         }
-
-
-        return responseUtil.successResponse(null);
     }
 
     private boolean areAllPagesInTopicCompleted(Topic topic, Long userId) {
@@ -176,16 +201,12 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
             userCurrentlyStudyingRepository.save(studyingSubject);
         }
 
-
-
-        //
         List<UserCurrentlyStudying> userCurrentlyStudyingList = userCurrentlyStudyingRepository.findAllByUserId(userId);
-        if(userCurrentlyStudyingList.isEmpty()){
+        if (userCurrentlyStudyingList.isEmpty()) {
             user.setChaptersCompletedInPercentage(0.0f);
-        }else{
+        } else {
             float totalCompletedPercentage = 0;
             int NoOfCurrentlyStudying = userCurrentlyStudyingList.size();
-            System.out.println("Total Size :"+NoOfCurrentlyStudying);
             for (UserCurrentlyStudying studying : userCurrentlyStudyingList) {
                 totalCompletedPercentage += studying.getCompletedChapterInPercentage();
             }
@@ -194,7 +215,7 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
             user.setChaptersCompletedInPercentage(averageCompletedPercentage);
         }
         userRepository.save(user);
-//
+
         return responseUtil.successResponse(null);
     }
 
@@ -210,7 +231,7 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
 
     private Topic fetchTopicById(Long topicId) {
         return topicRepository.findById(topicId)
-                .orElseThrow(() -> new NotFoundException("Topic Not Found"));
+                .orElseThrow(() -> new NotFoundException(topicNotFoundMessage));
     }
 
     private boolean areAllTopicsInLessonCompleted(Lesson lesson, long userId) {
@@ -239,12 +260,12 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
     public ResponseEntity<ResponseDTO<List<UserCurrentlyStudyingResponse>>> getAllUserCurrentlyStudying(HttpServletRequest request) {
         User user = jwtUtils.getUserDataFromRequest(request);
         List<UserCurrentlyStudying> subjects = userCurrentlyStudyingRepository.findAllByUserId(user.getId());
-        if(subjects.isEmpty()){
-            return responseUtil.errorResponse("User Currently Studying Not Found");
+        if (subjects.isEmpty()) {
+            return responseUtil.errorResponse(userProgressNotFoundMessage);
         }
         List<UserCurrentlyStudyingResponse> userCurrentlyStudyingResponses = entityMapperUtil.convertToUserCurrentlyStudyingResponseList(subjects);
 
-        if(userCurrentlyStudyingResponses.isEmpty()) throw new NotFoundException("User Progress Not Found");
+        if (userCurrentlyStudyingResponses.isEmpty()) throw new NotFoundException(userProgressNotFoundMessage);
         return responseUtil.successResponse(userCurrentlyStudyingResponses);
     }
 
@@ -256,7 +277,7 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
                 .findByUserIdAndSubjectId(user.getId(), subjectId);
 
         if (userCurrentlyStudyingList.isEmpty()) {
-            throw new NotFoundException("User currently studying records not found for the specified subject");
+            throw new NotFoundException(userProgressNotFoundMessage);
         }
 
         List<UserCurrentlyStudyingResponse> userCurrentlyStudyingResponses = userCurrentlyStudyingList.stream()
@@ -274,7 +295,7 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
                 .findAllByUserIdAndSubjectSubjectNameContainingIgnoreCase(user.getId(), subjectName);
 
         if (studyingSubjects.isEmpty()) {
-            throw new NotFoundException("No records found for the subject name: " + subjectName);
+            throw new NotFoundException(userProgressNotFoundMessage);
         }
 
         List<UserCurrentlyStudyingResponse> responses = entityMapperUtil.convertToUserCurrentlyStudyingResponseList(studyingSubjects);
@@ -295,6 +316,4 @@ public class UserStudyProgressServiceImpl implements UserStudyProgressServices {
 
         return (float) ((completedTopicCount * 100.0) / totalTopics);
     }
-
-
 }

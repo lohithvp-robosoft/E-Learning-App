@@ -5,7 +5,7 @@ import java.util.List;
 public class ChapterLessonTopicResponse {
     private Long id;
     private String chapterName;
-    private List<LessonResponse> lessons; // List of LessonResponse objects
+    private List<LessonResponse> lessons;
 
     public ChapterLessonTopicResponse(Long id, String chapterName, List<LessonResponse> lessons) {
         this.id = id;
@@ -13,7 +13,6 @@ public class ChapterLessonTopicResponse {
         this.lessons = lessons;
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }

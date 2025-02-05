@@ -12,6 +12,7 @@ import com.robosoft.elearning.services.ResultServices;
 import com.robosoft.elearning.util.ResponseUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +38,9 @@ public class ResultServicesImpl implements ResultServices {
 
     @Autowired
     private ChapterRepository chapterRepository;
+
+    @Value("${testResult.error.not-found}")
+    private String testResultNotFound;
 
 
     @Override
@@ -82,12 +86,25 @@ public class ResultServicesImpl implements ResultServices {
 
     @Override
     public ResponseEntity<ResponseDTO<List<UserTestScoreResponse>>> getAllScoreOfAUserBySubjectId(Long subjectId, HttpServletRequest request) {
-
         User user = jwtUtils.getUserDataFromRequest(request);
 
+        List<Long> testIds = getTestIdsBySubjectId(subjectId);
+
+        List<UserTestScore> userTestScores = getUserTestScores(testIds, user);
+
+        if (userTestScores.isEmpty()) {
+            throw new NotFoundException(testResultNotFound);
+        }
+
+        List<UserTestScoreResponse> userTestScoreResponsesList = mapUserTestScoresToResponse(userTestScores);
+
+        return responseUtil.successResponse(userTestScoreResponsesList);
+    }
+
+    private List<Long> getTestIdsBySubjectId(Long subjectId) {
+        List<Long> testIds = new ArrayList<>();
         List<Chapter> chapters = chapterRepository.findBySubjectId(subjectId);
 
-        List<Long> testIds = new ArrayList<>();
         for (Chapter chapter : chapters) {
             for (Lesson lesson : chapter.getLessons()) {
                 for (Test test : lesson.getTests()) {
@@ -96,49 +113,55 @@ public class ResultServicesImpl implements ResultServices {
             }
         }
 
-        List<UserTestScore> userTestScores = userTestScoreRepository.findByTestIdInAndUser(testIds, user);
+        return testIds;
+    }
 
-        if (userTestScores.isEmpty()) {
-            throw new NotFoundException("User Test Result Not Found");
-        }
+    private List<UserTestScore> getUserTestScores(List<Long> testIds, User user) {
+        return userTestScoreRepository.findByTestIdInAndUser(testIds, user);
+    }
 
+    private List<UserTestScoreResponse> mapUserTestScoresToResponse(List<UserTestScore> userTestScores) {
         List<UserTestScoreResponse> userTestScoreResponsesList = new ArrayList<>();
-
         Map<Long, Map<Long, Integer>> lessonIndexCache = new HashMap<>();
 
         for (UserTestScore userTestScore : userTestScores) {
-            Lesson lesson = userTestScore.getTest().getLesson();
-            Chapter chapter = lesson.getChapter();
-            String lessonName = lesson.getLessonName();
-            String subjectName = chapter.getSubject().getSubjectName();
-
-            Map<Long, Integer> chapterCache = lessonIndexCache.computeIfAbsent(chapter.getId(), k -> new HashMap<>());
-            Integer lessonIndex = chapterCache.get(lesson.getId());
-
-            if (lessonIndex == null) {
-
-                lessonIndex = lessonRepository.countByChapterIdAndIdLessThan(chapter.getId(), lesson.getId()) + 1;
-                chapterCache.put(lesson.getId(), lessonIndex);
-            }
-
-            UserTestScoreResponse userTestScoreResponse = new UserTestScoreResponse(
-                    userTestScore.getId(),
-                    subjectName,
-                    lessonIndex,
-                    lessonName,
-                    userTestScore.getTotalCorrectAnswers(),
-                    userTestScore.getTotalAnsweredQuestions(),
-                    userTestScore.getTotalNumberOfQuestion(),
-                    userTestScore.getTotalMarks(),
-                    userTestScore.getCreatedAt()
-            );
-
-            userTestScoreResponsesList.add(userTestScoreResponse);
+            UserTestScoreResponse response = createUserTestScoreResponse(userTestScore, lessonIndexCache);
+            userTestScoreResponsesList.add(response);
         }
 
-        return responseUtil.successResponse(userTestScoreResponsesList);
+        return userTestScoreResponsesList;
     }
 
+    private UserTestScoreResponse createUserTestScoreResponse(UserTestScore userTestScore, Map<Long, Map<Long, Integer>> lessonIndexCache) {
+        Lesson lesson = userTestScore.getTest().getLesson();
+        Chapter chapter = lesson.getChapter();
+        String lessonName = lesson.getLessonName();
+        String subjectName = chapter.getSubject().getSubjectName();
 
+        Integer lessonIndex = getLessonIndex(lesson, chapter, lessonIndexCache);
 
+        return new UserTestScoreResponse(
+                userTestScore.getId(),
+                subjectName,
+                lessonIndex,
+                lessonName,
+                userTestScore.getTotalCorrectAnswers(),
+                userTestScore.getTotalAnsweredQuestions(),
+                userTestScore.getTotalNumberOfQuestion(),
+                userTestScore.getTotalMarks(),
+                userTestScore.getCreatedAt()
+        );
+    }
+
+    private Integer getLessonIndex(Lesson lesson, Chapter chapter, Map<Long, Map<Long, Integer>> lessonIndexCache) {
+        Map<Long, Integer> chapterCache = lessonIndexCache.computeIfAbsent(chapter.getId(), k -> new HashMap<>());
+        Integer lessonIndex = chapterCache.get(lesson.getId());
+
+        if (lessonIndex == null) {
+            lessonIndex = lessonRepository.countByChapterIdAndIdLessThan(chapter.getId(), lesson.getId()) + 1;
+            chapterCache.put(lesson.getId(), lessonIndex);
+        }
+
+        return lessonIndex;
+    }
 }

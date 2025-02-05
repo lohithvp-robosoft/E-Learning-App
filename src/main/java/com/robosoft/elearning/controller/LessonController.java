@@ -34,8 +34,8 @@ public class LessonController {
     }
 
     @GetMapping("/lesson-by-chapter/chapter/{chapterId}")
-    ResponseEntity<ResponseDTO<List<CurrentlyStudyingLessonResponse1>>> getCurrentlyStudyingLessonByChapterId1(@PathVariable Long chapterId, HttpServletRequest request){
-        return lessonService.getCurrentlyStudyingLessonByChapterId1(chapterId, request);
+    ResponseEntity<ResponseDTO<List<CurrentlyStudyingLessonResponse>>> getCurrentlyStudyingLessonByChapterId1(@PathVariable Long chapterId, HttpServletRequest request){
+        return lessonService.getCurrentlyStudyingLessonByChapterId(chapterId, request);
     }
 
     @PreAuthorize("hasRole('ADMIN')")

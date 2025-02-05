@@ -82,6 +82,24 @@ public class UserServicesImpl implements UserServices {
     @Value("${message.otpSend.success}")
     private String otpSendSuccessMessage;
 
+    @Value("${message.error.userNotFound}")
+    private String userNotFoundMessage;
+
+    @Value("${email.error.notRegistered}")
+    private String emailNotRegisteredMessage;
+
+    @Value("${file.error.upload}")
+    private String fileUploadErrorMessage;
+
+    @Value("${s3.user-profile-folder}")
+    private String userProfileImageFolder;
+
+    @Value("${message.error.inValidOTP}")
+    private String inValidOTPMessage;
+
+    @Value("${message.error.inValidRefreshToken}")
+    private String inValidRefreshTokenMessage;
+
     @Override
     public ResponseEntity<ResponseDTO<RegisterResponse>> register(BaseRegisterRequest registerRequest, String otp) {
         boolean isOtpValid = otpServices.validateOtp(registerRequest.getEmail(), otp);
@@ -98,7 +116,7 @@ public class UserServicesImpl implements UserServices {
 
             return responseUtil.successResponse(userRegisterResponse);
         } else {
-            return responseUtil.errorResponse("Invalid OTP " + otp);
+            return responseUtil.errorResponse(inValidOTPMessage + " " + otp);
         }
     }
 
@@ -126,10 +144,10 @@ public class UserServicesImpl implements UserServices {
             throw new JwtException(tokenBlacklistMessage);
         }
         if (jwtUtils.isAccessToken(refreshTokenRequest.getRefreshToken()))
-            throw new JwtException("Please use Valid refresh Token");
+            throw new JwtException(inValidRefreshTokenMessage);
 
         String userId = jwtUtils.getUserIdFromJwtToken(refreshTokenRequest.getRefreshToken());
-        User user = userRepository.findById(Long.valueOf(userId)).orElseThrow(() -> new JwtException("User not found"));
+        User user = userRepository.findById(Long.valueOf(userId)).orElseThrow(() -> new JwtException(userNotFoundMessage));
 
         return responseUtil.successResponse(new RefreshTokenResponse(user, jwtUtils.generateAccessToken(user)));
     }
@@ -152,7 +170,7 @@ public class UserServicesImpl implements UserServices {
         long userId = jwtUtils.getUserIdFromRequestHeader(request);
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new NotFoundException(userNotFoundMessage));
 
         updateUserData(user, updateUserRequest);
 
@@ -165,7 +183,7 @@ public class UserServicesImpl implements UserServices {
 
         UserDetailResponse userDetailResponse = entityMapperUtil.convertUserToUserDetailResponse(user);
 
-        return responseUtil.successResponse(userDetailResponse, "User updated successfully");
+        return responseUtil.successResponse(userDetailResponse, null);
     }
 
     private void updateUserData(User user, UpdateUserRequest updateUserRequest) {
@@ -178,11 +196,11 @@ public class UserServicesImpl implements UserServices {
     }
 
     private String handleFileUpload(MultipartFile file, long userId) throws IOException {
-        String folder = "user-profile-images";
+        String folder = userProfileImageFolder;
         try {
             return fileStorageUtil.storeFile(file, folder, userId);
         } catch (Exception e) {
-            throw new IOException("Error uploading file", e);
+            throw new IOException(fileUploadErrorMessage, e);
         }
     }
 
@@ -190,7 +208,7 @@ public class UserServicesImpl implements UserServices {
     @Override
     public ResponseEntity<ResponseDTO<Void>> forgotPassword(ForgotPasswordRequest request) {
         User user = userRepository.findByEmail(request.getEmail()).orElseThrow(
-                () -> new NotFoundException("Email Not Registered")
+                () -> new NotFoundException(emailNotRegisteredMessage)
         );
         otpServices.sendOtp(user.getEmail(), changePasswordMailSubject, changePasswordMailContent);
         return responseUtil.successResponse(null, otpSendSuccessMessage);
@@ -209,8 +227,8 @@ public class UserServicesImpl implements UserServices {
 
     @Override
     public ResponseEntity<ResponseDTO<Void>> forgotResetPassword(ResetPasswordRequest resetPasswordRequest, String otp) {
-        User user = userRepository.findByEmail(resetPasswordRequest.getEmail()).orElseThrow(()->
-                new NotFoundException("User Not Registered"));
+        User user = userRepository.findByEmail(resetPasswordRequest.getEmail()).orElseThrow(() ->
+                new NotFoundException(emailNotRegisteredMessage));
         boolean isValidOtp = otpServices.validateOtp(user.getEmail(), otp);
         if (isValidOtp) {
             String encodedPassword = passwordEncoder.encode(resetPasswordRequest.getNewPassword());
@@ -218,13 +236,13 @@ public class UserServicesImpl implements UserServices {
             userRepository.save(user);
             return responseUtil.successResponse(null, passwordUpdatedMessage);
         } else {
-            return responseUtil.errorResponse("Invalid OTP " + otp);
+            return responseUtil.errorResponse(inValidOTPMessage + " " + otp);
         }
     }
 
     @Override
     public ResponseEntity<ResponseDTO<UserDetailResponse>> getProfile(HttpServletRequest request) {
-        User user = Optional.ofNullable(jwtUtils.getUserDataFromRequest(request)).orElseThrow(()-> new NotFoundException("User not Found"));
+        User user = Optional.ofNullable(jwtUtils.getUserDataFromRequest(request)).orElseThrow(() -> new NotFoundException(userNotFoundMessage));
         UserDetailResponse userDetailResponse = entityMapperUtil.convertUserToUserDetailResponse(user);
         return responseUtil.successResponse(userDetailResponse);
     }

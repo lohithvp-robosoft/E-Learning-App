@@ -11,7 +11,6 @@ import java.util.List;
 
 public interface TopicRepository extends JpaRepository<Topic, Long> {
 
-//    long countByLessonId(Long lessonId);
       long countByLesson(Lesson lesson);
       List<Topic> findByLessonId(Long lessonId);
       Page<Topic> findByLessonId(Long lessonId, Pageable pageable);

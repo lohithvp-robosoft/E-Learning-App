@@ -18,7 +18,6 @@ public class ChapterSummaryResponse {
         this.subjectName = subjectName;
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }

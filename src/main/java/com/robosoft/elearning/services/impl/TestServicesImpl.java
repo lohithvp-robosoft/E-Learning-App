@@ -15,6 +15,7 @@ import com.robosoft.elearning.util.ObjectMapperUtil;
 import com.robosoft.elearning.util.ResponseUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -54,10 +55,19 @@ public class TestServicesImpl implements TestServices {
     @Autowired
     private UserTestScoreRepository userTestScoreRepository;
 
+    @Value("${test.error.not-found}")
+    private String testNotFoundMessage;
+
+    @Value("${testProgress.error.not-found}")
+    private String testProgressNotFoundMessage;
+
+    @Value("${lesson.error.not-found}")
+    private String lessonNotFoundMessage;
+
 
     @Override
     public ResponseEntity<ResponseDTO<TestResponse>> getOneTest(Long testId) {
-        Test test = testRepository.findById(testId).orElseThrow(() -> new NotFoundException("Test Not Found"));
+        Test test = testRepository.findById(testId).orElseThrow(() -> new NotFoundException(testNotFoundMessage));
         TestResponse testResponse = entityMapperUtil.convertToTestResponse(test);
 
         return responseUtil.successResponse(testResponse);
@@ -67,7 +77,7 @@ public class TestServicesImpl implements TestServices {
     public ResponseEntity<ResponseDTO<List<TestResponse>>> getTestsForLesson(Long lessonId) {
         List<Test> tests = testRepository.findByLessonId(lessonId);
         if (tests.isEmpty()) {
-            throw new NotFoundException("No Test Available");
+            throw new NotFoundException(testNotFoundMessage);
         }
         List<TestResponse> testResponses = tests.stream()
                 .map(test -> entityMapperUtil.convertToTestResponse(test))
@@ -96,7 +106,7 @@ public class TestServicesImpl implements TestServices {
 
     private UserTestProgress getUserTestProgress(User user, Long testId) {
         return userTestProgressRepository.findByUserIdAndTestId(user.getId(), testId)
-                .orElseThrow(() -> new NotFoundException("User Test Progress Not Found"));
+                .orElseThrow(() -> new NotFoundException(testProgressNotFoundMessage));
     }
 
     private UserTestResult getOrCreateUserTestResult(User user) {
@@ -183,7 +193,7 @@ public class TestServicesImpl implements TestServices {
         test.setTotalTime(testRequest.getTotalTime());
         if (testRequest.getLessonId() != null) {
             Lesson lesson = lessonRepository.findById(testRequest.getLessonId())
-                    .orElseThrow(() -> new NotFoundException("Lesson not found"));
+                    .orElseThrow(() -> new NotFoundException(lessonNotFoundMessage));
             test.setLesson(lesson);
         }
         test.setCreatedAt(LocalDateTime.now());
@@ -191,33 +201,33 @@ public class TestServicesImpl implements TestServices {
         Test savedTest = testRepository.save(test);
 
         TestResponse response = convertToDTO(savedTest);
-        return responseUtil.successResponse(response, "Test created successfully");
+        return responseUtil.successResponse(response, null);
     }
 
     @Override
     public ResponseEntity<ResponseDTO<TestResponse>> updateTest(Long id, TestRequest testRequest) {
-        Test test = testRepository.findById(id).orElseThrow(() -> new NotFoundException("Test not found"));
+        Test test = testRepository.findById(id).orElseThrow(() -> new NotFoundException(testNotFoundMessage));
         test.setHeading(testRequest.getHeading());
         test.setLevel(testRequest.getLevel());
         test.setTestIcon(testRequest.getTestIcon());
         test.setTotalTime(testRequest.getTotalTime());
         if (testRequest.getLessonId() != null) {
             Lesson lesson = lessonRepository.findById(testRequest.getLessonId())
-                    .orElseThrow(() -> new NotFoundException("Lesson not found"));
+                    .orElseThrow(() -> new NotFoundException(lessonNotFoundMessage));
             test.setLesson(lesson);
         }
         test.setUpdatedAt(LocalDateTime.now());
         Test updatedTest = testRepository.save(test);
 
         TestResponse response = convertToDTO(updatedTest);
-        return responseUtil.successResponse(response, "Test updated successfully");
+        return responseUtil.successResponse(response, null);
     }
 
     @Override
     public ResponseEntity<ResponseDTO<String>> deleteTest(Long id) {
-        Test test = testRepository.findById(id).orElseThrow(() -> new NotFoundException("Test not found"));
+        Test test = testRepository.findById(id).orElseThrow(() -> new NotFoundException(testNotFoundMessage));
         testRepository.delete(test);
-        return responseUtil.successResponse("Test deleted successfully");
+        return responseUtil.successResponse(null);
     }
 
     private TestResponse convertToDTO(Test test) {

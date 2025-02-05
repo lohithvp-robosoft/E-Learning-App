@@ -5,6 +5,7 @@ import com.robosoft.elearning.services.OtpServices;
 import com.robosoft.elearning.util.EmailHandler;
 import com.robosoft.elearning.util.ResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -25,12 +26,15 @@ public class OtpServicesImpl implements OtpServices {
     @Autowired
     private ResponseUtil responseUtil;
 
+    @Value("${email.success.mailSent}")
+    private String emailSendMessage;
+
     @Override
     public ResponseEntity<ResponseDTO<Void>> sendOtp(String email, String subject, String content) {
         String otp = generateOtp();
         emailHandler.sendMail(email, subject, content + " " + otp);
         storeOtpInRedis(email, otp);
-        return responseUtil.successResponse(null, "Successfully sent the email to " + email);
+        return responseUtil.successResponse(null, emailSendMessage + " " + email);
     }
 
     @Override

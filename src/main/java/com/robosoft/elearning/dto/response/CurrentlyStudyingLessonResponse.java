@@ -2,18 +2,17 @@ package com.robosoft.elearning.dto.response;
 
 import java.util.List;
 
-    public class CurrentlyStudyingLessonResponse {
-
+public class CurrentlyStudyingLessonResponse {
     private Long lessonId;
     private String lessonName;
-    private Integer lessonIndex;
+    private Long lessonIndex;
     private Long chapterId;
-    private Boolean currentlyStudyingLesson;
-    private Integer completedLessonInPercentage;
+    private boolean currentlyStudyingLesson;
+    private Float completedLessonInPercentage;
     private List<TopicWithTopicNameResponse> topics;
 
-    public CurrentlyStudyingLessonResponse(Long lessonId, String lessonName, Integer lessonIndex, Long chapterId,
-                                           Boolean currentlyStudyingLesson, Integer completedLessonInPercentage,
+    public CurrentlyStudyingLessonResponse(Long lessonId, String lessonName, Long lessonIndex, Long chapterId,
+                                           boolean currentlyStudyingLesson, Float completedLessonInPercentage,
                                            List<TopicWithTopicNameResponse> topics) {
         this.lessonId = lessonId;
         this.lessonName = lessonName;
@@ -22,9 +21,6 @@ import java.util.List;
         this.currentlyStudyingLesson = currentlyStudyingLesson;
         this.completedLessonInPercentage = completedLessonInPercentage;
         this.topics = topics;
-    }
-
-    public CurrentlyStudyingLessonResponse(Long id, String subjectName, Long aLong, List<ChapterSummaryResponse> chapters) {
     }
 
     public Long getLessonId() {
@@ -43,11 +39,11 @@ import java.util.List;
         this.lessonName = lessonName;
     }
 
-    public Integer getLessonIndex() {
+    public Long getLessonIndex() {
         return lessonIndex;
     }
 
-    public void setLessonIndex(Integer lessonIndex) {
+    public void setLessonIndex(Long lessonIndex) {
         this.lessonIndex = lessonIndex;
     }
 
@@ -59,19 +55,19 @@ import java.util.List;
         this.chapterId = chapterId;
     }
 
-    public Boolean getCurrentlyStudyingLesson() {
+    public boolean isCurrentlyStudyingLesson() {
         return currentlyStudyingLesson;
     }
 
-    public void setCurrentlyStudyingLesson(Boolean currentlyStudyingLesson) {
+    public void setCurrentlyStudyingLesson(boolean currentlyStudyingLesson) {
         this.currentlyStudyingLesson = currentlyStudyingLesson;
     }
 
-    public Integer getCompletedLessonInPercentage() {
+    public Float getCompletedLessonInPercentage() {
         return completedLessonInPercentage;
     }
 
-    public void setCompletedLessonInPercentage(Integer completedLessonInPercentage) {
+    public void setCompletedLessonInPercentage(Float completedLessonInPercentage) {
         this.completedLessonInPercentage = completedLessonInPercentage;
     }
 
@@ -82,4 +78,5 @@ import java.util.List;
     public void setTopics(List<TopicWithTopicNameResponse> topics) {
         this.topics = topics;
     }
+
 }

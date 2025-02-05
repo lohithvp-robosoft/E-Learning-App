@@ -1,8 +1,5 @@
 package com.robosoft.elearning.dto.response;
 
-import java.security.PrivateKey;
-import java.util.List;
-
 public class SubjectResponse {
     private Long id;
     private String subjectName;

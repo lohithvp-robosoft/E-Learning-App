@@ -7,7 +7,7 @@ public class ContentRequest {
     private Long topicId;
     private String heading;
     private ContentType contentType; // e.g., text, video, image, etc.
-    private String contentImg; // URL or base64 string for the image
+    private String contentImg;
     private String info;
     private String videoUrl;
     private String thumbnail;

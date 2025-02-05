@@ -13,6 +13,7 @@ import com.robosoft.elearning.util.EntityMapperUtil;
 import com.robosoft.elearning.util.ResponseUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +40,12 @@ public class ChapterServiceImpl implements ChapterService {
     @Autowired
     private UserCurrentlyStudyingRepository userCurrentlyStudyingRepository;
 
+    @Value("${chapter.error.not-found}")
+    private String chapterNotFoundMessage;
+
+    @Value("${subject.error.not-found}")
+    private String subjectNotFoundMessage;
+
     @Override
     public ResponseEntity<ResponseDTO<List<ChapterResponse>>> getAllChapters() {
         List<Chapter> chapters = chapterRepository.findAll();
@@ -58,7 +65,7 @@ public class ChapterServiceImpl implements ChapterService {
     @Override
     public ResponseEntity<ResponseDTO<ChapterResponse>> getChapterById(long id) {
         Chapter chapter = chapterRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Chapter not found"));
+                .orElseThrow(() -> new NotFoundException(chapterNotFoundMessage));
         ChapterResponse chapterResponse = entityMapperUtil.convertChapterToChapterResponse(chapter);
         chapterResponse = new ChapterResponse(chapter.getId(),chapter.getChapterName(),chapter.getChapterImg());
         return responseUtil.successResponse(chapterResponse);
@@ -67,7 +74,7 @@ public class ChapterServiceImpl implements ChapterService {
         public ResponseEntity<ResponseDTO<Map<String, Object>>> getChaptersBySubjectId(Long subjectId, HttpServletRequest request) {
         User user = jwtUtils.getUserDataFromRequest(request);
         Subject subject = subjectRepository.findById(subjectId)
-                .orElseThrow(() -> new NotFoundException("Subject not found with ID: " + subjectId));
+                .orElseThrow(() -> new NotFoundException(subjectNotFoundMessage));
 
         List<ChapterSummaryResponse> chapterResponses = chapterRepository.findBySubjectId(subjectId)
                 .stream()
@@ -84,7 +91,7 @@ public class ChapterServiceImpl implements ChapterService {
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("subjectName", subject.getSubjectName());
         responseMap.put("chapters", chapterResponses);
-        return responseUtil.successResponse(responseMap, "Chapters fetched successfully");
+        return responseUtil.successResponse(responseMap, null);
     }
 
     @Override
@@ -94,26 +101,26 @@ public class ChapterServiceImpl implements ChapterService {
         chapter.setChapterImg(chapterRequest.getChapterImg());
         Chapter savedChapter = chapterRepository.save(chapter);
         ChapterResponse chapterResponse = new ChapterResponse(savedChapter.getId(), savedChapter.getChapterName(), savedChapter.getChapterImg());
-        return responseUtil.successResponse(chapterResponse, "Chapter created successfully");
+        return responseUtil.successResponse(chapterResponse, null);
     }
 
     @Override
     public ResponseEntity<ResponseDTO<ChapterResponse>> updateChapter(Long id, ChapterRequest chapterRequest) {
         Chapter chapter = chapterRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Chapter not found with ID: " + id));
+                .orElseThrow(() -> new NotFoundException(chapterNotFoundMessage));
         chapter.setChapterName(chapterRequest.getChapterName());
         chapter.setChapterImg(chapterRequest.getChapterImg());
         Chapter updatedChapter = chapterRepository.save(chapter);
         ChapterResponse chapterResponse = new ChapterResponse(updatedChapter.getId(), updatedChapter.getChapterName(), updatedChapter.getChapterImg());
-        return responseUtil.successResponse(chapterResponse, "Chapter updated successfully");
+        return responseUtil.successResponse(chapterResponse, null);
     }
 
     @Override
     public ResponseEntity<ResponseDTO<Void>> deleteChapter(Long id) {
         Chapter chapter = chapterRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Chapter not found with ID: " + id));
+                .orElseThrow(() -> new NotFoundException(chapterNotFoundMessage));
         chapterRepository.delete(chapter);
-        return responseUtil.successResponse(null, "Chapter deleted successfully");
+        return responseUtil.successResponse(null);
     }
 
 }

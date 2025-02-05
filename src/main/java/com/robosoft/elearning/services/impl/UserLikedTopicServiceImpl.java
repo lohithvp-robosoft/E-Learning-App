@@ -14,6 +14,7 @@ import com.robosoft.elearning.util.EntityMapperUtil;
 import com.robosoft.elearning.util.ResponseUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -46,20 +47,26 @@ public class UserLikedTopicServiceImpl implements UserLikedTopicServices {
     @Autowired
     private JwtUtils jwtUtils;
 
+    @Value("${topic.error.not-found}")
+    private String topicNotFoundMessage;
+
+    @Value("${likedPage.error.not-found}")
+    private String likedPageNotFoundMessage;
+
     @Override
-    public ResponseEntity<ResponseDTO<Void>> toggleLikeForPage(Long topicId, int pageNumber,HttpServletRequest request) {
+    public ResponseEntity<ResponseDTO<Void>> toggleLikeForPage(Long topicId, int pageNumber, HttpServletRequest request) {
         User user = jwtUtils.getUserDataFromRequest(request);
 
-        Topic topic = topicRepository.findById(topicId).orElseThrow(() -> new NotFoundException("Topic not found"));
+        Topic topic = topicRepository.findById(topicId).orElseThrow(() -> new NotFoundException(topicNotFoundMessage));
         UserLikedPage userLikedPage = userLikedPageRepository.findByUserAndTopicAndPageNumber(user, topic, pageNumber);
 
         if (userLikedPage != null) {
             userLikedPageRepository.delete(userLikedPage);
 
-            return responseUtil.successResponse(null,"Successfully disliked the topic");
+            return responseUtil.successResponse(null);
         } else {
             userLikedPageRepository.save(new UserLikedPage(user, topic, pageNumber));
-            return responseUtil.successResponse(null,"Successfully liked the topic");
+            return responseUtil.successResponse(null);
         }
     }
 
@@ -67,10 +74,10 @@ public class UserLikedTopicServiceImpl implements UserLikedTopicServices {
     @Override
     public ResponseEntity<ResponseDTO<List<UserLikedTopicResponse>>> getLikedTopics(Long subjectId, HttpServletRequest request) {
         User user = jwtUtils.getUserDataFromRequest(request);
-        List<UserLikedPage> likedPages = userLikedPageRepository.findByUser(user); // ✅ Fetch liked pages
+        List<UserLikedPage> likedPages = userLikedPageRepository.findByUser(user);
 
         if (likedPages.isEmpty()) {
-            return responseUtil.errorResponse("No liked pages found");
+            return responseUtil.errorResponse(likedPageNotFoundMessage);
         }
 
         List<UserLikedTopicResponse> userLikedTopicResponses = likedPages.stream()

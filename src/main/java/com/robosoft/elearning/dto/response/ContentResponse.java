@@ -29,19 +29,6 @@ public class ContentResponse {
 
     }
 
-
-
-
-//    public ContentResponse(Long id, String heading, ContentType contentType, String contentImg, String info, boolean userLiked) {
-//        this.id = id;
-//        this.heading = heading;
-//        this.contentType = contentType;
-//        this.contentImg = contentImg;
-//        this.info = info;
-//        this.userLiked = userLiked;
-//    }
-
-
     public Long getId() {
         return id;
     }

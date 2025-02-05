@@ -12,14 +12,15 @@ import com.robosoft.elearning.util.ResponseUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
-
 
 @Service
 public class LessonServiceImpl implements LessonService {
@@ -54,21 +55,20 @@ public class LessonServiceImpl implements LessonService {
     @Autowired
     private UserRepository userRepository;
 
-    private final ChapterNameResponse chapterNameResponse;
+    @Value("${lesson.error.not-found}")
+    private String lessonNotFoundMessage;
 
-    @Autowired
-    public LessonServiceImpl(ChapterNameResponse chapterNameResponse) {
-        this.chapterNameResponse = chapterNameResponse;
-    }
+    @Value("${chapter.error.not-found}")
+    private String chapterNotFoundMessage;
 
     @Override
     public ResponseEntity<ResponseDTO<LessonResponse>> getLessonById(long id) {
         try {
             Lesson lesson = lessonRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Lesson not found"));
+                    .orElseThrow(() -> new NotFoundException(lessonNotFoundMessage));
             LessonResponse lessonResponse = entityMapperUtil.convertLessonToLessonResponse(lesson);
 
-            return responseUtil.successResponse(lessonResponse, "Lesson fetched successfully");
+            return responseUtil.successResponse(lessonResponse, null);
         } catch (RuntimeException ex) {
             return responseUtil.errorResponse(ex.getMessage());
         }
@@ -78,10 +78,10 @@ public class LessonServiceImpl implements LessonService {
     public ResponseEntity<ResponseDTO<LessonResponse>> getLessonDetailsById(long lessonId) {
         try {
             Lesson lesson = lessonRepository.findById(lessonId)
-                    .orElseThrow(() -> new RuntimeException("Lesson not found"));
+                    .orElseThrow(() -> new NotFoundException(lessonNotFoundMessage));
             LessonResponse lessonResponse = entityMapperUtil.convertLessonToLessonResponse(lesson);
 
-            return responseUtil.successResponse(lessonResponse, "Lesson details fetched successfully");
+            return responseUtil.successResponse(lessonResponse, null);
         } catch (RuntimeException ex) {
             return responseUtil.errorResponse(ex.getMessage());
         }
@@ -96,136 +96,105 @@ public class LessonServiceImpl implements LessonService {
         return responseUtil.successResponse(responseList);
     }
 
-    public ResponseEntity<ResponseDTO<List<CurrentlyStudyingLessonResponse1>>> getCurrentlyStudyingLessonByChapterId1(
+    @Transactional
+    @Override
+    public ResponseEntity<ResponseDTO<List<CurrentlyStudyingLessonResponse>>> getCurrentlyStudyingLessonByChapterId(
             Long chapterId, HttpServletRequest request) {
 
         User user = jwtUtils.getUserDataFromRequest(request);
         Long userId = user.getId();
 
         Chapter currentChapter = chapterRepository.findById(chapterId)
-                .orElseThrow(() -> new NotFoundException("Chapter Not Found"));
+                .orElseThrow(() -> new NotFoundException(chapterNotFoundMessage));
 
-        Optional<UserCurrentlyStudying> optionalUserCurrentlyStudying = userCurrentlyStudyingRepository.findByUserIdAndCurrentChapterId(userId, chapterId);
+        Optional<UserCurrentlyStudying> optionalUserCurrentlyStudying = userCurrentlyStudyingRepository
+                .findByUserIdAndCurrentChapterId(userId, chapterId);
 
         if (!optionalUserCurrentlyStudying.isPresent()) {
-            System.out.println("No currently studying data found for user in this chapter.");
-            List<Lesson> lessonList = currentChapter.getLessons();
-
-            List<CurrentlyStudyingLessonResponse1> currentlyStudyingLessonResponse1List = new ArrayList<>();
-            Long lessonIndex = 0L;
-
-            for (Lesson lesson : lessonList) {
-                List<TopicWithTopicNameResponse> topics = lesson.getTopics().stream()
-                        .map(topic -> new TopicWithTopicNameResponse(
-                                topic.getId(),
-                                topic.getLessonId(),
-                                topic.getHeading(),
-                                topic.getSubHeading(),
-                                false,
-                                topic.getLesson().getChapter().getSubject().getId()
-                        ))
-                        .toList();
-
-                CurrentlyStudyingLessonResponse1 currentlyStudyingLessonResponse1 = new CurrentlyStudyingLessonResponse1(
-                        lesson.getId(),
-                        lesson.getLessonName(),
-                        ++lessonIndex,
-                        lesson.getChapter().getId(),
-                        false,
-                        0f,
-                        topics
-                );
-
-                currentlyStudyingLessonResponse1List.add(currentlyStudyingLessonResponse1);
-            }
-            return responseUtil.successResponse(currentlyStudyingLessonResponse1List);
+            return responseUtil.successResponse(getLessonsForNewUser(currentChapter));
         }
 
-        UserCurrentlyStudying userCurrentlyStudying1 = optionalUserCurrentlyStudying.get();
-        List<Lesson> lessons = currentChapter.getLessons();
-        List<CurrentlyStudyingLessonResponse1> currentlyStudyingLessonResponse1s = new ArrayList<>();
+        UserCurrentlyStudying userCurrentlyStudying = optionalUserCurrentlyStudying.get();
+        return responseUtil.successResponse(getLessonsForExistingUser(currentChapter, userCurrentlyStudying, userId));
+    }
 
+    private List<CurrentlyStudyingLessonResponse> getLessonsForNewUser(Chapter currentChapter) {
+        List<Lesson> lessonList = currentChapter.getLessons();
+        List<CurrentlyStudyingLessonResponse> responseList = new ArrayList<>();
+        Long lessonIndex = 0L;
+
+        for (Lesson lesson : lessonList) {
+            List<TopicWithTopicNameResponse> topics = getTopicResponseList(lesson.getTopics(), false);
+            CurrentlyStudyingLessonResponse response = createLessonResponse(lesson, lessonIndex++, false, 0f, topics);
+            responseList.add(response);
+        }
+        return responseList;
+    }
+
+    private List<CurrentlyStudyingLessonResponse> getLessonsForExistingUser(
+            Chapter currentChapter, UserCurrentlyStudying userCurrentlyStudying, Long userId) {
+
+        List<Lesson> lessons = currentChapter.getLessons();
+        List<CurrentlyStudyingLessonResponse> responseList = new ArrayList<>();
         Long lessonIndex = 0L;
         boolean foundCurrentLesson = false;
 
         for (Lesson lesson : lessons) {
             List<TopicWithTopicNameResponse> topics;
-
-            if (userCurrentlyStudying1.getCurrentLesson().getId().equals(lesson.getId())) {
+            if (userCurrentlyStudying.getCurrentLesson().getId().equals(lesson.getId())) {
                 foundCurrentLesson = true;
-                topics = topicRepository.findByLessonId(lesson.getId())
-                        .stream()
-                        .map(topic -> new TopicWithTopicNameResponse(
-                                topic.getId(),
-                                topic.getLessonId(),
-                                topic.getHeading(),
-                                topic.getSubHeading(),
-                                topicCompletedRepository.existsByTopicIdAndUserId(topic.getId(), userId),
-                                topic.getLesson().getChapter().getSubject().getId()
-                        ))
-                        .toList();
-
-                CurrentlyStudyingLessonResponse1 currentlyStudyingLessonResponse1 = new CurrentlyStudyingLessonResponse1(
-                        lesson.getId(),
-                        lesson.getLessonName(),
-                        ++lessonIndex,
-                        lesson.getChapter().getId(),
-                        true,
-                        userCurrentlyStudying1.getCompletedLessonInPercentage(),
-                        topics
-                );
-
-                currentlyStudyingLessonResponse1s.add(currentlyStudyingLessonResponse1);
+                topics = getTopicResponseListForCurrentLesson(lesson, userCurrentlyStudying, userId);
+                responseList.add(createLessonResponse(lesson, lessonIndex++, true, userCurrentlyStudying.getCompletedLessonInPercentage(), topics));
             } else if (!foundCurrentLesson) {
-                topics = lesson.getTopics().stream()
-                        .map(topic -> new TopicWithTopicNameResponse(
-                                topic.getId(),
-                                topic.getLessonId(),
-                                topic.getHeading(),
-                                topic.getSubHeading(),
-                                true,
-                                topic.getLesson().getChapter().getSubject().getId()
-                        ))
-                        .toList();
-
-                CurrentlyStudyingLessonResponse1 currentlyStudyingLessonResponse1 = new CurrentlyStudyingLessonResponse1(
-                        lesson.getId(),
-                        lesson.getLessonName(),
-                        ++lessonIndex,
-                        lesson.getChapter().getId(),
-                        false, // Not the current lesson
-                        100f,
-                        topics
-                );
-
-                currentlyStudyingLessonResponse1s.add(currentlyStudyingLessonResponse1);
+                topics = getTopicResponseList(lesson.getTopics(), true);
+                responseList.add(createLessonResponse(lesson, lessonIndex++, false, 100f, topics));
             } else {
-                topics = lesson.getTopics().stream()
-                        .map(topic -> new TopicWithTopicNameResponse(
-                                topic.getId(),
-                                topic.getLessonId(),
-                                topic.getHeading(),
-                                topic.getSubHeading(),
-                                false,
-                                topic.getLesson().getChapter().getSubject().getId()
-                        ))
-                        .toList();
-
-                CurrentlyStudyingLessonResponse1 currentlyStudyingLessonResponse1 = new CurrentlyStudyingLessonResponse1(
-                        lesson.getId(),
-                        lesson.getLessonName(),
-                        ++lessonIndex,
-                        lesson.getChapter().getId(),
-                        false,
-                        0f,
-                        topics
-                );
-
-                currentlyStudyingLessonResponse1s.add(currentlyStudyingLessonResponse1);
+                topics = getTopicResponseList(lesson.getTopics(), false);
+                responseList.add(createLessonResponse(lesson, lessonIndex++, false, 0f, topics));
             }
         }
+        return responseList;
+    }
 
-        return responseUtil.successResponse(currentlyStudyingLessonResponse1s);
+    private List<TopicWithTopicNameResponse> getTopicResponseList(List<Topic> topics, boolean completed) {
+        return topics.stream()
+                .map(topic -> new TopicWithTopicNameResponse(
+                        topic.getId(),
+                        topic.getLessonId(),
+                        topic.getHeading(),
+                        topic.getSubHeading(),
+                        completed,
+                        topic.getLesson().getChapter().getSubject().getId()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    private List<TopicWithTopicNameResponse> getTopicResponseListForCurrentLesson(
+            Lesson lesson, UserCurrentlyStudying userCurrentlyStudying, Long userId) {
+        return lesson.getTopics().stream()
+                .map(topic -> new TopicWithTopicNameResponse(
+                        topic.getId(),
+                        topic.getLessonId(),
+                        topic.getHeading(),
+                        topic.getSubHeading(),
+                        topicCompletedRepository.existsByTopicIdAndUserId(topic.getId(), userId),
+                        topic.getLesson().getChapter().getSubject().getId()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    private CurrentlyStudyingLessonResponse createLessonResponse(
+            Lesson lesson, Long lessonIndex, boolean isCurrent, float progress, List<TopicWithTopicNameResponse> topics) {
+
+        return new CurrentlyStudyingLessonResponse(
+                lesson.getId(),
+                lesson.getLessonName(),
+                lessonIndex,
+                lesson.getChapter().getId(),
+                isCurrent,
+                progress,
+                topics
+        );
     }
 
 
@@ -244,7 +213,7 @@ public class LessonServiceImpl implements LessonService {
         Lesson lesson = entityMapperUtil.convertLessonRequestToLesson(lessonRequest);
         Lesson savedLesson = lessonRepository.save(lesson);
         LessonResponse lessonResponse = entityMapperUtil.convertLessonToLessonResponse(savedLesson);
-        return responseUtil.successResponse(lessonResponse, "Lesson created successfully");
+        return responseUtil.successResponse(lessonResponse);
     }
 
     @Override
@@ -255,9 +224,9 @@ public class LessonServiceImpl implements LessonService {
             entityMapperUtil.updateLessonFromRequest(lessonRequest, lesson);
             Lesson updatedLesson = lessonRepository.save(lesson);
             LessonResponse lessonResponse = entityMapperUtil.convertLessonToLessonResponse(updatedLesson);
-            return responseUtil.successResponse(lessonResponse, "Lesson updated successfully");
+            return responseUtil.successResponse(lessonResponse);
         } else {
-            throw new NotFoundException("Lesson not found");
+            throw new NotFoundException(lessonNotFoundMessage);
         }
     }
 
@@ -266,11 +235,10 @@ public class LessonServiceImpl implements LessonService {
         Optional<Lesson> existingLesson = lessonRepository.findById(id);
         if (existingLesson.isPresent()) {
             lessonRepository.deleteById(id);
-            return responseUtil.successResponse(null, "Lesson deleted successfully");
+            return responseUtil.successResponse(null);
         } else {
-            throw new NotFoundException("Lesson not found");
+            throw new NotFoundException(lessonNotFoundMessage);
         }
     }
-
 
 }
