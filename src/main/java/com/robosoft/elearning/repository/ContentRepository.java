@@ -1,7 +1,7 @@
 package com.robosoft.elearning.repository;
 
 
-import com.robosoft.elearning.modal.Content;
+import com.robosoft.elearning.model.Content;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

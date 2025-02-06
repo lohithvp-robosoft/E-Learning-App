@@ -3,12 +3,11 @@ package com.robosoft.elearning.util;
 import com.robosoft.elearning.dto.request.LessonRequest;
 import com.robosoft.elearning.dto.response.*;
 import com.robosoft.elearning.exception.NotFoundException;
-import com.robosoft.elearning.modal.*;
+import com.robosoft.elearning.model.*;
 import com.robosoft.elearning.repository.ChapterRepository;
 import com.robosoft.elearning.repository.LessonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import software.amazon.awssdk.services.s3.endpoints.internal.Value;
 
 import java.util.ArrayList;
 import java.util.List;

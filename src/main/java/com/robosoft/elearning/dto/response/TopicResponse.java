@@ -1,6 +1,6 @@
 package com.robosoft.elearning.dto.response;
 
-import com.robosoft.elearning.modal.Level;
+import com.robosoft.elearning.model.Level;
 import java.util.List;
 
 public class TopicResponse {

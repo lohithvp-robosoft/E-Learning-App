@@ -1,17 +1,15 @@
 package com.robosoft.elearning.services.impl;
 
-import com.robosoft.elearning.controller.TestController;
 import com.robosoft.elearning.dto.request.TestRequest;
 import com.robosoft.elearning.dto.response.ResponseDTO;
 import com.robosoft.elearning.dto.response.TestResponse;
 import com.robosoft.elearning.dto.response.TestSubmitResponse;
 import com.robosoft.elearning.exception.NotFoundException;
 import com.robosoft.elearning.jwt.JwtUtils;
-import com.robosoft.elearning.modal.*;
+import com.robosoft.elearning.model.*;
 import com.robosoft.elearning.repository.*;
 import com.robosoft.elearning.services.TestServices;
 import com.robosoft.elearning.util.EntityMapperUtil;
-import com.robosoft.elearning.util.ObjectMapperUtil;
 import com.robosoft.elearning.util.ResponseUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
-import static java.util.stream.Collectors.toList;
 
 @Service
 public class TestServicesImpl implements TestServices {

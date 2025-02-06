@@ -2,7 +2,7 @@ package com.robosoft.elearning.services.impl;
 
 import com.robosoft.elearning.dto.response.ChapterRecommendationResponse;
 import com.robosoft.elearning.dto.response.ResponseDTO;
-import com.robosoft.elearning.modal.Subject;
+import com.robosoft.elearning.model.Subject;
 import com.robosoft.elearning.repository.SubjectRepository;
 import com.robosoft.elearning.services.RecommendationServices;
 import com.robosoft.elearning.util.ResponseUtil;

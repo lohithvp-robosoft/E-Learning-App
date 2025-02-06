@@ -4,7 +4,7 @@ import com.robosoft.elearning.dto.request.LessonRequest;
 import com.robosoft.elearning.dto.response.*;
 import com.robosoft.elearning.exception.NotFoundException;
 import com.robosoft.elearning.jwt.JwtUtils;
-import com.robosoft.elearning.modal.*;
+import com.robosoft.elearning.model.*;
 import com.robosoft.elearning.repository.*;
 import com.robosoft.elearning.services.LessonService;
 import com.robosoft.elearning.util.EntityMapperUtil;
@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Service

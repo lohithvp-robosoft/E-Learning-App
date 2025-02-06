@@ -1,7 +1,7 @@
 package com.robosoft.elearning.dto.response;
 
-import com.robosoft.elearning.modal.Role;
-import com.robosoft.elearning.modal.User;
+import com.robosoft.elearning.model.Role;
+import com.robosoft.elearning.model.User;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.robosoft.elearning.modal;
+package com.robosoft.elearning.model;
 
 public enum Level {
     BEGINNER,

@@ -1,8 +1,8 @@
 package com.robosoft.elearning.repository;
 
-import com.robosoft.elearning.modal.Topic;
-import com.robosoft.elearning.modal.User;
-import com.robosoft.elearning.modal.UserLikedPage;
+import com.robosoft.elearning.model.Topic;
+import com.robosoft.elearning.model.User;
+import com.robosoft.elearning.model.UserLikedPage;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

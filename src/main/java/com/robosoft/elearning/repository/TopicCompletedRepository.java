@@ -1,8 +1,8 @@
 package com.robosoft.elearning.repository;
 
 
-import com.robosoft.elearning.modal.Lesson;
-import com.robosoft.elearning.modal.TopicCompleted;
+import com.robosoft.elearning.model.Lesson;
+import com.robosoft.elearning.model.TopicCompleted;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

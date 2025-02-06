@@ -1,6 +1,6 @@
 package com.robosoft.elearning.dto.response;
 
-import com.robosoft.elearning.modal.Level;
+import com.robosoft.elearning.model.Level;
 
 public class UserLikedTopicResponse {
     private Long topicId;

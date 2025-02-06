@@ -4,7 +4,7 @@ import com.robosoft.elearning.dto.response.ResponseDTO;
 import com.robosoft.elearning.dto.response.UserCurrentlyStudyingResponse;
 import com.robosoft.elearning.exception.NotFoundException;
 import com.robosoft.elearning.jwt.JwtUtils;
-import com.robosoft.elearning.modal.*;
+import com.robosoft.elearning.model.*;
 import com.robosoft.elearning.repository.*;
 import com.robosoft.elearning.services.UserStudyProgressServices;
 import com.robosoft.elearning.util.EntityMapperUtil;
@@ -16,10 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class UserStudyProgressServiceImpl implements UserStudyProgressServices {

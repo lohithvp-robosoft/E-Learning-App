@@ -1,8 +1,8 @@
 package com.robosoft.elearning.repository;
 
-import com.robosoft.elearning.modal.Test;
-import com.robosoft.elearning.modal.User;
-import com.robosoft.elearning.modal.UserTestScore;
+import com.robosoft.elearning.model.Test;
+import com.robosoft.elearning.model.User;
+import com.robosoft.elearning.model.UserTestScore;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

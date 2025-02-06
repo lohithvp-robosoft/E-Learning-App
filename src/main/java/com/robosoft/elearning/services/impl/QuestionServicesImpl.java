@@ -5,7 +5,7 @@ import com.robosoft.elearning.dto.request.UpdateQuestionRequest;
 import com.robosoft.elearning.dto.response.*;
 import com.robosoft.elearning.exception.NotFoundException;
 import com.robosoft.elearning.jwt.JwtUtils;
-import com.robosoft.elearning.modal.*;
+import com.robosoft.elearning.model.*;
 import com.robosoft.elearning.repository.*;
 import com.robosoft.elearning.services.FirebaseService;
 import com.robosoft.elearning.services.QuestionServices;
@@ -18,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 

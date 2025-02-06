@@ -1,4 +1,4 @@
-package com.robosoft.elearning.modal;
+package com.robosoft.elearning.model;
 
 import com.robosoft.elearning.dto.request.BaseRegisterRequest;
 import jakarta.persistence.*;

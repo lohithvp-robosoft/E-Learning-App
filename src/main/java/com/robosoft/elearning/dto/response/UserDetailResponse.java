@@ -1,7 +1,6 @@
 package com.robosoft.elearning.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.robosoft.elearning.modal.UserTestResult;
 
 public class UserDetailResponse {
     private long id;

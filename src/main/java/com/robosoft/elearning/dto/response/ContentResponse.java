@@ -1,7 +1,7 @@
 package com.robosoft.elearning.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.robosoft.elearning.modal.ContentType;
+import com.robosoft.elearning.model.ContentType;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ContentResponse {

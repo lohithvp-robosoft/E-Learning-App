@@ -1,8 +1,6 @@
-package com.robosoft.elearning.modal;
+package com.robosoft.elearning.model;
 
 import jakarta.persistence.*;
-
-import java.util.List;
 
 @Entity
 public class ContentAudio {

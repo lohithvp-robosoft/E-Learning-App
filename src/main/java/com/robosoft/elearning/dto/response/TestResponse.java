@@ -1,10 +1,8 @@
 package com.robosoft.elearning.dto.response;
 
-import com.robosoft.elearning.modal.Level;
-import com.robosoft.elearning.modal.Question;
+import com.robosoft.elearning.model.Level;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 public class TestResponse {
     private Long id;

@@ -1,10 +1,6 @@
 package com.robosoft.elearning.dto.request;
 
-import com.robosoft.elearning.modal.Role;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import com.robosoft.elearning.model.Role;
 
 import java.util.ArrayList;
 import java.util.List;

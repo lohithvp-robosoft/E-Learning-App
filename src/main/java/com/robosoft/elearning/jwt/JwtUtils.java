@@ -2,8 +2,8 @@ package com.robosoft.elearning.jwt;
 
 import com.robosoft.elearning.exception.JwtException;
 import com.robosoft.elearning.exception.NotFoundException;
-import com.robosoft.elearning.modal.Role;
-import com.robosoft.elearning.modal.User;
+import com.robosoft.elearning.model.Role;
+import com.robosoft.elearning.model.User;
 //import io.jsonwebtoken.JwtException;
 import com.robosoft.elearning.repository.UserRepository;
 import io.jsonwebtoken.Claims;
@@ -18,13 +18,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @Component

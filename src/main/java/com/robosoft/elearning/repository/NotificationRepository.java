@@ -1,6 +1,6 @@
 package com.robosoft.elearning.repository;
 
-import com.robosoft.elearning.modal.Notification;
+import com.robosoft.elearning.model.Notification;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

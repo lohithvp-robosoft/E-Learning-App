@@ -4,7 +4,7 @@ import com.robosoft.elearning.dto.request.ChapterRequest;
 import com.robosoft.elearning.dto.response.*;
 import com.robosoft.elearning.exception.NotFoundException;
 import com.robosoft.elearning.jwt.JwtUtils;
-import com.robosoft.elearning.modal.*;
+import com.robosoft.elearning.model.*;
 import com.robosoft.elearning.repository.ChapterRepository;
 import com.robosoft.elearning.repository.SubjectRepository;
 import com.robosoft.elearning.repository.UserCurrentlyStudyingRepository;

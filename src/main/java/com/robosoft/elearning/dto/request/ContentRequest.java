@@ -1,6 +1,6 @@
 package com.robosoft.elearning.dto.request;
 
-import com.robosoft.elearning.modal.ContentType;
+import com.robosoft.elearning.model.ContentType;
 
 public class ContentRequest {
     private Long lessonId;

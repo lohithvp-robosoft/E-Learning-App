@@ -1,29 +1,31 @@
-package com.robosoft.elearning.modal;
+package com.robosoft.elearning.model;
 
 import jakarta.persistence.*;
 
 @Entity
-public class UserLikedPage {
+@Table(name = "content_completion")
+public class ContentCompletion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    private User user;
-
-    @ManyToOne
+    @JoinColumn(name = "topic_id", nullable = false)
     private Topic topic;
+
+    @Column(nullable = false)
+    private Long userId;
 
     @Column(nullable = false)
     private int pageNumber;
 
-    public UserLikedPage(User user, Topic topic, int pageNumber) {
-        this.user = user;
+    public ContentCompletion() {}
+
+    public ContentCompletion(Topic topic, Long userId, int pageNumber) {
         this.topic = topic;
+        this.userId = userId;
         this.pageNumber = pageNumber;
     }
-
-    public UserLikedPage(){}
 
     public Long getId() {
         return id;
@@ -31,14 +33,6 @@ public class UserLikedPage {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public Topic getTopic() {
@@ -49,6 +43,14 @@ public class UserLikedPage {
         this.topic = topic;
     }
 
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
     public int getPageNumber() {
         return pageNumber;
     }
@@ -57,4 +59,3 @@ public class UserLikedPage {
         this.pageNumber = pageNumber;
     }
 }
-

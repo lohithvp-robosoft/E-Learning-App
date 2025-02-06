@@ -1,6 +1,6 @@
 package com.robosoft.elearning.dto.response;
 
-import com.robosoft.elearning.modal.ContentType;
+import com.robosoft.elearning.model.ContentType;
 
 import java.util.List;
 

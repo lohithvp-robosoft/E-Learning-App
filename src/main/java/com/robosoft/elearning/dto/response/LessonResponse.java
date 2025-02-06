@@ -1,9 +1,7 @@
 package com.robosoft.elearning.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.robosoft.elearning.modal.Level;
-
-import java.util.List;
+import com.robosoft.elearning.model.Level;
 
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

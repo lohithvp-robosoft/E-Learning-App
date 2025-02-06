@@ -4,11 +4,9 @@ import com.robosoft.elearning.dto.request.TestRequest;
 import com.robosoft.elearning.dto.response.ResponseDTO;
 import com.robosoft.elearning.dto.response.TestResponse;
 import com.robosoft.elearning.dto.response.TestSubmitResponse;
-import com.robosoft.elearning.modal.Test;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 

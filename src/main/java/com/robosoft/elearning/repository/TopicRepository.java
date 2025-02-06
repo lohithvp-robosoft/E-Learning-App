@@ -1,7 +1,7 @@
 package com.robosoft.elearning.repository;
 
-import com.robosoft.elearning.modal.Lesson;
-import com.robosoft.elearning.modal.Topic;
+import com.robosoft.elearning.model.Lesson;
+import com.robosoft.elearning.model.Topic;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,6 +1,6 @@
 package com.robosoft.elearning.dto.request;
 
-import com.robosoft.elearning.modal.Role;
+import com.robosoft.elearning.model.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

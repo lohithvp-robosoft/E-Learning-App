@@ -6,7 +6,7 @@ import com.robosoft.elearning.dto.response.PaginatedContentResponse;
 import com.robosoft.elearning.dto.response.ResponseDTO;
 import com.robosoft.elearning.exception.NotFoundException;
 import com.robosoft.elearning.jwt.JwtUtils;
-import com.robosoft.elearning.modal.*;
+import com.robosoft.elearning.model.*;
 import com.robosoft.elearning.repository.ContentRepository;
 import com.robosoft.elearning.repository.LessonRepository;
 import com.robosoft.elearning.repository.TopicRepository;

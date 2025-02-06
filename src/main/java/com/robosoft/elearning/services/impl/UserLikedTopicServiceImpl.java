@@ -4,7 +4,7 @@ import com.robosoft.elearning.dto.response.ResponseDTO;
 import com.robosoft.elearning.dto.response.UserLikedTopicResponse;
 import com.robosoft.elearning.exception.NotFoundException;
 import com.robosoft.elearning.jwt.JwtUtils;
-import com.robosoft.elearning.modal.*;
+import com.robosoft.elearning.model.*;
 import com.robosoft.elearning.repository.ChapterRepository;
 import com.robosoft.elearning.repository.TopicRepository;
 import com.robosoft.elearning.repository.UserLikedPageRepository;
@@ -20,8 +20,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class UserLikedTopicServiceImpl implements UserLikedTopicServices {
