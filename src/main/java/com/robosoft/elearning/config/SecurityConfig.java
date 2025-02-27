@@ -70,6 +70,7 @@ public class SecurityConfig {
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
+//                        .anyRequest().permitAll()
                         .requestMatchers(
                                         "/api/v1/user/send-reg-otp",
                                 "/api/v1/admin/send-reg-otp",
@@ -78,8 +79,10 @@ public class SecurityConfig {
                                 "/api/v1/login",
                                 "/api/v1/refresh-Token",
                                 "/api/v1/forgot-password",
-                                "/api/v1/forgot-reset-password"
-                        ).permitAll()
+                                "/api/v1/forgot-reset-password",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**"
+                                ).permitAll()
                         .anyRequest().authenticated()
         );
         http.sessionManagement(session ->
